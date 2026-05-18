@@ -26,6 +26,12 @@ public class Dashboard extends javax.swing.JFrame {
         defaultColor = new Color(51, 51, 51);
         clickColor = new Color(102, 153, 255);
         lblID.setText(staff.getStaff_id());
+        
+        if(staff.getRole().equals("admin")){
+            menu_Am.setVisible(true);
+        }else{
+            menu_Am.setVisible(false);
+        }
 
         menu_Mb.setBackground(defaultColor);
         menu_Cd.setBackground(defaultColor);
@@ -250,6 +256,9 @@ public class Dashboard extends javax.swing.JFrame {
 
         menu_Am.setBackground(new java.awt.Color(51, 51, 51));
         menu_Am.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                menu_AmMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 menu_AmMousePressed(evt);
             }
@@ -367,7 +376,15 @@ public class Dashboard extends javax.swing.JFrame {
         menu_Es.setBackground(defaultColor);
         menu_Bc.setBackground(defaultColor);
         menu_Am.setBackground(clickColor);
+        menuName.setText("ADMIN MANAGEMENT");
     }//GEN-LAST:event_menu_AmMousePressed
+
+    private void menu_AmMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menu_AmMouseClicked
+        Admin_Management admin_Management = new Admin_Management();
+        jDesktopPanel.removeAll();
+        jDesktopPanel.add(admin_Management).setVisible(true);
+
+    }//GEN-LAST:event_menu_AmMouseClicked
 
     private void menu_MbMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_menu_MbMousePressed
         // TODO add your handling code here:
