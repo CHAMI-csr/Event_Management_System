@@ -6,7 +6,6 @@ import java.awt.Color;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author chamika
@@ -27,13 +26,13 @@ public class Dashboard extends javax.swing.JFrame {
         defaultColor = new Color(51, 51, 51);
         clickColor = new Color(102, 153, 255);
         lblID.setText(staff.getStaff_id());
-        
 
         menu_Mb.setBackground(defaultColor);
         menu_Cd.setBackground(defaultColor);
         menu_Ar.setBackground(defaultColor);
         menu_Es.setBackground(defaultColor);
         menu_Bc.setBackground(defaultColor);
+        menu_Am.setBackground(defaultColor);
     }
 
     /**
@@ -61,6 +60,8 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         menu_Bc = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
+        menu_Am = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
         jDesktopPanel = new javax.swing.JDesktopPane();
         jLabel1 = new javax.swing.JLabel();
 
@@ -238,13 +239,43 @@ public class Dashboard extends javax.swing.JFrame {
             menu_BcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(menu_BcLayout.createSequentialGroup()
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 48, Short.MAX_VALUE))
         );
         menu_BcLayout.setVerticalGroup(
             menu_BcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, menu_BcLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 12, Short.MAX_VALUE)
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        menu_Am.setBackground(new java.awt.Color(51, 51, 51));
+        menu_Am.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                menu_AmMousePressed(evt);
+            }
+        });
+
+        jLabel9.setBackground(new java.awt.Color(153, 153, 153));
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Admin Settings Male.png"))); // NOI18N
+        jLabel9.setText("ADMIN MANAGEMENT");
+        jLabel9.setMaximumSize(new java.awt.Dimension(141, 50));
+        jLabel9.setMinimumSize(new java.awt.Dimension(141, 50));
+
+        javax.swing.GroupLayout menu_AmLayout = new javax.swing.GroupLayout(menu_Am);
+        menu_Am.setLayout(menu_AmLayout);
+        menu_AmLayout.setHorizontalGroup(
+            menu_AmLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(menu_AmLayout.createSequentialGroup()
+                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        menu_AmLayout.setVerticalGroup(
+            menu_AmLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, menu_AmLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -252,23 +283,29 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(menu_Bc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(menu_Es, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(menu_Mb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(menu_Cd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(menu_Ar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(menu_Bc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(menu_Es, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(menu_Mb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(menu_Cd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(menu_Ar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(menu_Am, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -283,6 +320,8 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(menu_Es, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(menu_Bc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(menu_Am, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -321,6 +360,15 @@ public class Dashboard extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void menu_AmMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menu_AmMousePressed
+        menu_Mb.setBackground(defaultColor);
+        menu_Cd.setBackground(defaultColor);
+        menu_Ar.setBackground(defaultColor);
+        menu_Es.setBackground(defaultColor);
+        menu_Bc.setBackground(defaultColor);
+        menu_Am.setBackground(clickColor);
+    }//GEN-LAST:event_menu_AmMousePressed
+
     private void menu_MbMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_menu_MbMousePressed
         // TODO add your handling code here:
         menu_Mb.setBackground(clickColor);
@@ -328,6 +376,7 @@ public class Dashboard extends javax.swing.JFrame {
         menu_Ar.setBackground(defaultColor);
         menu_Es.setBackground(defaultColor);
         menu_Bc.setBackground(defaultColor);
+        menu_Am.setBackground(defaultColor);
 
         menuName.setText("Manage Bookings");
     }// GEN-LAST:event_menu_MbMousePressed
@@ -339,6 +388,7 @@ public class Dashboard extends javax.swing.JFrame {
         menu_Ar.setBackground(defaultColor);
         menu_Es.setBackground(defaultColor);
         menu_Bc.setBackground(defaultColor);
+        menu_Am.setBackground(defaultColor);
 
         menuName.setText("Client Details");
     }// GEN-LAST:event_menu_CdMousePressed
@@ -350,6 +400,7 @@ public class Dashboard extends javax.swing.JFrame {
         menu_Ar.setBackground(clickColor);
         menu_Es.setBackground(defaultColor);
         menu_Bc.setBackground(defaultColor);
+        menu_Am.setBackground(defaultColor);
 
         menuName.setText("Assign Resources");
     }// GEN-LAST:event_menu_ArMousePressed
@@ -361,6 +412,7 @@ public class Dashboard extends javax.swing.JFrame {
         menu_Ar.setBackground(defaultColor);
         menu_Es.setBackground(clickColor);
         menu_Bc.setBackground(defaultColor);
+        menu_Am.setBackground(defaultColor);
 
         menuName.setText("Event Schedule");
     }// GEN-LAST:event_menu_EsMousePressed
@@ -372,6 +424,7 @@ public class Dashboard extends javax.swing.JFrame {
         menu_Ar.setBackground(defaultColor);
         menu_Es.setBackground(defaultColor);
         menu_Bc.setBackground(clickColor);
+        menu_Am.setBackground(defaultColor);
 
         menuName.setText("Billing & Cost");
     }// GEN-LAST:event_menu_BcMousePressed
@@ -417,8 +470,6 @@ public class Dashboard extends javax.swing.JFrame {
         // </editor-fold>
 
         /* Create and display the form */
-        
-
         System.out.println();
     }
 
@@ -430,11 +481,13 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lblID;
     private javax.swing.JLabel menuName;
+    private javax.swing.JPanel menu_Am;
     private javax.swing.JPanel menu_Ar;
     private javax.swing.JPanel menu_Bc;
     private javax.swing.JPanel menu_Cd;
