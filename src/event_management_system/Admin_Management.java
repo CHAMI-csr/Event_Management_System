@@ -19,8 +19,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
      */
     public Admin_Management() {
         initComponents();
-        this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
-        BasicInternalFrameUI ui=(BasicInternalFrameUI)this.getUI();
+        this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
         ui.setNorthPane(null);
     }
 
@@ -35,8 +35,11 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnMannage = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        jpAddStaff = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jpMannageStaff = new javax.swing.JPanel();
 
         setClosable(true);
         setMaximumSize(new java.awt.Dimension(1060, 600));
@@ -45,39 +48,76 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         jPanel1.setBackground(new java.awt.Color(153, 204, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(200, 564));
-        jPanel1.setLayout(new java.awt.GridLayout(20, 1, 0, 10));
+        jPanel1.setLayout(new java.awt.GridLayout(10, 1, 0, 10));
 
         jButton1.setBackground(new java.awt.Color(204, 255, 204));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jButton1.setForeground(new java.awt.Color(102, 102, 102));
         jButton1.setText("ADD STAFF");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
         jPanel1.add(jButton1);
 
-        jButton2.setBackground(new java.awt.Color(204, 255, 204));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(102, 102, 102));
-        jButton2.setText("MANAGE STAFF");
-        jPanel1.add(jButton2);
+        btnMannage.setBackground(new java.awt.Color(204, 255, 204));
+        btnMannage.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnMannage.setForeground(new java.awt.Color(102, 102, 102));
+        btnMannage.setText("MANAGE STAFF");
+        btnMannage.addActionListener(this::btnMannageActionPerformed);
+        jPanel1.add(btnMannage);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.LINE_START);
 
         jPanel2.setBackground(new java.awt.Color(255, 153, 153));
+        jPanel2.setLayout(new java.awt.CardLayout());
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 848, Short.MAX_VALUE)
+        jLabel1.setText("jhygjjh");
+
+        javax.swing.GroupLayout jpAddStaffLayout = new javax.swing.GroupLayout(jpAddStaff);
+        jpAddStaff.setLayout(jpAddStaffLayout);
+        jpAddStaffLayout.setHorizontalGroup(
+            jpAddStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpAddStaffLayout.createSequentialGroup()
+                .addGap(324, 324, 324)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(236, Short.MAX_VALUE))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1130, Short.MAX_VALUE)
+        jpAddStaffLayout.setVerticalGroup(
+            jpAddStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpAddStaffLayout.createSequentialGroup()
+                .addGap(175, 175, 175)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(201, Short.MAX_VALUE))
         );
+
+        jPanel2.add(jpAddStaff, "card3");
+
+        javax.swing.GroupLayout jpMannageStaffLayout = new javax.swing.GroupLayout(jpMannageStaff);
+        jpMannageStaff.setLayout(jpMannageStaffLayout);
+        jpMannageStaffLayout.setHorizontalGroup(
+            jpMannageStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 800, Short.MAX_VALUE)
+        );
+        jpMannageStaffLayout.setVerticalGroup(
+            jpMannageStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+        );
+
+        jPanel2.add(jpMannageStaff, "card2");
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        jpMannageStaff.setVisible(false);
+        jpAddStaff.setVisible(true);
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btnMannageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMannageActionPerformed
+        jpMannageStaff.setVisible(true);
+        jpAddStaff.setVisible(false);
+    }//GEN-LAST:event_btnMannageActionPerformed
 
     /**
      * @param args the command line arguments
@@ -105,9 +145,12 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnMannage;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jpAddStaff;
+    private javax.swing.JPanel jpMannageStaff;
     // End of variables declaration//GEN-END:variables
 }
