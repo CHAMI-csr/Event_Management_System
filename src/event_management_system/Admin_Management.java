@@ -59,13 +59,13 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         txtPassword = new javax.swing.JLabel();
         jTextField6 = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
-        txtPasswordCon = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jCheckBox2 = new javax.swing.JCheckBox();
-        jButton2 = new javax.swing.JButton();
+        btnCreate = new javax.swing.JButton();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
+        txtPasswordConfirm = new javax.swing.JPasswordField();
         jpMannageStaff = new javax.swing.JPanel();
 
         setClosable(true);
@@ -110,7 +110,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel2.setBackground(new java.awt.Color(51, 51, 51));
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel2.setText("NEXT ID");
+        jLabel2.setText("ASSIGN STAFF ID");
 
         lblNextId.setBackground(new java.awt.Color(51, 51, 51));
         lblNextId.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -162,7 +162,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -170,11 +170,11 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblNextId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtName, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtContact, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtContact, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(txtEmail)
-                                .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(txtNId, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtNId, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(210, 210, 210))))
         );
         jPanel3Layout.setVerticalGroup(
@@ -242,9 +242,6 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel11.setText("CONFIRM pw.");
         jPanel4.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 127, 40));
 
-        txtPasswordCon.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jPanel4.add(txtPasswordCon, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 320, 290, 40));
-
         jLabel12.setForeground(new java.awt.Color(255, 0, 51));
         jLabel12.setText("After checking this box, ");
         jPanel4.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 400, -1, 30));
@@ -253,16 +250,16 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel13.setText("the user can change the password the first time they log in.");
         jPanel4.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 420, 330, 30));
 
-        jCheckBox2.setForeground(new java.awt.Color(0, 0, 0));
         jCheckBox2.setText("First Time Can Be Change Password User ");
         jCheckBox2.addActionListener(this::jCheckBox2ActionPerformed);
         jPanel4.add(jCheckBox2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 380, 290, -1));
 
-        jButton2.setBackground(new java.awt.Color(153, 255, 204));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(51, 51, 51));
-        jButton2.setText("CREATE ACCOUNT");
-        jPanel4.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 490, 220, 40));
+        btnCreate.setBackground(new java.awt.Color(153, 255, 204));
+        btnCreate.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnCreate.setForeground(new java.awt.Color(51, 51, 51));
+        btnCreate.setText("CREATE ACCOUNT");
+        btnCreate.addActionListener(this::btnCreateActionPerformed);
+        jPanel4.add(btnCreate, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 490, 220, 40));
 
         jLabel14.setForeground(new java.awt.Color(255, 0, 51));
         jLabel14.setText("The Staff ID has been assigned as the default password.");
@@ -272,6 +269,9 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel15.setText("The password field was left empty. ");
         jPanel4.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, -1, 32));
 
+        txtPasswordConfirm.addActionListener(this::txtPasswordConfirmActionPerformed);
+        jPanel4.add(txtPasswordConfirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 320, 290, 40));
+
         jpAddStaff.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(393, 0, 460, 600));
 
         jPanel2.add(jpAddStaff, "card3");
@@ -280,7 +280,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jpMannageStaff.setLayout(jpMannageStaffLayout);
         jpMannageStaffLayout.setHorizontalGroup(
             jpMannageStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 850, Short.MAX_VALUE)
+            .addGap(0, 853, Short.MAX_VALUE)
         );
         jpMannageStaffLayout.setVerticalGroup(
             jpMannageStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -329,6 +329,25 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox2ActionPerformed
 
+    private void txtPasswordConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordConfirmActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPasswordConfirmActionPerformed
+
+    private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
+        String name,email,address,role,password,confirmPassowrd;
+        int contact,Nid;
+        
+        name=txtName.getText();
+        email=txtEmail.getText();
+        address=txtAddress.getText();
+        role=txtRole.getSelectedItem().toString();
+        password=txtPassword.getText();
+        confirmPassowrd=txtPasswordConfirm.getText();
+        contact=Integer.parseInt(txtContact.getText());
+        Nid=Integer.parseInt(txtNId.getText());
+        
+    }//GEN-LAST:event_btnCreateActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -355,9 +374,9 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnMannage;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
@@ -387,7 +406,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtNId;
     private javax.swing.JTextField txtName;
     private javax.swing.JLabel txtPassword;
-    private javax.swing.JTextField txtPasswordCon;
+    private javax.swing.JPasswordField txtPasswordConfirm;
     private javax.swing.JComboBox<String> txtRole;
     // End of variables declaration//GEN-END:variables
 }
