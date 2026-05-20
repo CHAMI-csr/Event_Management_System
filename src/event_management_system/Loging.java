@@ -76,8 +76,8 @@ public class Loging extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("UserName");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 90, 90, 20));
+        jLabel3.setText("Email or Staff_Id");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 90, 120, 20));
 
         jLabel4.setFont(new java.awt.Font("Sitka Subheading", 1, 36)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
@@ -120,6 +120,8 @@ public class Loging extends javax.swing.JFrame {
     }// GEN-LAST:event_txtUsernameActionPerformed
 
     private void btnLogingActionPerformed(java.awt.event.ActionEvent evt) {
+        txtUsername.setText("100");
+        txtPassword.setText("Admin@123");
 
         String enteredUsername = txtUsername.getText();
         String enteredPassword = new String(txtPassword.getPassword());

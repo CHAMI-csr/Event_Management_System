@@ -8,20 +8,35 @@ package event_management_system;
  *
  * @author chamika
  */
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.sql.Connection;
+import javax.swing.JOptionPane;
+
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 public class Admin_Management extends javax.swing.JInternalFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Admin_Management.class.getName());
 
     /**
      * Creates new form manage_Bookings
      */
+    PreparedStatement pst;
+    ResultSet rs;
+    Connection con = DBConnect.connect();
+
     public Admin_Management() {
         initComponents();
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
         ui.setNorthPane(null);
+        String staffid = genarateUserId();
+        lblNextId.setText(staffid);
+
     }
 
     /**
@@ -110,7 +125,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel2.setBackground(new java.awt.Color(51, 51, 51));
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel2.setText("ASSIGN STAFF ID");
+        jLabel2.setText("ASSIGN STAFF ID : ");
 
         lblNextId.setBackground(new java.awt.Color(51, 51, 51));
         lblNextId.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -209,7 +224,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 .addGap(135, 135, 135))
         );
 
-        jpAddStaff.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 400, 600));
+        jpAddStaff.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 420, 600));
 
         jPanel4.setBackground(new java.awt.Color(204, 255, 255));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -227,15 +242,15 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         txtRole.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         txtRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Event Planner", "Ticketing Staff", "Technical", "Analytics", "Administrator" }));
-        jPanel4.add(txtRole, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 126, 318, 42));
+        jPanel4.add(txtRole, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 126, 220, 42));
 
         txtPassword.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         txtPassword.setForeground(new java.awt.Color(102, 102, 102));
         txtPassword.setText("PASSOWORD");
-        jPanel4.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 420, 40));
+        jPanel4.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 130, 40));
 
         jTextField6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jPanel4.add(jTextField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 270, 290, 40));
+        jPanel4.add(jTextField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 270, 240, 40));
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(102, 102, 102));
@@ -270,9 +285,9 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jPanel4.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, -1, 32));
 
         txtPasswordConfirm.addActionListener(this::txtPasswordConfirmActionPerformed);
-        jPanel4.add(txtPasswordConfirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 320, 290, 40));
+        jPanel4.add(txtPasswordConfirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 320, 240, 40));
 
-        jpAddStaff.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(393, 0, 460, 600));
+        jpAddStaff.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(413, 0, 440, 600));
 
         jPanel2.add(jpAddStaff, "card3");
 
@@ -297,7 +312,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         jpMannageStaff.setVisible(false);
         jpAddStaff.setVisible(true);
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnMannageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMannageActionPerformed
@@ -334,18 +349,130 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtPasswordConfirmActionPerformed
 
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
-        String name,email,address,role,password,confirmPassowrd;
-        int contact,Nid;
+        // --- Collect field values ---
+        String name    = txtName.getText().trim();
+        String email   = txtEmail.getText().trim();
+        String address = txtAddress.getText().trim();
+        String role    = txtRole.getSelectedItem().toString();
+
         
-        name=txtName.getText();
-        email=txtEmail.getText();
-        address=txtAddress.getText();
-        role=txtRole.getSelectedItem().toString();
-        password=txtPassword.getText();
-        confirmPassowrd=txtPasswordConfirm.getText();
-        contact=Integer.parseInt(txtContact.getText());
-        Nid=Integer.parseInt(txtNId.getText());
-        
+        String password        = jTextField6.getText().trim();
+        String confirmPassword = new String(txtPasswordConfirm.getPassword()).trim();
+
+        String contactStr = txtContact.getText().trim();
+        String nIdStr     = txtNId.getText().trim();
+
+        // --- Basic empty-field validation ---
+        if (name.isEmpty() || email.isEmpty() || address.isEmpty()
+                || contactStr.isEmpty() || nIdStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Please fill in all required fields.",
+                    "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+     
+        long contact;
+        int  nId;
+        try {
+            contact = Long.parseLong(contactStr);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Contact number must contain digits only.",
+                    "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            nId = Integer.parseInt(nIdStr);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "National ID must contain digits only.",
+                    "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // --- Generate next Staff ID ---
+        String staffId = genarateUserId();
+
+       
+        if (password.isEmpty()) {
+            jLabel15.setVisible(true);   
+            jLabel14.setVisible(true);  
+            password = staffId;
+        } else {
+            jLabel15.setVisible(false);
+            jLabel14.setVisible(false);
+          
+            if (!password.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(this,
+                        "Password and Confirm Password do not match.",
+                        "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+
+        // --- Duplicate check (email OR national ID already exists) ---
+        if (checkUsername(email, nId)) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "A staff member with this Email or National ID already exists.",
+                    "Duplicate Record",
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+
+        try {
+            String sql = "INSERT INTO staff (staff_id, staff_name, contact_number, staff_email, "
+                       + "staff_address, Id, role, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, staffId);
+            pst.setString(2, name);
+            pst.setLong  (3, contact);
+            pst.setString(4, email);
+            pst.setString(5, address);
+            pst.setInt   (6, nId);
+            pst.setString(7, role);
+            pst.setString(8, password);
+
+            int rows = pst.executeUpdate();
+
+            if (rows > 0) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "Staff account created successfully!\nStaff ID: " + staffId,
+                        "Success",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
+
+              
+                txtName.setText("");
+                txtContact.setText("");
+                txtEmail.setText("");
+                txtAddress.setText("");
+                txtNId.setText("");
+                jTextField6.setText("");
+                txtPasswordConfirm.setText("");
+                jLabel15.setVisible(false);
+                jLabel14.setVisible(false);
+
+                // Refresh the displayed next ID
+                String nextId = genarateUserId();
+                lblNextId.setText(nextId);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Failed to create staff account. Please try again.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (java.sql.SQLException ex) {
+           JOptionPane.showMessageDialog(this,
+                    "Database error: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnCreateActionPerformed
 
     /**
@@ -409,4 +536,46 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JPasswordField txtPasswordConfirm;
     private javax.swing.JComboBox<String> txtRole;
     // End of variables declaration//GEN-END:variables
+
+    private String genarateUserId() {
+        String newId = "S-0001";  // default ID
+        try {
+            // MAX()
+            String sql = "SELECT MAX(staff_id) AS max_id FROM staff";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+
+            // Data  null 
+            if (rs.next() && rs.getString("max_id") != null) {
+                String lastId = rs.getString("max_id"); // උදා: "S-0001"
+
+                // "S-" (substring(2)
+                int num = Integer.parseInt(lastId.substring(2));
+
+                num++; // (1 -> 2)
+
+                //"S-" 
+                newId = String.format("S-%04d", num); //  "S-0002"
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return newId;
+    }
+
+    private boolean checkUsername(String email, int id) {
+        try {
+            String msg = "select * from staff where staff_email=? OR Id=?";
+            pst = con.prepareStatement(msg);
+            pst.setString(1, email);
+            pst.setInt(2, id);
+            rs = pst.executeQuery();
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+
+    }
+
 }
