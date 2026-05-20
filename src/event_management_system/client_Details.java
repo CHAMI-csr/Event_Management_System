@@ -210,7 +210,7 @@ public class client_Details extends javax.swing.JInternalFrame {
         });
         jScrollPane1.setViewportView(jTableClients);
 
-        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 104, 678, 460));
+        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 104, 678, 470));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel7.setText("Client Search");
