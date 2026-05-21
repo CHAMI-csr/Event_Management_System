@@ -8,12 +8,15 @@ package event_management_system;
  *
  * @author chamika
  */
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.Connection;
+import java.util.Base64;
 import javax.swing.JOptionPane;
 
 import javax.swing.plaf.basic.BasicInternalFrameUI;
@@ -350,10 +353,15 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
         // --- Collect field values ---
+        String role="";
         String name    = txtName.getText().trim();
         String email   = txtEmail.getText().trim();
         String address = txtAddress.getText().trim();
-        String role    = txtRole.getSelectedItem().toString();
+        String Srole    = txtRole.getSelectedItem().toString();
+        
+        if(Srole.equals("Administrator")){
+             role="admin";
+        }
 
         
         String password        = jTextField6.getText().trim();
@@ -365,10 +373,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         // --- Basic empty-field validation ---
         if (name.isEmpty() || email.isEmpty() || address.isEmpty()
                 || contactStr.isEmpty() || nIdStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Please fill in all required fields.",
-                    "Validation Error",
-                    JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,"Please fill in all required fields.","Validation Error",JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -387,10 +392,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         try {
             nId = Integer.parseInt(nIdStr);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "National ID must contain digits only.",
-                    "Validation Error",
-                    JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,"National ID must contain digits only.","Validation Error",JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -407,25 +409,24 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             jLabel14.setVisible(false);
           
             if (!password.equals(confirmPassword)) {
-                JOptionPane.showMessageDialog(this,
-                        "Password and Confirm Password do not match.",
-                        "Validation Error",
-                        JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this,"Password and Confirm Password do not match.","Validation Error",JOptionPane.WARNING_MESSAGE);
                 return;
+            }else{
+                
             }
         }
 
         // --- Duplicate check (email OR national ID already exists) ---
         if (checkUsername(email, nId)) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "A staff member with this Email or National ID already exists.",
-                    "Duplicate Record",
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,"A staff member with this Email or National ID already exists.","Duplicate Record",JOptionPane.WARNING_MESSAGE);
             return;
         }
 
 
         try {
+            
+            String finalPassword = encryptMyPassword(password);
+            
             String sql = "INSERT INTO staff (staff_id, staff_name, contact_number, staff_email, "
                        + "staff_address, Id, role, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             pst = con.prepareStatement(sql);
@@ -436,15 +437,12 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             pst.setString(5, address);
             pst.setInt   (6, nId);
             pst.setString(7, role);
-            pst.setString(8, password);
+            pst.setString(8, finalPassword);
 
             int rows = pst.executeUpdate();
 
             if (rows > 0) {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                        "Staff account created successfully!\nStaff ID: " + staffId,
-                        "Success",
-                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this,"Staff account created successfully!\nStaff ID: " + staffId,"Success",JOptionPane.INFORMATION_MESSAGE);
 
               
                 txtName.setText("");
@@ -460,17 +458,12 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 // Refresh the displayed next ID
                 String nextId = genarateUserId();
                 lblNextId.setText(nextId);
+                
             } else {
-                JOptionPane.showMessageDialog(this,
-                        "Failed to create staff account. Please try again.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,"Failed to create staff account. Please try again.","Error",JOptionPane.ERROR_MESSAGE);
             }
         } catch (java.sql.SQLException ex) {
-           JOptionPane.showMessageDialog(this,
-                    "Database error: " + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+           JOptionPane.showMessageDialog(this,"Database error: " + ex.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnCreateActionPerformed
@@ -575,6 +568,20 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+
+    }
+
+    private String encryptMyPassword(String password) {
+
+ try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256"); // Secure hashing
+            byte[] hashBytes = md.digest(password.getBytes());
+            return Base64.getEncoder().encodeToString(hashBytes);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+
 
     }
 

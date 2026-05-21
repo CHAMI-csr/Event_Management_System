@@ -5,10 +5,15 @@
 package event_management_system;
 
 import java.awt.event.KeyEvent;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Base64;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -120,8 +125,8 @@ public class Loging extends javax.swing.JFrame {
     }// GEN-LAST:event_txtUsernameActionPerformed
 
     private void btnLogingActionPerformed(java.awt.event.ActionEvent evt) {
-        txtUsername.setText("100");
-        txtPassword.setText("Admin@123");
+//        txtUsername.setText("100");
+//        txtPassword.setText("Admin@123");
 
         String enteredUsername = txtUsername.getText();
         String enteredPassword = new String(txtPassword.getPassword());
@@ -139,8 +144,7 @@ public class Loging extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "DB not connected");
         }
 
-//        String username = "admin";
-//        String password = "admin123";
+
     }
 
     private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtPasswordActionPerformed
@@ -190,12 +194,13 @@ public class Loging extends javax.swing.JFrame {
 
     private Staff CheckStaff(String enteredUsername, String enteredPassword) {
         try {
+            String finalPassword = encryptMyPassword(enteredPassword);
             String msg = "select * from staff where (staff_id = ? OR staff_email = ? OR Id = ?) and password=?";
             pst = conn.prepareStatement(msg);
             pst.setString(1, enteredUsername);
             pst.setString(2, enteredUsername);
             pst.setString(3, enteredUsername);
-            pst.setString(4, enteredPassword);
+            pst.setString(4, finalPassword);
 
             rs = pst.executeQuery();
 
@@ -211,7 +216,19 @@ public class Loging extends javax.swing.JFrame {
 
     private void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-         btnLoging.doClick();
+            btnLoging.doClick();
         }
+    }
+
+    private String encryptMyPassword(String paasword) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256"); // Secure hashing
+            byte[] hashBytes = md.digest(paasword.getBytes());
+            return Base64.getEncoder().encodeToString(hashBytes);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Loging.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+
     }
 }
