@@ -8,6 +8,10 @@ package event_management_system;
  *
  * @author chamika
  */
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
@@ -18,6 +22,7 @@ import java.util.logging.Logger;
 import java.sql.Connection;
 import java.util.Base64;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
@@ -39,6 +44,18 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         ui.setNorthPane(null);
         String staffid = genarateUserId();
         lblNextId.setText(staffid);
+        
+        try {
+            // Dark theme එකට:
+            UIManager.setLookAndFeel(new FlatLightLaf());
+
+            // එහෙමත් නැත්නම් Light theme එකට:
+            // UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception ex) {
+            System.err.println("Failed to initialize FlatLaf");
+        }
+
+        initComponents();
 
     }
 
@@ -75,11 +92,11 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel9 = new javax.swing.JLabel();
         txtRole = new javax.swing.JComboBox<>();
         txtPassword = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
+        txrPassword = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        jCheckBox2 = new javax.swing.JCheckBox();
+        CheckPassword = new javax.swing.JCheckBox();
         btnCreate = new javax.swing.JButton();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
@@ -136,6 +153,11 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         txtContact.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         txtContact.addActionListener(this::txtContactActionPerformed);
+        txtContact.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtContactKeyPressed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(102, 102, 102));
@@ -157,6 +179,11 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         txtNId.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         txtNId.addActionListener(this::txtNIdActionPerformed);
+        txtNId.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtNIdKeyPressed(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(102, 102, 102));
@@ -252,8 +279,13 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         txtPassword.setText("PASSOWORD");
         jPanel4.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 130, 40));
 
-        jTextField6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jPanel4.add(jTextField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 270, 240, 40));
+        txrPassword.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        txrPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txrPasswordKeyPressed(evt);
+            }
+        });
+        jPanel4.add(txrPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 270, 240, 40));
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(102, 102, 102));
@@ -268,9 +300,10 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel13.setText("the user can change the password the first time they log in.");
         jPanel4.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 420, 330, 30));
 
-        jCheckBox2.setText("First Time Can Be Change Password User ");
-        jCheckBox2.addActionListener(this::jCheckBox2ActionPerformed);
-        jPanel4.add(jCheckBox2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 380, 290, -1));
+        CheckPassword.setForeground(new java.awt.Color(51, 51, 51));
+        CheckPassword.setText("First Time Can Be Change Password User ");
+        CheckPassword.addActionListener(this::CheckPasswordActionPerformed);
+        jPanel4.add(CheckPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 380, 290, -1));
 
         btnCreate.setBackground(new java.awt.Color(153, 255, 204));
         btnCreate.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -343,9 +376,9 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNIdActionPerformed
 
-    private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
+    private void CheckPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckPasswordActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox2ActionPerformed
+    }//GEN-LAST:event_CheckPasswordActionPerformed
 
     private void txtPasswordConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordConfirmActionPerformed
         // TODO add your handling code here:
@@ -353,33 +386,41 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
         // --- Collect field values ---
-        String role="";
-        String name    = txtName.getText().trim();
-        String email   = txtEmail.getText().trim();
+
+        String name = txtName.getText().trim();
+        String email = txtEmail.getText().trim();
         String address = txtAddress.getText().trim();
-        String Srole    = txtRole.getSelectedItem().toString();
-        
-        if(Srole.equals("Administrator")){
-             role="admin";
+        String role = txtRole.getSelectedItem().toString();
+
+        if (role.equals("Administrator")) {
+            role = "admin";
         }
 
-        
-        String password        = jTextField6.getText().trim();
+        String password = txrPassword.getText().trim();
         String confirmPassword = new String(txtPasswordConfirm.getPassword()).trim();
 
         String contactStr = txtContact.getText().trim();
-        String nIdStr     = txtNId.getText().trim();
+        String nIdStr = txtNId.getText().trim();
 
         // --- Basic empty-field validation ---
         if (name.isEmpty() || email.isEmpty() || address.isEmpty()
                 || contactStr.isEmpty() || nIdStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this,"Please fill in all required fields.","Validation Error",JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please fill in all required fields.", "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-     
+        String emailPattern = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+
+        if (!email.isEmpty() && !email.matches(emailPattern)) {
+            JOptionPane.showMessageDialog(this,
+                    "Please enter a valid email address!\n(e.g., example@gmail.com)",
+                    "Invalid Email",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         long contact;
-        int  nId;
+        double nId;
         try {
             contact = Long.parseLong(contactStr);
         } catch (NumberFormatException ex) {
@@ -390,67 +431,70 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             return;
         }
         try {
-            nId = Integer.parseInt(nIdStr);
+            nId = Double.parseDouble(nIdStr);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this,"National ID must contain digits only.","Validation Error",JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "National ID must contain digits only.", "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         // --- Generate next Staff ID ---
         String staffId = genarateUserId();
 
-       
         if (password.isEmpty()) {
-            jLabel15.setVisible(true);   
-            jLabel14.setVisible(true);  
+            jLabel15.setVisible(true);
+            jLabel14.setVisible(true);
             password = staffId;
         } else {
             jLabel15.setVisible(false);
             jLabel14.setVisible(false);
-          
+
             if (!password.equals(confirmPassword)) {
-                JOptionPane.showMessageDialog(this,"Password and Confirm Password do not match.","Validation Error",JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Password and Confirm Password do not match.", "Validation Error", JOptionPane.WARNING_MESSAGE);
                 return;
-            }else{
-                
+            } else {
+
             }
         }
 
         // --- Duplicate check (email OR national ID already exists) ---
         if (checkUsername(email, nId)) {
-            JOptionPane.showMessageDialog(this,"A staff member with this Email or National ID already exists.","Duplicate Record",JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "A staff member with this Email or National ID already exists.", "Duplicate Record", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-
         try {
-            
+
             String finalPassword = encryptMyPassword(password);
-            
+
             String sql = "INSERT INTO staff (staff_id, staff_name, contact_number, staff_email, "
-                       + "staff_address, Id, role, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    + "staff_address, Id, role, password,first_time_log) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             pst = con.prepareStatement(sql);
             pst.setString(1, staffId);
             pst.setString(2, name);
-            pst.setLong  (3, contact);
+            pst.setLong(3, contact);
             pst.setString(4, email);
             pst.setString(5, address);
-            pst.setInt   (6, nId);
+            pst.setDouble(6, nId);
             pst.setString(7, role);
             pst.setString(8, finalPassword);
+
+            if (CheckPassword.isSelected()) {
+                pst.setString(9, "1");
+            } else {
+                pst.setString(9, "0");
+            }
 
             int rows = pst.executeUpdate();
 
             if (rows > 0) {
-                JOptionPane.showMessageDialog(this,"Staff account created successfully!\nStaff ID: " + staffId,"Success",JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Staff account created successfully!\nStaff ID: " + staffId, "Success", JOptionPane.INFORMATION_MESSAGE);
 
-              
                 txtName.setText("");
                 txtContact.setText("");
                 txtEmail.setText("");
                 txtAddress.setText("");
                 txtNId.setText("");
-                jTextField6.setText("");
+                txtPassword.setText("");
                 txtPasswordConfirm.setText("");
                 jLabel15.setVisible(false);
                 jLabel14.setVisible(false);
@@ -458,15 +502,52 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 // Refresh the displayed next ID
                 String nextId = genarateUserId();
                 lblNextId.setText(nextId);
-                
+
             } else {
-                JOptionPane.showMessageDialog(this,"Failed to create staff account. Please try again.","Error",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to create staff account. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (java.sql.SQLException ex) {
-           JOptionPane.showMessageDialog(this,"Database error: " + ex.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnCreateActionPerformed
+
+    private void txtContactKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContactKeyPressed
+        txtContact.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!((c >= '0') && (c <= '9')
+                        || (c == KeyEvent.VK_BACK_SPACE)
+                        || (c == KeyEvent.VK_DELETE))) {
+                    e.consume();
+                }
+            }
+        });
+    }//GEN-LAST:event_txtContactKeyPressed
+
+    private void txtNIdKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNIdKeyPressed
+        txtNId.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+
+                //  (0-9), 'V', 'v',
+                if (!((c >= '0') && (c <= '9')
+                        || (c == 'V')
+                        || (c == 'v')
+                        || (c == java.awt.event.KeyEvent.VK_BACK_SPACE)
+                        || (c == java.awt.event.KeyEvent.VK_DELETE))) {
+
+                    e.consume();
+                }
+            }
+        });
+    }//GEN-LAST:event_txtNIdKeyPressed
+
+    private void txrPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txrPasswordKeyPressed
+
+       
+
+    }//GEN-LAST:event_txrPasswordKeyPressed
 
     /**
      * @param args the command line arguments
@@ -494,10 +575,10 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox CheckPassword;
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnMannage;
     private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -516,10 +597,10 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JTextField jTextField6;
     private javax.swing.JPanel jpAddStaff;
     private javax.swing.JPanel jpMannageStaff;
     private javax.swing.JLabel lblNextId;
+    private javax.swing.JTextField txrPassword;
     private javax.swing.JTextField txtAddress;
     private javax.swing.JTextField txtContact;
     private javax.swing.JTextField txtEmail;
@@ -540,7 +621,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
             // Data  null 
             if (rs.next() && rs.getString("max_id") != null) {
-                String lastId = rs.getString("max_id"); // උදා: "S-0001"
+                String lastId = rs.getString("max_id"); //ex : "S-0001"
 
                 // "S-" (substring(2)
                 int num = Integer.parseInt(lastId.substring(2));
@@ -556,12 +637,12 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         return newId;
     }
 
-    private boolean checkUsername(String email, int id) {
+    private boolean checkUsername(String email, double id) {
         try {
             String msg = "select * from staff where staff_email=? OR Id=?";
             pst = con.prepareStatement(msg);
             pst.setString(1, email);
-            pst.setInt(2, id);
+            pst.setDouble(2, id);
             rs = pst.executeQuery();
             return rs.next();
         } catch (SQLException ex) {
@@ -573,7 +654,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
     private String encryptMyPassword(String password) {
 
- try {
+        try {
             MessageDigest md = MessageDigest.getInstance("SHA-256"); // Secure hashing
             byte[] hashBytes = md.digest(password.getBytes());
             return Base64.getEncoder().encodeToString(hashBytes);
@@ -581,7 +662,6 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "";
-
 
     }
 

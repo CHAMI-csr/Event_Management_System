@@ -4,6 +4,7 @@
  */
 package event_management_system;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.event.KeyEvent;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,6 +16,7 @@ import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 /**
  *
@@ -25,7 +27,7 @@ public class Loging extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Loging.class.getName());
 
     /**
-     * Creates new form Loging
+     * Creates new form 
      */
     PreparedStatement pst;
     DBConnect db = new DBConnect();
@@ -33,6 +35,17 @@ public class Loging extends javax.swing.JFrame {
     ResultSet rs;
 
     public Loging() {
+        initComponents();
+        try {
+            // Dark theme එකට:
+            UIManager.setLookAndFeel(new FlatDarkLaf());
+
+            // එහෙමත් නැත්නම් Light theme එකට:
+            // UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception ex) {
+            System.err.println("Failed to initialize FlatLaf");
+        }
+
         initComponents();
 
     }
@@ -125,8 +138,8 @@ public class Loging extends javax.swing.JFrame {
     }// GEN-LAST:event_txtUsernameActionPerformed
 
     private void btnLogingActionPerformed(java.awt.event.ActionEvent evt) {
-//        txtUsername.setText("100");
-//        txtPassword.setText("Admin@123");
+        txtUsername.setText("S-1000");
+        txtPassword.setText("2");
 
         String enteredUsername = txtUsername.getText();
         String enteredPassword = new String(txtPassword.getPassword());
@@ -205,7 +218,7 @@ public class Loging extends javax.swing.JFrame {
             rs = pst.executeQuery();
 
             if (rs.next()) {
-                return new Staff(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getString(5), rs.getInt(6), rs.getString(7));
+                return new Staff(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7));
             }
         } catch (SQLException ex) {
             System.getLogger(Loging.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);

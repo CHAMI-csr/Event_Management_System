@@ -15,11 +15,11 @@ public class Staff {
     private int contact_number;
     private String staff_email;
     private String staff_address;
-    private int Id;
+    private String Id;
     private String role;
     private String password;
 
-    public Staff(String staff_id, String staff_name, int contact_number, String staff_email, String staff_address, int Id, String role) {
+    public Staff(String staff_id, String staff_name, int contact_number, String staff_email, String staff_address, String Id, String role) {
         this.staff_id = staff_id;
         this.staff_name = staff_name;
         this.contact_number = contact_number;
@@ -69,11 +69,11 @@ public class Staff {
         this.staff_address = staff_address;
     }
 
-    public int getId() {
+    public String getId() {
         return Id;
     }
 
-    public void setId(int Id) {
+    public void setId(String Id) {
         this.Id = Id;
     }
 
@@ -92,7 +92,7 @@ public class Staff {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     
     
     

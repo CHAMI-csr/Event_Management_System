@@ -8,6 +8,8 @@ package event_management_system;
  *
  * @author chamika
  */
+import com.formdev.flatlaf.FlatDarkLaf;
+import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 public class manage_Bookings extends javax.swing.JInternalFrame {
@@ -22,6 +24,17 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,0,0,0));
         BasicInternalFrameUI ui=(BasicInternalFrameUI)this.getUI();
         ui.setNorthPane(null);
+        try {
+            // Dark theme එකට:
+            UIManager.setLookAndFeel(new FlatDarkLaf());
+
+            // එහෙමත් නැත්නම් Light theme එකට:
+            // UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception ex) {
+            System.err.println("Failed to initialize FlatLaf");
+        }
+
+        initComponents();
     }
 
     /**

@@ -8,6 +8,8 @@ package event_management_system;
  *
  * @author chamika
  */
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -19,6 +21,7 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
+import javax.swing.UIManager;
 import javax.swing.table.TableRowSorter;
 
 public class client_Details extends javax.swing.JInternalFrame {
@@ -40,6 +43,18 @@ public class client_Details extends javax.swing.JInternalFrame {
         btnUpdateClient.setVisible(false);
         btnCancelClient.setVisible(false);
         btnDelClient.setVisible(false);
+        
+        try {
+            // Dark theme එකට:
+            UIManager.setLookAndFeel(new FlatLightLaf());
+
+            // එහෙමත් නැත්නම් Light theme එකට:
+            // UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception ex) {
+            System.err.println("Failed to initialize FlatLaf");
+        }
+
+        
     }
 
     /**
