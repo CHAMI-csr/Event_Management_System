@@ -100,7 +100,7 @@ public class client_Details extends javax.swing.JInternalFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(1060, 600));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(102, 102, 102));
+        jPanel2.setBackground(new java.awt.Color(26, 26, 36));
         jPanel2.setPreferredSize(new java.awt.Dimension(370, 600));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -114,6 +114,9 @@ public class client_Details extends javax.swing.JInternalFrame {
         jLabel2.setText("ID CARD NO");
         jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 46, 120, 30));
 
+        txtIdNo.setBackground(new java.awt.Color(255, 255, 255));
+        txtIdNo.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtIdNo.setForeground(new java.awt.Color(0, 0, 0));
         txtIdNo.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         txtIdNo.addActionListener(this::txtIdNoActionPerformed);
         txtIdNo.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -128,6 +131,9 @@ public class client_Details extends javax.swing.JInternalFrame {
         jLabel3.setText("NAME");
         jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 130, 120, 30));
 
+        txtName.setBackground(new java.awt.Color(255, 255, 255));
+        txtName.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtName.setForeground(new java.awt.Color(0, 0, 0));
         txtName.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel2.add(txtName, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 166, 300, 30));
 
@@ -136,6 +142,9 @@ public class client_Details extends javax.swing.JInternalFrame {
         jLabel4.setText("PHONE");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 214, 120, 30));
 
+        txtPhone.setBackground(new java.awt.Color(255, 255, 255));
+        txtPhone.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtPhone.setForeground(new java.awt.Color(0, 0, 0));
         txtPhone.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         txtPhone.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -149,6 +158,9 @@ public class client_Details extends javax.swing.JInternalFrame {
         jLabel5.setText("EMAIL");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 298, 120, 30));
 
+        txtEmail.setBackground(new java.awt.Color(255, 255, 255));
+        txtEmail.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtEmail.setForeground(new java.awt.Color(0, 0, 0));
         txtEmail.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel2.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 334, 300, 30));
 
@@ -157,12 +169,16 @@ public class client_Details extends javax.swing.JInternalFrame {
         jLabel6.setText("ADDRESS");
         jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 382, 120, 30));
 
+        txtAddress.setBackground(new java.awt.Color(255, 255, 255));
+        txtAddress.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtAddress.setForeground(new java.awt.Color(0, 0, 0));
         txtAddress.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         txtAddress.setMaximumSize(new java.awt.Dimension(64, 22));
         jPanel2.add(txtAddress, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 418, 300, 88));
 
-        btnCancelClient.setBackground(new java.awt.Color(204, 204, 204));
+        btnCancelClient.setBackground(new java.awt.Color(255, 0, 127));
         btnCancelClient.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnCancelClient.setForeground(new java.awt.Color(255, 255, 255));
         btnCancelClient.setText("CANCEL");
         btnCancelClient.addActionListener(this::btnCancelClientActionPerformed);
         jPanel2.add(btnCancelClient, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 530, 110, 50));
@@ -181,7 +197,7 @@ public class client_Details extends javax.swing.JInternalFrame {
         btnDelClient.addActionListener(this::btnDelClientActionPerformed);
         jPanel2.add(btnDelClient, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 530, 110, 50));
 
-        btnAddClient.setBackground(new java.awt.Color(153, 255, 0));
+        btnAddClient.setBackground(new java.awt.Color(0, 240, 255));
         btnAddClient.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         btnAddClient.setText("ADD Client");
         btnAddClient.addActionListener(this::btnAddClientActionPerformed);
@@ -189,9 +205,12 @@ public class client_Details extends javax.swing.JInternalFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 370, 600));
 
-        jPanel3.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel3.setBackground(new java.awt.Color(26, 26, 36));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jTableClients.setBackground(new java.awt.Color(255, 255, 255));
+        jTableClients.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        jTableClients.setForeground(new java.awt.Color(0, 0, 0));
         jTableClients.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -218,6 +237,8 @@ public class client_Details extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTableClients.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        jTableClients.setSelectionForeground(new java.awt.Color(0, 0, 0));
         jTableClients.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTableClientsMouseClicked(evt);
@@ -228,12 +249,14 @@ public class client_Details extends javax.swing.JInternalFrame {
         jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 104, 678, 470));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Client Search");
-        jPanel3.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, 164, -1));
+        jPanel3.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 164, -1));
 
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Search_1.png"))); // NOI18N
         jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 10, -1, -1));
 
+        txtSearch.setBackground(new java.awt.Color(255, 255, 255));
         txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtSearchKeyReleased(evt);

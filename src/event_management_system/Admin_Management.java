@@ -54,8 +54,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         } catch (Exception ex) {
             System.err.println("Failed to initialize FlatLaf");
         }
-
-        initComponents();
+        
+        
 
     }
 
@@ -108,21 +108,24 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         setMinimumSize(new java.awt.Dimension(1060, 600));
         setPreferredSize(new java.awt.Dimension(1060, 600));
 
-        jPanel1.setBackground(new java.awt.Color(153, 204, 255));
+        jPanel1.setBackground(new java.awt.Color(40, 42, 54));
+        jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(50, 1, 1, 1));
         jPanel1.setPreferredSize(new java.awt.Dimension(200, 600));
         jPanel1.setLayout(new java.awt.GridLayout(10, 1, 0, 10));
 
-        jButton1.setBackground(new java.awt.Color(204, 255, 204));
+        jButton1.setBackground(new java.awt.Color(102, 153, 255));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(102, 102, 102));
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("ADD STAFF");
+        jButton1.setBorderPainted(false);
         jButton1.addActionListener(this::jButton1ActionPerformed);
         jPanel1.add(jButton1);
 
-        btnMannage.setBackground(new java.awt.Color(204, 255, 204));
+        btnMannage.setBackground(new java.awt.Color(102, 153, 255));
         btnMannage.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        btnMannage.setForeground(new java.awt.Color(102, 102, 102));
+        btnMannage.setForeground(new java.awt.Color(255, 255, 255));
         btnMannage.setText("MANAGE STAFF");
+        btnMannage.setBorderPainted(false);
         btnMannage.addActionListener(this::btnMannageActionPerformed);
         jPanel1.add(btnMannage);
 
@@ -133,23 +136,23 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         jpAddStaff.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setBackground(new java.awt.Color(26, 26, 36));
 
         txtName.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         txtName.addActionListener(this::txtNameActionPerformed);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("NAME");
 
         jLabel2.setBackground(new java.awt.Color(51, 51, 51));
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("ASSIGN STAFF ID : ");
 
         lblNextId.setBackground(new java.awt.Color(51, 51, 51));
         lblNextId.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblNextId.setForeground(new java.awt.Color(102, 102, 102));
+        lblNextId.setForeground(new java.awt.Color(255, 255, 255));
 
         txtContact.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         txtContact.addActionListener(this::txtContactActionPerformed);
@@ -160,21 +163,21 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         });
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("CONTACT NO.");
 
         txtEmail.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         txtEmail.addActionListener(this::txtEmailActionPerformed);
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("EMAIL");
 
         txtAddress.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         txtAddress.addActionListener(this::txtAddressActionPerformed);
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("ADDRESS");
 
         txtNId.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -186,11 +189,11 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("National Id");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("ADD STAFF ");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -211,15 +214,17 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblNextId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtName, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtContact, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtEmail)
-                                .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(txtNId, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtContact, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtEmail)
+                                    .addComponent(txtAddress, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)))
+                            .addComponent(txtNId, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                            .addComponent(lblNextId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(210, 210, 210))))
         );
         jPanel3Layout.setVerticalGroup(
@@ -228,7 +233,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(47, 47, 47)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblNextId, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
@@ -256,17 +261,17 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         jpAddStaff.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 420, 600));
 
-        jPanel4.setBackground(new java.awt.Color(204, 255, 255));
+        jPanel4.setBackground(new java.awt.Color(26, 26, 36));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Account  security");
         jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(15, 6, -1, 42));
 
         jLabel9.setBackground(new java.awt.Color(51, 51, 51));
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("ROLE");
         jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(15, 126, 115, 42));
 
@@ -275,7 +280,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jPanel4.add(txtRole, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 126, 220, 42));
 
         txtPassword.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        txtPassword.setForeground(new java.awt.Color(102, 102, 102));
+        txtPassword.setForeground(new java.awt.Color(255, 255, 255));
         txtPassword.setText("PASSOWORD");
         jPanel4.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 130, 40));
 
@@ -288,7 +293,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jPanel4.add(txrPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 270, 240, 40));
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("CONFIRM pw.");
         jPanel4.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 127, 40));
 
@@ -300,7 +305,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel13.setText("the user can change the password the first time they log in.");
         jPanel4.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 420, 330, 30));
 
-        CheckPassword.setForeground(new java.awt.Color(51, 51, 51));
+        CheckPassword.setForeground(new java.awt.Color(255, 255, 255));
         CheckPassword.setText("First Time Can Be Change Password User ");
         CheckPassword.addActionListener(this::CheckPasswordActionPerformed);
         jPanel4.add(CheckPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 380, 290, -1));
