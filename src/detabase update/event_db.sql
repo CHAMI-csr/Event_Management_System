@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   `event_id` varchar(50) NOT NULL,
   `client_id` varchar(100) DEFAULT NULL,
   `staff_id` varchar(50) NOT NULL,
+  `package_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `event_type` varchar(50) DEFAULT NULL,
   `event_date` date DEFAULT NULL,
   `start_time` time DEFAULT NULL,
@@ -61,11 +62,14 @@ CREATE TABLE IF NOT EXISTS `events` (
   `venue` varchar(150) DEFAULT NULL,
   `guest_count` int DEFAULT NULL,
   `event_status` varchar(20) DEFAULT 'Upcoming',
+  `Event_Add_Date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`event_id`),
   KEY `staff_id` (`staff_id`),
   KEY `client_ibfk_1` (`client_id`),
-  CONSTRAINT `client_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_id`),
-  CONSTRAINT `events_ibfk_2` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`)
+  KEY `package_id` (`package_id`),
+  CONSTRAINT `events_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_id`),
+  CONSTRAINT `events_ibfk_2` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`),
+  CONSTRAINT `events_ibfk_3` FOREIGN KEY (`package_id`) REFERENCES `package` (`package_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table event_db.events: ~0 rows (approximately)
@@ -86,6 +90,17 @@ CREATE TABLE IF NOT EXISTS `event_resources` (
 
 -- Dumping data for table event_db.event_resources: ~0 rows (approximately)
 
+-- Dumping structure for table event_db.package
+CREATE TABLE IF NOT EXISTS `package` (
+  `package_id` varchar(20) NOT NULL,
+  `package_name` varchar(100) NOT NULL,
+  `description` text,
+  `price` double NOT NULL,
+  PRIMARY KEY (`package_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table event_db.package: ~0 rows (approximately)
+
 -- Dumping structure for table event_db.resources
 CREATE TABLE IF NOT EXISTS `resources` (
   `resource_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
@@ -101,20 +116,36 @@ CREATE TABLE IF NOT EXISTS `resources` (
 CREATE TABLE IF NOT EXISTS `staff` (
   `staff_id` varchar(50) NOT NULL,
   `staff_name` varchar(255) DEFAULT NULL,
-  `contact_number` int NOT NULL DEFAULT (0),
+  `contact_number` varchar(15) NOT NULL,
   `staff_email` varchar(100) NOT NULL,
   `staff_address` text NOT NULL,
   `Id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `role` varchar(100) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `first_time_log` tinyint(1) NOT NULL DEFAULT '0',
+  `make_time` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`staff_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table event_db.staff: ~2 rows (approximately)
-INSERT INTO `staff` (`staff_id`, `staff_name`, `contact_number`, `staff_email`, `staff_address`, `Id`, `role`, `password`, `first_time_log`) VALUES
-	('S-1000', 'chamika', 728880547, 'infor.chami1@gmail.com', 'galle', '200625103468', 'admin', '1HNeOiZeFu7gP1lxi5tdAwGcB9i2xR+Q2jpmbuwTqzU=', 0),
-	('S-1001', 'sdf', 654, 'trt@gmmail.com', 'rter', '5646546.0', 'Event Planner', 'HtF789ToNT3KjKvwvhKs39c0Sz6renmG5IUEQberXo8=', 1);
+INSERT INTO `staff` (`staff_id`, `staff_name`, `contact_number`, `staff_email`, `staff_address`, `Id`, `role`, `password`, `first_time_log`, `make_time`) VALUES
+	('S-1000', 'chamika', '0728880547', 'infor.chami1@gmail.com', 'galle', '200625103468', 'admin', '1HNeOiZeFu7gP1lxi5tdAwGcB9i2xR+Q2jpmbuwTqzU=', 0, '2026-06-03 10:19:14'),
+	('S-1001', 'sdf', '0710000654', 'trt@gmmail.com', 'rter', '5646546', 'Event Planner', 'HtF789ToNT3KjKvwvhKs39c0Sz6renmG5IUEQberXo8=', 1, '2026-06-03 10:19:14');
+
+-- Dumping structure for table event_db.staff_log
+CREATE TABLE IF NOT EXISTS `staff_log` (
+  `log_id` int NOT NULL AUTO_INCREMENT,
+  `staff_id` varchar(50) NOT NULL,
+  `login_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `logout_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`log_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table event_db.staff_log: ~3 rows (approximately)
+INSERT INTO `staff_log` (`log_id`, `staff_id`, `login_time`, `logout_time`) VALUES
+	(1, 'S-1000', '2026-06-03 14:24:07', NULL),
+	(2, 'S-1000', '2026-06-03 14:37:46', NULL),
+	(3, 'S-1000', '2026-06-03 14:38:37', NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

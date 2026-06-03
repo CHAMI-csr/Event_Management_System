@@ -4,6 +4,8 @@ import java.awt.Color;
 import javax.swing.UIManager;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -21,15 +23,19 @@ public class Dashboard extends javax.swing.JFrame {
     /**
      * Creates new form Dashboard
      */
-    Staff getstaff;
+
     Color defaultColor, clickColor;
+    Connection conn = DBConnect.connect();
+   
 
     public Dashboard(Staff staff) {
         initComponents();
         defaultColor = new Color(51, 51, 51);
         clickColor = new Color(102, 153, 255);
+        Log_Loging(staff);
         lblID.setText(staff.getStaff_id());
         
+
         if (staff.getRole().equals("admin")) {
             menu_Am.setVisible(true);
         } else {
@@ -536,4 +542,18 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel menu_Es;
     private javax.swing.JPanel menu_Mb;
     // End of variables declaration//GEN-END:variables
+
+    private void Log_Loging(Staff staff) {
+        try {
+            String logSql = "INSERT INTO staff_log (staff_id) VALUES (?)";
+            PreparedStatement logPst = conn.prepareStatement(logSql);
+
+           
+            logPst.setString(1, staff.getStaff_id());
+
+            logPst.executeUpdate();
+        } catch (Exception ex) {
+            System.out.println("Login Log Error: " + ex.getMessage());
+        }
+    }
 }

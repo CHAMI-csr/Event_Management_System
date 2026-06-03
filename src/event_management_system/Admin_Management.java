@@ -71,6 +71,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         btnMannage = new javax.swing.JButton();
+        btnMannage1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jpAddStaff = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -102,6 +103,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel15 = new javax.swing.JLabel();
         txtPasswordConfirm = new javax.swing.JPasswordField();
         jpMannageStaff = new javax.swing.JPanel();
+        jpEventAdd = new javax.swing.JPanel();
 
         setClosable(true);
         setMaximumSize(new java.awt.Dimension(1060, 600));
@@ -128,6 +130,14 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         btnMannage.setBorderPainted(false);
         btnMannage.addActionListener(this::btnMannageActionPerformed);
         jPanel1.add(btnMannage);
+
+        btnMannage1.setBackground(new java.awt.Color(102, 153, 255));
+        btnMannage1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnMannage1.setForeground(new java.awt.Color(255, 255, 255));
+        btnMannage1.setText("EVENT ADD");
+        btnMannage1.setBorderPainted(false);
+        btnMannage1.addActionListener(this::btnMannage1ActionPerformed);
+        jPanel1.add(btnMannage1);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.LINE_START);
 
@@ -345,6 +355,19 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         jPanel2.add(jpMannageStaff, "card2");
 
+        javax.swing.GroupLayout jpEventAddLayout = new javax.swing.GroupLayout(jpEventAdd);
+        jpEventAdd.setLayout(jpEventAddLayout);
+        jpEventAddLayout.setHorizontalGroup(
+            jpEventAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 853, Short.MAX_VALUE)
+        );
+        jpEventAddLayout.setVerticalGroup(
+            jpEventAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 600, Short.MAX_VALUE)
+        );
+
+        jPanel2.add(jpEventAdd, "card2");
+
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
         pack();
@@ -554,6 +577,10 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_txrPasswordKeyPressed
 
+    private void btnMannage1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMannage1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnMannage1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -583,6 +610,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JCheckBox CheckPassword;
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnMannage;
+    private javax.swing.JButton btnMannage1;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
@@ -603,6 +631,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jpAddStaff;
+    private javax.swing.JPanel jpEventAdd;
     private javax.swing.JPanel jpMannageStaff;
     private javax.swing.JLabel lblNextId;
     private javax.swing.JTextField txrPassword;
