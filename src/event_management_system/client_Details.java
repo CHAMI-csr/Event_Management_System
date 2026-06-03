@@ -46,7 +46,7 @@ public class client_Details extends javax.swing.JInternalFrame {
         
         try {
             // Dark theme එකට:
-            UIManager.setLookAndFeel(new FlatLightLaf());
+            com.formdev.flatlaf.FlatDarkLaf.setup();
 
             // එහෙමත් නැත්නම් Light theme එකට:
             // UIManager.setLookAndFeel(new FlatLightLaf());
@@ -237,8 +237,8 @@ public class client_Details extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTableClients.setSelectionBackground(new java.awt.Color(255, 255, 255));
-        jTableClients.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        jTableClients.setSelectionBackground(new java.awt.Color(0, 0, 0));
+        jTableClients.setSelectionForeground(new java.awt.Color(255, 255, 255));
         jTableClients.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTableClientsMouseClicked(evt);

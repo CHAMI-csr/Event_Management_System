@@ -47,7 +47,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         
         try {
             // Dark theme එකට:
-            UIManager.setLookAndFeel(new FlatLightLaf());
+           com.formdev.flatlaf.FlatDarkLaf.setup();
 
             // එහෙමත් නැත්නම් Light theme එකට:
             // UIManager.setLookAndFeel(new FlatLightLaf());
