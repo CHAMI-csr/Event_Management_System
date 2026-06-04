@@ -20,11 +20,15 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.Connection;
+import java.sql.Statement;
 import java.util.Base64;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
 import javax.swing.UIManager;
 
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 public class Admin_Management extends javax.swing.JInternalFrame {
 
@@ -44,18 +48,18 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         ui.setNorthPane(null);
         String staffid = genarateUserId();
         lblNextId.setText(staffid);
-        
+        lblNextItemID.setText(generateItemId());
+        loadItemTable();
+
         try {
             // Dark theme එකට:
-           com.formdev.flatlaf.FlatDarkLaf.setup();
+            com.formdev.flatlaf.FlatDarkLaf.setup();
 
             // එහෙමත් නැත්නම් Light theme එකට:
             // UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception ex) {
             System.err.println("Failed to initialize FlatLaf");
         }
-        
-        
 
     }
 
@@ -69,9 +73,10 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnAddStaff = new javax.swing.JButton();
         btnMannage = new javax.swing.JButton();
-        btnMannage1 = new javax.swing.JButton();
+        btnEventAdd = new javax.swing.JButton();
+        btnItemAdd = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jpAddStaff = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -104,6 +109,21 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         txtPasswordConfirm = new javax.swing.JPasswordField();
         jpMannageStaff = new javax.swing.JPanel();
         jpEventAdd = new javax.swing.JPanel();
+        jpItemAdd = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        txtItemName = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        lblNextItemID = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        txtItemPrice = new javax.swing.JTextField();
+        txtItemType = new javax.swing.JComboBox<>();
+        jLabel20 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        itemTable = new javax.swing.JTable();
+        btnAddItem = new javax.swing.JButton();
+        jLabel21 = new javax.swing.JLabel();
+        txtSearch = new javax.swing.JTextField();
 
         setClosable(true);
         setMaximumSize(new java.awt.Dimension(1060, 600));
@@ -115,13 +135,13 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(200, 600));
         jPanel1.setLayout(new java.awt.GridLayout(10, 1, 0, 10));
 
-        jButton1.setBackground(new java.awt.Color(102, 153, 255));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("ADD STAFF");
-        jButton1.setBorderPainted(false);
-        jButton1.addActionListener(this::jButton1ActionPerformed);
-        jPanel1.add(jButton1);
+        btnAddStaff.setBackground(new java.awt.Color(102, 153, 255));
+        btnAddStaff.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnAddStaff.setForeground(new java.awt.Color(255, 255, 255));
+        btnAddStaff.setText("ADD STAFF");
+        btnAddStaff.setBorderPainted(false);
+        btnAddStaff.addActionListener(this::btnAddStaffActionPerformed);
+        jPanel1.add(btnAddStaff);
 
         btnMannage.setBackground(new java.awt.Color(102, 153, 255));
         btnMannage.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -131,13 +151,21 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         btnMannage.addActionListener(this::btnMannageActionPerformed);
         jPanel1.add(btnMannage);
 
-        btnMannage1.setBackground(new java.awt.Color(102, 153, 255));
-        btnMannage1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        btnMannage1.setForeground(new java.awt.Color(255, 255, 255));
-        btnMannage1.setText("EVENT ADD");
-        btnMannage1.setBorderPainted(false);
-        btnMannage1.addActionListener(this::btnMannage1ActionPerformed);
-        jPanel1.add(btnMannage1);
+        btnEventAdd.setBackground(new java.awt.Color(102, 153, 255));
+        btnEventAdd.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnEventAdd.setForeground(new java.awt.Color(255, 255, 255));
+        btnEventAdd.setText("EVENT ADD");
+        btnEventAdd.setBorderPainted(false);
+        btnEventAdd.addActionListener(this::btnEventAddActionPerformed);
+        jPanel1.add(btnEventAdd);
+
+        btnItemAdd.setBackground(new java.awt.Color(102, 153, 255));
+        btnItemAdd.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnItemAdd.setForeground(new java.awt.Color(255, 255, 255));
+        btnItemAdd.setText("ITEM ADD");
+        btnItemAdd.setBorderPainted(false);
+        btnItemAdd.addActionListener(this::btnItemAddActionPerformed);
+        jPanel1.add(btnItemAdd);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.LINE_START);
 
@@ -368,20 +396,100 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         jPanel2.add(jpEventAdd, "card2");
 
+        jpItemAdd.setBackground(new java.awt.Color(26, 26, 36));
+        jpItemAdd.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setText("Item ADD");
+        jpItemAdd.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, 220, 60));
+        jpItemAdd.add(txtItemName, new org.netbeans.lib.awtextra.AbsoluteConstraints(156, 175, 193, 37));
+
+        jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setText("Item Name");
+        jpItemAdd.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 175, 132, 37));
+
+        jLabel17.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setText("Next Item ID");
+        jpItemAdd.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 120, 157, 37));
+
+        lblNextItemID.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lblNextItemID.setForeground(new java.awt.Color(255, 255, 255));
+        jpItemAdd.add(lblNextItemID, new org.netbeans.lib.awtextra.AbsoluteConstraints(181, 120, 168, 37));
+
+        jLabel19.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel19.setText("Item Type");
+        jpItemAdd.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 230, 132, 37));
+        jpItemAdd.add(txtItemPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(156, 285, 193, 37));
+
+        txtItemType.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtItemType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Music", "Media", "Decor", "Furniture", "Food", "Others" }));
+        jpItemAdd.add(txtItemType, new org.netbeans.lib.awtextra.AbsoluteConstraints(156, 230, 193, 37));
+
+        jLabel20.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel20.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel20.setText("Item Price");
+        jpItemAdd.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 285, 132, 37));
+
+        itemTable.setBackground(new java.awt.Color(0, 0, 0));
+        itemTable.setForeground(new java.awt.Color(255, 255, 255));
+        itemTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Item ID", "Item Name", "Item Type", "Item Price"
+            }
+        ));
+        itemTable.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        itemTable.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        jScrollPane1.setViewportView(itemTable);
+
+        jpItemAdd.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(361, 84, 486, 510));
+
+        btnAddItem.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnAddItem.setText("ADD ITEM");
+        btnAddItem.addActionListener(this::btnAddItemActionPerformed);
+        jpItemAdd.add(btnAddItem, new org.netbeans.lib.awtextra.AbsoluteConstraints(111, 362, 138, 39));
+
+        jLabel21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Search_1.png"))); // NOI18N
+        jpItemAdd.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 20, -1, 50));
+
+        txtSearch.setBackground(new java.awt.Color(255, 255, 255));
+        txtSearch.addActionListener(this::txtSearchActionPerformed);
+        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSearchKeyReleased(evt);
+            }
+        });
+        jpItemAdd.add(txtSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 30, 250, 33));
+
+        jPanel2.add(jpItemAdd, "card2");
+
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        jpMannageStaff.setVisible(false);
+    private void btnAddStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddStaffActionPerformed
         jpAddStaff.setVisible(true);
+        jpMannageStaff.setVisible(false);
+        jpEventAdd.setVisible(false);
+        jpItemAdd.setVisible(false);
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnAddStaffActionPerformed
 
     private void btnMannageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMannageActionPerformed
         jpMannageStaff.setVisible(true);
         jpAddStaff.setVisible(false);
+        jpEventAdd.setVisible(false);
+        jpItemAdd.setVisible(false);
     }//GEN-LAST:event_btnMannageActionPerformed
 
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
@@ -573,13 +681,76 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
     private void txrPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txrPasswordKeyPressed
 
-       
 
     }//GEN-LAST:event_txrPasswordKeyPressed
 
-    private void btnMannage1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMannage1ActionPerformed
+    private void btnEventAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEventAddActionPerformed
+        jpEventAdd.setVisible(true);
+        jpAddStaff.setVisible(false);
+        jpMannageStaff.setVisible(false);
+        jpItemAdd.setVisible(false);
+    }//GEN-LAST:event_btnEventAddActionPerformed
+
+    private void btnItemAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemAddActionPerformed
+        jpItemAdd.setVisible(true);
+        jpEventAdd.setVisible(false);
+        jpAddStaff.setVisible(false);
+        jpMannageStaff.setVisible(false);
+    }//GEN-LAST:event_btnItemAddActionPerformed
+
+    private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
+        try {
+            loadItemTable(); 
+            
+            String searchString = txtSearch.getText();
+
+            DefaultTableModel model = (DefaultTableModel) itemTable.getModel();
+
+            TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(model);
+            itemTable.setRowSorter(tr);
+
+            tr.setRowFilter(RowFilter.regexFilter("(?i)" + searchString));
+
+        } catch (Exception e) {
+            System.out.println("Search Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_txtSearchKeyReleased
+
+    private void txtSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnMannage1ActionPerformed
+    }//GEN-LAST:event_txtSearchActionPerformed
+
+    private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItemActionPerformed
+        try {
+            String itemId, itemName, itemType, itemPrice;
+            itemId = generateItemId();
+            itemName = txtItemName.getText();
+            itemType = txtItemType.getSelectedItem().toString();
+            itemPrice = txtItemPrice.getText();
+            if (itemId.isEmpty() || itemName.isEmpty() || itemType.isEmpty() || itemPrice.isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "Please Empty Fill Not Reqrerd");
+            }
+            String sql = "INSERT INTO resources( resource_id, resource_name, resource_type,cost_per_item ) VALUES(?,?,?,?)";
+            pst = con.prepareStatement(sql);
+            
+            pst.setString(1, itemId);
+            pst.setString(2, itemName);
+            pst.setString(3, itemType);
+            pst.setString(4, itemPrice);
+            
+            pst.executeUpdate();
+            
+            loadItemTable();
+            lblNextItemID.setText(generateItemId());
+             txtItemName.setText("");
+             txtItemPrice.setText("");
+            
+            
+        } catch (SQLException ex) {
+            System.getLogger(Admin_Management.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+
+    }//GEN-LAST:event_btnAddItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -608,17 +779,26 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox CheckPassword;
+    private javax.swing.JButton btnAddItem;
+    private javax.swing.JButton btnAddStaff;
     private javax.swing.JButton btnCreate;
+    private javax.swing.JButton btnEventAdd;
+    private javax.swing.JButton btnItemAdd;
     private javax.swing.JButton btnMannage;
-    private javax.swing.JButton btnMannage1;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JTable itemTable;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -630,19 +810,26 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel jpAddStaff;
     private javax.swing.JPanel jpEventAdd;
+    private javax.swing.JPanel jpItemAdd;
     private javax.swing.JPanel jpMannageStaff;
     private javax.swing.JLabel lblNextId;
+    private javax.swing.JLabel lblNextItemID;
     private javax.swing.JTextField txrPassword;
     private javax.swing.JTextField txtAddress;
     private javax.swing.JTextField txtContact;
     private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtItemName;
+    private javax.swing.JTextField txtItemPrice;
+    private javax.swing.JComboBox<String> txtItemType;
     private javax.swing.JTextField txtNId;
     private javax.swing.JTextField txtName;
     private javax.swing.JLabel txtPassword;
     private javax.swing.JPasswordField txtPasswordConfirm;
     private javax.swing.JComboBox<String> txtRole;
+    private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 
     private String genarateUserId() {
@@ -696,6 +883,58 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "";
+
+    }
+
+    private String generateItemId() {
+        String newId = "R-001";  // default ID
+        try {
+            // MAX()
+            String sql = "SELECT MAX(resource_id) AS max_id FROM resources";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+
+            // Data  null 
+            if (rs.next() && rs.getString("max_id") != null) {
+                String lastId = rs.getString("max_id"); //ex : "R-001"
+
+                // "R-" (substring(2))
+                int num = Integer.parseInt(lastId.substring(2));
+
+                num++; // (1 -> 2)
+
+                //"R-" 
+                newId = String.format("R-%03d", num); //  "R-002"
+            }
+        } catch (SQLException ex) {
+            // මෙතන 'manage_Resources' කියන එක ඔයාගේ Form එකේ නමට වෙනස් කරගන්න
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return newId;
+    }
+
+    private void loadItemTable() {
+        try {
+
+            Statement s = con.createStatement();
+
+            ResultSet rs = pst.executeQuery("SELECT * FROM resources");
+
+            DefaultTableModel model = (DefaultTableModel) itemTable.getModel();
+            model.setRowCount(0);
+
+            while (rs.next()) {
+
+                String item_id = rs.getString("resource_id");
+                String item_name = rs.getString("resource_name");
+                String item_type = rs.getString("resource_type");
+                String item_price = rs.getString("cost_per_item");
+
+                model.addRow(new Object[]{item_id, item_name, item_type, item_price});
+            }
+        } catch (SQLException ex) {
+            System.getLogger(client_Details.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
 
     }
 

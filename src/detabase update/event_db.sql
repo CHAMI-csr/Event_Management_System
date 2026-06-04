@@ -99,7 +99,33 @@ CREATE TABLE IF NOT EXISTS `package` (
   PRIMARY KEY (`package_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table event_db.package: ~0 rows (approximately)
+-- Dumping data for table event_db.package: ~2 rows (approximately)
+INSERT INTO `package` (`package_id`, `package_name`, `description`, `price`) VALUES
+	('P-1001', 'Wedding Premium', 'Full Wedding Package with all services', 150000),
+	('P-1002', 'Basic Birthday', 'Simple Birthday Package', 40000);
+
+-- Dumping structure for table event_db.package_resources
+CREATE TABLE IF NOT EXISTS `package_resources` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `package_id` varchar(20) NOT NULL,
+  `resource_id` varchar(50) NOT NULL,
+  `quantity` int DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `package_id` (`package_id`),
+  KEY `resource_id` (`resource_id`),
+  CONSTRAINT `package_resources_ibfk_1` FOREIGN KEY (`package_id`) REFERENCES `package` (`package_id`),
+  CONSTRAINT `package_resources_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resources` (`resource_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table event_db.package_resources: ~7 rows (approximately)
+INSERT INTO `package_resources` (`id`, `package_id`, `resource_id`, `quantity`) VALUES
+	(1, 'P-1001', 'R-001', 1),
+	(2, 'P-1001', 'R-002', 1),
+	(3, 'P-1001', 'R-003', 1),
+	(4, 'P-1001', 'R-004', 150),
+	(5, 'P-1002', 'R-005', 1),
+	(6, 'P-1002', 'R-006', 1),
+	(7, 'P-1002', 'R-001', 1);
 
 -- Dumping structure for table event_db.resources
 CREATE TABLE IF NOT EXISTS `resources` (
@@ -110,7 +136,16 @@ CREATE TABLE IF NOT EXISTS `resources` (
   PRIMARY KEY (`resource_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table event_db.resources: ~0 rows (approximately)
+-- Dumping data for table event_db.resources: ~8 rows (approximately)
+INSERT INTO `resources` (`resource_id`, `resource_name`, `resource_type`, `cost_per_item`) VALUES
+	('R-001', 'Professional DJ System', 'Music', 25000.00),
+	('R-002', 'Wedding Photography', 'Media', 50000.00),
+	('R-003', 'Floral Decorations', 'Decor', 45000.00),
+	('R-004', 'Banquet Chairs', 'Furniture', 100.00),
+	('R-005', 'Birthday Balloon Decor', 'Decor', 15000.00),
+	('R-006', 'Birthday Cake (2kg)', 'Food', 8000.00),
+	('R-007', 'Flowers', 'Decor', 1000.00),
+	('R-008', 'Canabis', 'Food', 500.00);
 
 -- Dumping structure for table event_db.staff
 CREATE TABLE IF NOT EXISTS `staff` (
@@ -139,13 +174,23 @@ CREATE TABLE IF NOT EXISTS `staff_log` (
   `login_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `logout_time` datetime DEFAULT NULL,
   PRIMARY KEY (`log_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table event_db.staff_log: ~3 rows (approximately)
+-- Dumping data for table event_db.staff_log: ~13 rows (approximately)
 INSERT INTO `staff_log` (`log_id`, `staff_id`, `login_time`, `logout_time`) VALUES
 	(1, 'S-1000', '2026-06-03 14:24:07', NULL),
 	(2, 'S-1000', '2026-06-03 14:37:46', NULL),
-	(3, 'S-1000', '2026-06-03 14:38:37', NULL);
+	(3, 'S-1000', '2026-06-03 14:38:37', NULL),
+	(4, 'S-1000', '2026-06-04 11:30:27', NULL),
+	(5, 'S-1000', '2026-06-04 11:38:14', NULL),
+	(6, 'S-1000', '2026-06-04 11:55:56', NULL),
+	(7, 'S-1000', '2026-06-04 11:56:40', NULL),
+	(8, 'S-1000', '2026-06-04 11:58:28', NULL),
+	(9, 'S-1000', '2026-06-04 12:02:44', NULL),
+	(10, 'S-1000', '2026-06-04 12:03:14', NULL),
+	(11, 'S-1000', '2026-06-04 12:03:59', NULL),
+	(12, 'S-1000', '2026-06-04 12:30:38', NULL),
+	(13, 'S-1000', '2026-06-04 12:36:52', NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
