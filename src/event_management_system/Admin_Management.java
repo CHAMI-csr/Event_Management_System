@@ -824,7 +824,29 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnItemUpadateActionPerformed
 
     private void btnItemDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemDeleteActionPerformed
-        // TODO add your handling code here:
+        int ok = JOptionPane.showConfirmDialog(null, "Do you want to delete", "Delete", JOptionPane.YES_NO_OPTION);
+        if (ok == JOptionPane.YES_OPTION) {
+            try {
+                
+                String itemId=lblNextItemID.getText();
+                // Database Update
+                String sql = "DELETE FROM resources WHERE resource_id=? ";
+                PreparedStatement pst = con.prepareStatement(sql);
+                pst.setString(1, itemId);
+                
+                pst.executeUpdate();
+                
+                JOptionPane.showMessageDialog(this, "Client Delete Successfully!");
+                
+                loadItemTable();
+                
+                btnItemCancel.doClick();
+                
+            } catch (SQLException ex) {
+                System.getLogger(client_Details.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+            
+        }
     }//GEN-LAST:event_btnItemDeleteActionPerformed
 
     private void itemTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemTableMouseClicked
