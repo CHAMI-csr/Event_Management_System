@@ -25,6 +25,7 @@ import java.sql.Statement;
 import java.util.Base64;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.UIManager;
 
@@ -42,8 +43,11 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     PreparedStatement pst;
     ResultSet rs;
     Connection con = DBConnect.connect();
+    public JTable pTable;
 
     public Admin_Management() {
+        this.pTable = pakageTable;
+
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         try {
             // Dark theme එකට:
@@ -64,7 +68,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         lblNextId.setText(staffid);
         lblNextItemID.setText(generateItemId());
         loadItemTable();
-        loadPackageTable();
+        refreshPackageTable();
+        
 
     }
 
@@ -117,7 +122,9 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         txtPackageSearch = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
         jLabel22 = new javax.swing.JLabel();
-        jLabel24 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
         jpItemAdd = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         txtItemName = new javax.swing.JTextField();
@@ -370,11 +377,11 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jpMannageStaff.setLayout(jpMannageStaffLayout);
         jpMannageStaffLayout.setHorizontalGroup(
             jpMannageStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1064, Short.MAX_VALUE)
+            .addGap(0, 1061, Short.MAX_VALUE)
         );
         jpMannageStaffLayout.setVerticalGroup(
             jpMannageStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 618, Short.MAX_VALUE)
+            .addGap(0, 534, Short.MAX_VALUE)
         );
 
         main.add(jpMannageStaff, "card2");
@@ -396,17 +403,17 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         pakageTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Package ID", "Package Name", "Package Description", "Estimate Price"
+                "Package ID", "Package Name", "Package Description", "Estimate Price", "Price"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -428,16 +435,16 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 507, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel17)
                         .addGap(18, 18, 18)
+                        .addComponent(jButton1))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1)
-                            .addComponent(txtPackageSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(0, 22, Short.MAX_VALUE))
+                            .addComponent(txtPackageSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 507, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(0, 32, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -446,43 +453,60 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtPackageSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
+                .addComponent(txtPackageSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(19, 19, 19))
         );
 
-        jpEventAdd.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 550, 540));
+        jpEventAdd.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 560, 540));
 
         jPanel6.setBackground(new java.awt.Color(26, 26, 36));
         jPanel6.setPreferredSize(new java.awt.Dimension(510, 594));
 
-        jLabel22.setText("jLabel18");
+        jLabel22.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel22.setText("GO TO ITEM MANAGEMENT");
 
-        jLabel24.setText("jLabel18");
+        jLabel23.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel23.setText("GO TO UPDATE/DELETE");
+
+        jButton2.setText("jButton2");
+
+        jButton3.setText("jButton2");
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(0, 467, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel22, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel24, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(100, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(51, 51, 51)
-                .addComponent(jLabel22)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 451, Short.MAX_VALUE)
-                .addComponent(jLabel24)
-                .addContainerGap())
+                .addGap(109, 109, 109)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(315, Short.MAX_VALUE))
         );
 
-        jpEventAdd.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 0, 510, 540));
+        jpEventAdd.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 0, 500, 540));
 
         main.add(jpEventAdd, "card2");
 
@@ -514,7 +538,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         lblNextItemID.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         lblNextItemID.setForeground(new java.awt.Color(255, 255, 255));
-        jpItemAdd.add(lblNextItemID, new org.netbeans.lib.awtextra.AbsoluteConstraints(219, 120, 130, 37));
+        jpItemAdd.add(lblNextItemID, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 120, 130, 37));
 
         jLabel19.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel19.setForeground(new java.awt.Color(255, 255, 255));
@@ -949,7 +973,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             pst.setString(2, itemType);
             pst.setString(3, itemPrice);
             pst.setString(4, itemId);
-            
+
             pst.executeUpdate();
             loadItemTable();
             txtItemName.setText("");
@@ -964,25 +988,25 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         int ok = JOptionPane.showConfirmDialog(null, "Do you want to delete", "Delete", JOptionPane.YES_NO_OPTION);
         if (ok == JOptionPane.YES_OPTION) {
             try {
-                
-                String itemId=lblNextItemID.getText();
+
+                String itemId = lblNextItemID.getText();
                 // Database Update
                 String sql = "DELETE FROM resources WHERE resource_id=? ";
                 PreparedStatement pst = con.prepareStatement(sql);
                 pst.setString(1, itemId);
-                
+
                 pst.executeUpdate();
-                
+
                 JOptionPane.showMessageDialog(this, "Client Delete Successfully!");
-                
+
                 loadItemTable();
-                
+
                 btnItemCancel.doClick();
-                
+
             } catch (SQLException ex) {
                 System.getLogger(client_Details.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             }
-            
+
         }
     }//GEN-LAST:event_btnItemDeleteActionPerformed
 
@@ -1013,12 +1037,13 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_itemTableMouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        new Package_add().setVisible(true);
+        
+        Package_add pa = new Package_add(this);
+        pa.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void txtPackageSearchKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPackageSearchKeyPressed
-       try {
-            
+        try {
 
             String searchString = txtPackageSearch.getText();
 
@@ -1073,6 +1098,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JPanel header;
     private javax.swing.JTable itemTable;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1087,7 +1114,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1109,7 +1136,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblNextId;
     private javax.swing.JLabel lblNextItemID;
     private javax.swing.JPanel main;
-    private javax.swing.JTable pakageTable;
+    public javax.swing.JTable pakageTable;
     private javax.swing.JTextField txrPassword;
     private javax.swing.JTextField txtAddress;
     private javax.swing.JTextField txtContact;
@@ -1238,28 +1265,30 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         btnItemCancel.setVisible(false);
     }
 
-    private void loadPackageTable() {
-         try {
+    public void refreshPackageTable() {
+        try {
+            java.sql.Connection con = DBConnect.connect();
+            java.sql.Statement s = con.createStatement();
+            java.sql.ResultSet rs = s.executeQuery("SELECT * FROM package");
 
-            Statement s = con.createStatement();
-
-            ResultSet rs = pst.executeQuery("SELECT * FROM package");
-
-            DefaultTableModel model = (DefaultTableModel) pakageTable.getModel();
+            // pTable කියන්නේ ඔයාගේ Table එකේ Variable Name එක
+            javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) pakageTable.getModel();
             model.setRowCount(0);
 
             while (rs.next()) {
-
-                String package_id = rs.getString("package_id");
-                String package_name = rs.getString("package_name");
-                String description = rs.getString("description");
-                String price = rs.getString("price");
-
-                model.addRow(new Object[]{package_id, package_name, description, price});
+                model.addRow(new Object[]{
+                    rs.getString("package_id"),
+                    rs.getString("package_name"),
+                    rs.getString("description"),
+                    rs.getString("price")
+                });
             }
-        } catch (SQLException ex) {
-            System.getLogger(client_Details.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (Exception ex) {
+            System.out.println("Table Load Error: " + ex.getMessage());
         }
     }
+    
+    
+   
 
 }
