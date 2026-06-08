@@ -43,10 +43,9 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     PreparedStatement pst;
     ResultSet rs;
     Connection con = DBConnect.connect();
-    public JTable pTable;
+    String package_Id;
 
     public Admin_Management() {
-        this.pTable = pakageTable;
 
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         try {
@@ -69,7 +68,6 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         lblNextItemID.setText(generateItemId());
         loadItemTable();
         refreshPackageTable();
-        
 
     }
 
@@ -121,8 +119,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         pakageTable = new javax.swing.JTable();
         txtPackageSearch = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnItemManage = new javax.swing.JButton();
+        btnPackageUpdate = new javax.swing.JButton();
         jpItemAdd = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         txtItemName = new javax.swing.JTextField();
@@ -141,6 +139,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         btnItemCancel = new javax.swing.JButton();
         btnItemUpadate = new javax.swing.JButton();
         btnItemDelete = new javax.swing.JButton();
+        jLabel22 = new javax.swing.JLabel();
+        txtItemQty = new javax.swing.JSpinner();
         header = new javax.swing.JPanel();
         btnAddStaff = new javax.swing.JButton();
         btnMannage = new javax.swing.JButton();
@@ -418,8 +418,18 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
+        pakageTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                pakageTableMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(pakageTable);
 
+        txtPackageSearch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtPackageSearchMouseClicked(evt);
+            }
+        });
         txtPackageSearch.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtPackageSearchKeyPressed(evt);
@@ -463,13 +473,14 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jPanel6.setBackground(new java.awt.Color(26, 26, 36));
         jPanel6.setPreferredSize(new java.awt.Dimension(510, 594));
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Circled Right.png"))); // NOI18N
-        jButton2.setText("GO TO ITEM MANAGEMENT");
+        btnItemManage.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        btnItemManage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Circled Right.png"))); // NOI18N
+        btnItemManage.setText("GO TO PACKAGE ITEM ADD");
+        btnItemManage.addActionListener(this::btnItemManageActionPerformed);
 
-        jButton3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Circled Right.png"))); // NOI18N
-        jButton3.setText("GO TO UPDATE/DELETE");
+        btnPackageUpdate.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        btnPackageUpdate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Circled Right.png"))); // NOI18N
+        btnPackageUpdate.setText("GO TO UPDATE/DELETE");
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -478,17 +489,17 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnItemManage, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnPackageUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(110, 110, 110)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnItemManage, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(btnPackageUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(314, 314, 314))
         );
 
         jpEventAdd.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 0, 500, 540));
@@ -531,7 +542,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jpItemAdd.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 230, 132, 37));
 
         txtItemPrice.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jpItemAdd.add(txtItemPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 290, 193, 37));
+        jpItemAdd.add(txtItemPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 280, 193, 37));
 
         txtItemType.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         txtItemType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Music", "Media", "Decor", "Furniture", "Food", "Others" }));
@@ -540,22 +551,32 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel20.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel20.setForeground(new java.awt.Color(255, 255, 255));
         jLabel20.setText("Item Price");
-        jpItemAdd.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 290, 132, 37));
+        jpItemAdd.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 280, 132, 37));
 
         itemTable.setBackground(new java.awt.Color(0, 0, 0));
         itemTable.setForeground(new java.awt.Color(255, 255, 255));
         itemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Item ID", "Item Name", "Item Type", "Item Price"
+                "Item ID", "Item Name", "Item Type", "Item Price", "Quantity"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         itemTable.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        itemTable.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        itemTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         itemTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 itemTableMouseClicked(evt);
@@ -568,7 +589,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         btnItemAdd.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnItemAdd.setText("ADD ITEM");
         btnItemAdd.addActionListener(this::btnItemAddActionPerformed);
-        jpItemAdd.add(btnItemAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 350, 150, 39));
+        jpItemAdd.add(btnItemAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 400, 150, 39));
 
         jLabel21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Search_1.png"))); // NOI18N
         jpItemAdd.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 10, -1, 50));
@@ -584,17 +605,26 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         btnItemCancel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnItemCancel.setText("CANCEL");
         btnItemCancel.addActionListener(this::btnItemCancelActionPerformed);
-        jpItemAdd.add(btnItemCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 400, 110, 40));
+        jpItemAdd.add(btnItemCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 450, 110, 40));
 
         btnItemUpadate.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnItemUpadate.setText("UPDATE");
         btnItemUpadate.addActionListener(this::btnItemUpadateActionPerformed);
-        jpItemAdd.add(btnItemUpadate, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 400, 110, 40));
+        jpItemAdd.add(btnItemUpadate, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 450, 110, 40));
 
         btnItemDelete.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnItemDelete.setText("DELETE");
         btnItemDelete.addActionListener(this::btnItemDeleteActionPerformed);
-        jpItemAdd.add(btnItemDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 400, 110, 40));
+        jpItemAdd.add(btnItemDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 450, 110, 40));
+
+        jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel22.setText("Quantity");
+        jpItemAdd.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 330, 132, 37));
+
+        txtItemQty.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jpItemAdd.add(txtItemQty, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 330, 193, 37));
+        txtItemQty.getAccessibleContext().setAccessibleName("");
 
         main.add(jpItemAdd, "card2");
 
@@ -899,22 +929,30 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
     private void btnItemAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemAddActionPerformed
         try {
-            String itemId, itemName, itemType, itemPrice;
-            itemId = generateItemId();
-            itemName = txtItemName.getText();
-            itemType = txtItemType.getSelectedItem().toString();
-            itemPrice = txtItemPrice.getText();
-            if (itemId.isEmpty() || itemName.isEmpty() || itemType.isEmpty() || itemPrice.isEmpty()) {
-                JOptionPane.showMessageDialog(rootPane, "Please Empty Fill Not Reqrerd");
+            String itemId = generateItemId();
+            String itemName = txtItemName.getText().trim();
+            String itemType = txtItemType.getSelectedItem() != null ? txtItemType.getSelectedItem().toString() : "";
+            String itemPrice = txtItemPrice.getText().trim();
+            int qty = (Integer) txtItemQty.getValue();
+
+            if (qty <= 0) {
+                JOptionPane.showMessageDialog(rootPane, "Please enter a valid quantity.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            String sql = "INSERT INTO resources( resource_id, resource_name, resource_type,cost_per_item ) VALUES(?,?,?,?)";
+
+            if (itemId.isEmpty() || itemName.isEmpty() || itemType.isEmpty() || itemPrice.isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "Please fill in all required fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String sql = "INSERT INTO resources(resource_id, resource_name, resource_type, cost_per_item, stock_qty) VALUES(?,?,?,?,?)";
             pst = con.prepareStatement(sql);
 
             pst.setString(1, itemId);
             pst.setString(2, itemName);
             pst.setString(3, itemType);
             pst.setString(4, itemPrice);
+            pst.setInt(5, qty);
 
             pst.executeUpdate();
 
@@ -922,9 +960,10 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             lblNextItemID.setText(generateItemId());
             txtItemName.setText("");
             txtItemPrice.setText("");
+            txtItemQty.setValue(0);
 
-        } catch (SQLException ex) {
-            System.getLogger(Admin_Management.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (java.sql.SQLException ex) {
+            java.util.logging.Logger.getLogger(Item_Management.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
     }//GEN-LAST:event_btnItemAddActionPerformed
@@ -937,6 +976,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         txtItemName.setText("");
         txtItemType.setSelectedItem("");
         txtItemPrice.setText("");
+        txtItemQty.setValue(0);
         lblNameId.setForeground(new Color(242, 242, 242));
         lblNextItemID.setForeground(new Color(242, 242, 242));
     }//GEN-LAST:event_btnItemCancelActionPerformed
@@ -948,21 +988,30 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             itemName = txtItemName.getText();
             itemType = txtItemType.getSelectedItem().toString();
             itemPrice = txtItemPrice.getText();
+            int qty = (Integer) txtItemQty.getValue();
+            
+            if (qty <= 0) {
+                JOptionPane.showMessageDialog(rootPane, "Please enter a valid quantity.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             if (itemId.isEmpty() || itemName.isEmpty() || itemType.isEmpty() || itemPrice.isEmpty()) {
                 JOptionPane.showMessageDialog(rootPane, "Please Empty Fill Not Reqrerd");
                 return;
             }
-            String sql = "UPDATE resources SET resource_name=?, resource_type=?, cost_per_item=? WHERE resource_id=?";
+            String sql = "UPDATE resources SET resource_name=?, resource_type=?, cost_per_item=?,stock_qty=? WHERE resource_id=?";
             pst = con.prepareStatement(sql);
             pst.setString(1, itemName);
             pst.setString(2, itemType);
             pst.setString(3, itemPrice);
-            pst.setString(4, itemId);
+            pst.setInt(4, qty);
+            pst.setString(5, itemId);
 
             pst.executeUpdate();
             loadItemTable();
             txtItemName.setText("");
             txtItemPrice.setText("");
+            txtItemQty.setValue(0);
             btnItemCancel.doClick();
         } catch (SQLException ex) {
             System.getLogger(Admin_Management.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
@@ -1004,6 +1053,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         String item_name = iModel.getValueAt(rowIndex, 1).toString();
         String item_type = iModel.getValueAt(rowIndex, 2).toString();
         String item_price = iModel.getValueAt(rowIndex, 3).toString();
+        int item_qty = (int) iModel.getValueAt(rowIndex, 4);
 
         lblNameId.setText("Update Item Id");
         lblNameId.setForeground(Color.YELLOW);
@@ -1014,6 +1064,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         txtItemName.setText(item_name);
         txtItemType.setSelectedItem(item_type);
         txtItemPrice.setText(item_price);
+        txtItemQty.setValue(item_qty);
         btnItemAdd.setVisible(false);
         btnItemUpadate.setVisible(true);
         btnItemDelete.setVisible(true);
@@ -1022,7 +1073,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_itemTableMouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
+
         Package_add pa = new Package_add(this);
         pa.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -1043,6 +1094,30 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             System.out.println("Search Error: " + e.getMessage());
         }
     }//GEN-LAST:event_txtPackageSearchKeyPressed
+
+    private void btnItemManageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemManageActionPerformed
+        Item_Management iM = new Item_Management(package_Id);
+        iM.setVisible(true);
+    }//GEN-LAST:event_btnItemManageActionPerformed
+
+    private void pakageTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pakageTableMouseClicked
+        int rowIndex = pakageTable.getSelectedRow();
+
+        DefaultTableModel iModel = (DefaultTableModel) pakageTable.getModel();
+
+        String package_id = iModel.getValueAt(rowIndex, 0).toString();
+
+        this.package_Id = package_id;
+
+        btnItemManage.setVisible(true);
+        btnPackageUpdate.setVisible(true);
+    }//GEN-LAST:event_pakageTableMouseClicked
+
+    private void txtPackageSearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtPackageSearchMouseClicked
+        btnItemManage.setVisible(false);
+        btnPackageUpdate.setVisible(false);
+        pakageTable.clearSelection();
+    }//GEN-LAST:event_txtPackageSearchMouseClicked
 
     /**
      * @param args the command line arguments
@@ -1078,13 +1153,13 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnItemAdd;
     private javax.swing.JButton btnItemCancel;
     private javax.swing.JButton btnItemDelete;
+    private javax.swing.JButton btnItemManage;
     private javax.swing.JButton btnItemUpadate;
     private javax.swing.JButton btnMannage;
+    private javax.swing.JButton btnPackageUpdate;
     private javax.swing.JPanel header;
     private javax.swing.JTable itemTable;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1098,6 +1173,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1126,6 +1202,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtItemName;
     private javax.swing.JTextField txtItemPrice;
+    private javax.swing.JSpinner txtItemQty;
     private javax.swing.JComboBox<String> txtItemType;
     private javax.swing.JTextField txtNId;
     private javax.swing.JTextField txtName;
@@ -1220,8 +1297,6 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private void loadItemTable() {
         try {
 
-            Statement s = con.createStatement();
-
             ResultSet rs = pst.executeQuery("SELECT * FROM resources");
 
             DefaultTableModel model = (DefaultTableModel) itemTable.getModel();
@@ -1233,8 +1308,9 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 String item_name = rs.getString("resource_name");
                 String item_type = rs.getString("resource_type");
                 String item_price = rs.getString("cost_per_item");
+                int qty = rs.getInt("stock_qty");
 
-                model.addRow(new Object[]{item_id, item_name, item_type, item_price});
+                model.addRow(new Object[]{item_id, item_name, item_type, item_price, qty});
             }
         } catch (SQLException ex) {
             System.getLogger(client_Details.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
@@ -1246,6 +1322,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         btnItemUpadate.setVisible(false);
         btnItemDelete.setVisible(false);
         btnItemCancel.setVisible(false);
+        btnItemManage.setVisible(false);
+        btnPackageUpdate.setVisible(false);
     }
 
     public void refreshPackageTable() {
@@ -1270,8 +1348,5 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             System.out.println("Table Load Error: " + ex.getMessage());
         }
     }
-    
-    
-   
 
 }
