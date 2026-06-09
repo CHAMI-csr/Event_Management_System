@@ -1326,7 +1326,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 newId = String.format("R-%03d", num); //  "R-002"
             }
         } catch (SQLException ex) {
-            // මෙතන 'manage_Resources' කියන එක ඔයාගේ Form එකේ නමට වෙනස් කරගන්න
+            //  'manage_Resources' 
             Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
         }
         return newId;
@@ -1370,7 +1370,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             java.sql.Statement s = con.createStatement();
             java.sql.ResultSet rs = s.executeQuery("SELECT * FROM package");
 
-            // pTable කියන්නේ ඔයාගේ Table එකේ Variable Name එක
+            // pTable 
             javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) pakageTable.getModel();
             model.setRowCount(0);
 
