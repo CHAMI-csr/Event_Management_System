@@ -317,6 +317,15 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 txtRoleFocusLost(evt);
             }
         });
+        txtRole.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                txtRolePopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         txtRole.addInputMethodListener(new java.awt.event.InputMethodListener() {
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
@@ -1143,6 +1152,10 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private void txtRoleInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_txtRoleInputMethodTextChanged
          txrPassword.setFocusable(true);
     }//GEN-LAST:event_txtRoleInputMethodTextChanged
+
+    private void txtRolePopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_txtRolePopupMenuWillBecomeInvisible
+       txrPassword.requestFocus();
+    }//GEN-LAST:event_txtRolePopupMenuWillBecomeInvisible
 
     /**
      * @param args the command line arguments
