@@ -118,6 +118,11 @@ public class Item_Management extends javax.swing.JFrame {
                 "Item name", "Item Type", "cost per item"
             }
         ));
+        itemTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                itemTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(itemTable);
 
         jLabel2.setText("Item Add Package");
@@ -236,6 +241,10 @@ public class Item_Management extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void itemTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemTableMouseClicked
+        
+    }//GEN-LAST:event_itemTableMouseClicked
 
     /**
      * @param args the command line arguments

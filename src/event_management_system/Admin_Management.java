@@ -312,6 +312,19 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         txtRole.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         txtRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Event Planner", "Ticketing Staff", "Technical", "Analytics", "Administrator" }));
+        txtRole.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtRoleFocusLost(evt);
+            }
+        });
+        txtRole.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                txtRoleInputMethodTextChanged(evt);
+            }
+        });
+        txtRole.addActionListener(this::txtRoleActionPerformed);
         jPanel4.add(txtRole, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 120, 220, 42));
 
         txtPassword.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -1118,6 +1131,18 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         btnPackageUpdate.setVisible(false);
         pakageTable.clearSelection();
     }//GEN-LAST:event_txtPackageSearchMouseClicked
+
+    private void txtRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtRoleActionPerformed
+        
+    }//GEN-LAST:event_txtRoleActionPerformed
+
+    private void txtRoleFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtRoleFocusLost
+        txrPassword.setFocusable(true);
+    }//GEN-LAST:event_txtRoleFocusLost
+
+    private void txtRoleInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_txtRoleInputMethodTextChanged
+         txrPassword.setFocusable(true);
+    }//GEN-LAST:event_txtRoleInputMethodTextChanged
 
     /**
      * @param args the command line arguments
