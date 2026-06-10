@@ -27,7 +27,7 @@ public class Loging extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Loging.class.getName());
 
     /**
-     * Creates new form 
+     * Creates new form
      */
     PreparedStatement pst;
     DBConnect db = new DBConnect();
@@ -46,7 +46,6 @@ public class Loging extends javax.swing.JFrame {
             System.err.println("Failed to initialize FlatLaf");
         }
 
-        initComponents();
 
     }
 
@@ -106,6 +105,11 @@ public class Loging extends javax.swing.JFrame {
         btnLoging.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         btnLoging.setForeground(new java.awt.Color(255, 255, 255));
         btnLoging.setText("Login");
+        btnLoging.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnLogingMouseClicked(evt);
+            }
+        });
         btnLoging.addActionListener(this::btnLogingActionPerformed);
         jPanel1.add(btnLoging, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 280, 220, 40));
 
@@ -133,30 +137,42 @@ public class Loging extends javax.swing.JFrame {
         keyPressed(evt);
     }//GEN-LAST:event_txtPasswordKeyPressed
 
+    private void btnLogingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnLogingMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnLogingMouseClicked
+
     private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtUsernameActionPerformed
         // TODO add your handling code here:
     }// GEN-LAST:event_txtUsernameActionPerformed
 
     private void btnLogingActionPerformed(java.awt.event.ActionEvent evt) {
-        txtUsername.setText("S-1000");
-        txtPassword.setText("2");
+//        txtUsername.setText("S-1000");
+//        txtPassword.setText("2");
 
-        String enteredUsername = txtUsername.getText();
-        String enteredPassword = new String(txtPassword.getPassword());
+        String enteredUsername = txtUsername.getText().trim();
+        char[] passwordChars = txtPassword.getPassword();
+        String enteredPassword = new String(passwordChars).trim();
 
-        if (!db.isConnected()) {
+        if (enteredUsername.isEmpty() || enteredPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter both username and password.", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (conn != null) {
             Staff staff = CheckStaff(enteredUsername, enteredPassword);
+
             if (staff != null) {
                 JOptionPane.showMessageDialog(this, "Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 new Dashboard(staff).setVisible(true);
                 this.dispose();
             } else {
-                JOptionPane.showMessageDialog(null, "Please enter correct username and password");
+                JOptionPane.showMessageDialog(null, "Please enter correct username and password.\n\n*Check your NetBeans Output window for details*", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                txtPassword.setText("");
+                txtPassword.requestFocus();
             }
         } else {
-            JOptionPane.showMessageDialog(null, "DB not connected");
+            JOptionPane.showMessageDialog(null, "DB not connected! Please check XAMPP.", "Database Error", JOptionPane.ERROR_MESSAGE);
         }
-
 
     }
 
@@ -214,8 +230,11 @@ public class Loging extends javax.swing.JFrame {
             pst.setString(2, enteredUsername);
             pst.setString(3, enteredUsername);
             pst.setString(4, finalPassword);
+            
+           
 
             rs = pst.executeQuery();
+            System.out.println(finalPassword);
 
             if (rs.next()) {
                 return new Staff(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7));

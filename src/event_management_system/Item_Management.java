@@ -46,6 +46,8 @@ public class Item_Management extends javax.swing.JFrame {
         txtUnitPrice.setEditable(false);
         lblGrandTotal.setEditable(false);
         btnUpdate.setVisible(false);
+        lblSelectItem.setVisible(false);
+        lblSelectPackage.setVisible(false);
 
     }
 
@@ -87,7 +89,10 @@ public class Item_Management extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         txtUnitPrice = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnItemAdd = new javax.swing.JButton();
+        lblSelectItem = new javax.swing.JLabel();
+        lblSelectPackage = new javax.swing.JLabel();
+        btnItemUpadate = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -238,6 +243,9 @@ public class Item_Management extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tbPackageResourcesMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                tbPackageResourcesMouseEntered(evt);
+            }
         });
         jScrollPane2.setViewportView(tbPackageResources);
 
@@ -311,68 +319,43 @@ public class Item_Management extends javax.swing.JFrame {
         jPanel4.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(717, 0, 480, -1));
 
         jPanel6.setBackground(new java.awt.Color(0, 12, 28));
+        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        txtItemName.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jPanel6.add(txtItemName, new org.netbeans.lib.awtextra.AbsoluteConstraints(27, 159, 191, 40));
 
         txtQty.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         txtQty.addChangeListener(this::txtQtyStateChanged);
+        jPanel6.add(txtQty, new org.netbeans.lib.awtextra.AbsoluteConstraints(27, 243, 115, 40));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel4.setText("Quantity");
+        jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(27, 205, 73, 32));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel5.setText("Price");
+        jPanel6.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(27, 289, 85, 32));
+
+        txtUnitPrice.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jPanel6.add(txtUnitPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(27, 327, 191, 40));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setText("Item Name");
+        jPanel6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(27, 121, 85, 32));
 
-        jButton1.setText("ADD ITEM");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
+        btnItemAdd.setText("ADD ITEM");
+        btnItemAdd.addActionListener(this::btnItemAddActionPerformed);
+        jPanel6.add(btnItemAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 380, 118, 39));
 
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(70, 70, 70)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(75, Short.MAX_VALUE))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtItemName, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtUnitPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 230, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(223, 223, 223))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(44, 44, 44)
-                    .addComponent(txtItemName, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(txtUnitPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(278, Short.MAX_VALUE)))
-        );
+        lblSelectItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Circled Right.png"))); // NOI18N
+        jPanel6.add(lblSelectItem, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 71, -1, 32));
+
+        lblSelectPackage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Circled left.png"))); // NOI18N
+        jPanel6.add(lblSelectPackage, new org.netbeans.lib.awtextra.AbsoluteConstraints(204, 71, -1, 32));
+
+        btnItemUpadate.setText("UPDATE");
+        btnItemUpadate.addActionListener(this::btnItemUpadateActionPerformed);
+        jPanel6.add(btnItemUpadate, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 380, 118, 39));
 
         jPanel4.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 0, 240, 530));
 
@@ -406,6 +389,11 @@ public class Item_Management extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void itemTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemTableMouseClicked
+        btnItemUpadate.setVisible(false);
+        btnItemAdd.setVisible(true);
+        tbPackageResources.clearSelection();
+        btnItemAdd.setText("ADD ITEM");
+        lblSelectPackage.setVisible(false);
         txtQty.setValue(1);
 
         int rowIndex = itemTable.getSelectedRow();
@@ -420,6 +408,7 @@ public class Item_Management extends javax.swing.JFrame {
         txtUnitPrice.setText(item_price);
         itemPrice = item_price;
         this.item_id = selectedItemId;
+        lblSelectItem.setVisible(true);
 
 
     }//GEN-LAST:event_itemTableMouseClicked
@@ -446,7 +435,7 @@ public class Item_Management extends javax.swing.JFrame {
         txtUnitPrice.setText(String.format("%.2f", total));
     }//GEN-LAST:event_txtQtyStateChanged
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnItemAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemAddActionPerformed
         try {
 
             String packageId = package_Id;
@@ -496,7 +485,7 @@ public class Item_Management extends javax.swing.JFrame {
             System.getLogger(Item_Management.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnItemAddActionPerformed
 
     private void lblEstimatePriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblEstimatePriceActionPerformed
 
@@ -526,14 +515,62 @@ public class Item_Management extends javax.swing.JFrame {
     }//GEN-LAST:event_lblEstimatePriceMouseClicked
 
     private void tbPackageResourcesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbPackageResourcesMouseClicked
-        int rowIndex = itemTable.getSelectedRow();
-
-        DefaultTableModel iModel = (DefaultTableModel) itemTable.getModel();
+        btnItemUpadate.setVisible(true);
+        btnItemAdd.setVisible(false);
+        itemTable.clearSelection();
+        lblSelectItem.setVisible(false);
+        int rowIndex = tbPackageResources.getSelectedRow();
+        DefaultTableModel iModel = (DefaultTableModel) tbPackageResources.getModel();
 
         String selectedItemId = iModel.getValueAt(rowIndex, 0).toString();
         String item_name = iModel.getValueAt(rowIndex, 1).toString();
-        String item_price = iModel.getValueAt(rowIndex, 3).toString();
+        String item_qty = iModel.getValueAt(rowIndex, 2).toString();
+        String item_total_price = iModel.getValueAt(rowIndex, 3).toString();
+
+        txtItemName.setText(item_name);
+        
+
+        int qtyInt = 1;
+        try {
+            qtyInt = Integer.parseInt(item_qty);
+            txtQty.setValue(qtyInt);
+            txtQty.dispatchEvent(evt);
+        } catch (NumberFormatException e) {
+            txtQty.setValue(1);
+        }
+
+        try {
+            double total = Double.parseDouble(item_total_price);
+            double unitPrice = total / qtyInt;
+            itemPrice = String.valueOf(unitPrice);
+        } catch (Exception e) {
+            itemPrice = "0.00";
+        }
+        
+        txtUnitPrice.setText(item_total_price);
+        this.item_id = selectedItemId;
+        lblSelectPackage.setVisible(true);
     }//GEN-LAST:event_tbPackageResourcesMouseClicked
+
+    private void tbPackageResourcesMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbPackageResourcesMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tbPackageResourcesMouseEntered
+
+    private void btnItemUpadateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemUpadateActionPerformed
+        try {
+            int qty = (int) txtQty.getValue();
+            String sql = "UPDATE package_resources SET quantity=? WHERE resource_id=? and package_id=?";
+            pst = con.prepareStatement(sql);
+            pst.setInt(1, qty);
+            pst.setString(2, item_id);
+            pst.setString(3, package_Id);
+            pst.executeUpdate();
+            loadPackageResourcesTable(package_Id);
+
+        } catch (SQLException ex) {
+            System.getLogger(Item_Management.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_btnItemUpadateActionPerformed
 
     /**
      * @param args the command line arguments
@@ -560,9 +597,10 @@ public class Item_Management extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnItemAdd;
+    private javax.swing.JButton btnItemUpadate;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JTable itemTable;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -585,6 +623,8 @@ public class Item_Management extends javax.swing.JFrame {
     private javax.swing.JTextField lblGrandTotal;
     private javax.swing.JLabel lblPackageName;
     private javax.swing.JLabel lblPackagePrice;
+    private javax.swing.JLabel lblSelectItem;
+    private javax.swing.JLabel lblSelectPackage;
     private javax.swing.JLabel package_id;
     private javax.swing.JTable tbPackageResources;
     private javax.swing.JTextField txtItemName;
@@ -685,7 +725,7 @@ public class Item_Management extends javax.swing.JFrame {
         for (int i = 0; i < rowCount; i++) {
             try {
 
-                double rowTotal = Double.parseDouble(tbPackageResources.getValueAt(i, 2).toString());
+                double rowTotal = Double.parseDouble(tbPackageResources.getValueAt(i, 3).toString());
                 grandTotal += rowTotal;
             } catch (Exception e) {
 

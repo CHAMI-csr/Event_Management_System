@@ -779,6 +779,7 @@
                               <Component id="btnItemManage" min="-2" pref="300" max="-2" attributes="0"/>
                               <Component id="btnPackageUpdate" min="-2" pref="300" max="-2" attributes="0"/>
                           </Group>
+                          <EmptySpace pref="190" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>

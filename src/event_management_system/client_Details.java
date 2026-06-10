@@ -187,11 +187,13 @@ public class client_Details extends javax.swing.JInternalFrame {
         btnDelClient.addActionListener(this::btnDelClientActionPerformed);
         jPanel2.add(btnDelClient, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 530, 110, 50));
 
-        btnAddClient.setBackground(new java.awt.Color(0, 240, 255));
+        btnAddClient.setBackground(new java.awt.Color(51, 0, 102));
         btnAddClient.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btnAddClient.setForeground(new java.awt.Color(255, 255, 255));
         btnAddClient.setText("ADD Client");
+        btnAddClient.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         btnAddClient.addActionListener(this::btnAddClientActionPerformed);
-        jPanel2.add(btnAddClient, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 535, 300, -1));
+        jPanel2.add(btnAddClient, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 525, 300, 60));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 370, 600));
 

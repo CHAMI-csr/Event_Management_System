@@ -512,7 +512,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 .addGap(10, 10, 10)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnItemManage, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPackageUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnPackageUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(190, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -813,6 +814,17 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             jLabel15.setVisible(false);
             jLabel14.setVisible(false);
 
+            String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
+
+            if (!password.matches(passwordPattern)) {
+                JOptionPane.showMessageDialog(this,
+                        "Password must be at least 8 characters long, and include an uppercase letter, a lowercase letter, a digit, and a special character (@#$%^&+=!).",
+                        "Weak Password Error",
+                        JOptionPane.ERROR_MESSAGE);
+                txrPassword.requestFocus();
+                return;
+            }
+
             if (!password.equals(confirmPassword)) {
                 JOptionPane.showMessageDialog(this, "Password and Confirm Password do not match.", "Validation Error", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -1011,7 +1023,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             itemType = txtItemType.getSelectedItem().toString();
             itemPrice = txtItemPrice.getText();
             int qty = (Integer) txtItemQty.getValue();
-            
+
             if (qty <= 0) {
                 JOptionPane.showMessageDialog(rootPane, "Please enter a valid quantity.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -1142,7 +1154,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtPackageSearchMouseClicked
 
     private void txtRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtRoleActionPerformed
-        
+
     }//GEN-LAST:event_txtRoleActionPerformed
 
     private void txtRoleFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtRoleFocusLost
@@ -1150,11 +1162,11 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtRoleFocusLost
 
     private void txtRoleInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_txtRoleInputMethodTextChanged
-         txrPassword.setFocusable(true);
+        txrPassword.setFocusable(true);
     }//GEN-LAST:event_txtRoleInputMethodTextChanged
 
     private void txtRolePopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_txtRolePopupMenuWillBecomeInvisible
-       txrPassword.requestFocus();
+        txrPassword.requestFocus();
     }//GEN-LAST:event_txtRolePopupMenuWillBecomeInvisible
 
     /**
