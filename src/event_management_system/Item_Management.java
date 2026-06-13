@@ -165,11 +165,11 @@ public class Item_Management extends javax.swing.JFrame {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Id", "Item name", "Item Type", "cost per item", "stock_qty"
+                "Id", "name", "Resources Type", "cost per resource", "stock_qty"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, true, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -187,7 +187,7 @@ public class Item_Management extends javax.swing.JFrame {
         jScrollPane1.setViewportView(itemTable);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel2.setText("Item Table");
+        jLabel2.setText("Resources Table");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -197,8 +197,8 @@ public class Item_Management extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 423, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(51, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -225,7 +225,7 @@ public class Item_Management extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Id", "Item name", "Quantity", "Price"
+                "Id", "resources name", "Quantity", "Price"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -250,7 +250,7 @@ public class Item_Management extends javax.swing.JFrame {
         jScrollPane2.setViewportView(tbPackageResources);
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel6.setText("Package Include Items");
+        jLabel6.setText("Package Include resources");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel7.setText("Total Price");
@@ -279,7 +279,6 @@ public class Item_Management extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
@@ -293,7 +292,8 @@ public class Item_Management extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(lblEstimatePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                    .addComponent(lblEstimatePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addComponent(jLabel6))
                 .addContainerGap(10, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -340,10 +340,10 @@ public class Item_Management extends javax.swing.JFrame {
         jPanel6.add(txtUnitPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(27, 327, 191, 40));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel3.setText("Item Name");
-        jPanel6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(27, 121, 85, 32));
+        jLabel3.setText("Resources Name");
+        jPanel6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(27, 121, 120, 32));
 
-        btnItemAdd.setText("ADD ITEM");
+        btnItemAdd.setText("ADD Resources");
         btnItemAdd.addActionListener(this::btnItemAddActionPerformed);
         jPanel6.add(btnItemAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 380, 118, 39));
 
