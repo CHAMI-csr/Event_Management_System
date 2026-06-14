@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   `client_id` varchar(100) DEFAULT NULL,
   `staff_id` varchar(50) NOT NULL,
   `package_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `sup_id` varchar(50) DEFAULT NULL,
   `event_type` varchar(50) DEFAULT NULL,
   `event_date` date DEFAULT NULL,
   `start_time` time DEFAULT NULL,
@@ -103,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `package` (
 INSERT INTO `package` (`package_id`, `package_name`, `description`, `price`) VALUES
 	('P-1001', 'Wedding Premium', 'Full Wedding Package with all services', 210005),
 	('P-1002', 'Basic Birthday', 'Simple Birthday Package', 40000),
-	('S-1003', 'gh', 'ghg', 6000);
+	('S-1003', 'gh', 'ghg', 60000);
 
 -- Dumping structure for table event_db.package_resources
 CREATE TABLE IF NOT EXISTS `package_resources` (
@@ -116,18 +117,16 @@ CREATE TABLE IF NOT EXISTS `package_resources` (
   KEY `resource_id` (`resource_id`),
   CONSTRAINT `package_resources_ibfk_1` FOREIGN KEY (`package_id`) REFERENCES `package` (`package_id`),
   CONSTRAINT `package_resources_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resources` (`resource_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table event_db.package_resources: ~8 rows (approximately)
+-- Dumping data for table event_db.package_resources: ~7 rows (approximately)
 INSERT INTO `package_resources` (`id`, `package_id`, `resource_id`, `quantity`) VALUES
 	(1, 'P-1001', 'R-001', 1),
 	(2, 'P-1001', 'R-002', 1),
-	(3, 'P-1001', 'R-003', 1),
 	(4, 'P-1001', 'R-004', 151),
 	(5, 'P-1002', 'R-005', 1),
-	(6, 'P-1002', 'R-006', 1),
-	(8, 'P-1001', 'R-007', 14),
-	(10, 'P-1001', 'R-006', 2);
+	(6, 'P-1002', 'R-006', 5),
+	(10, 'P-1001', 'R-006', 3);
 
 -- Dumping structure for table event_db.resources
 CREATE TABLE IF NOT EXISTS `resources` (
@@ -136,18 +135,19 @@ CREATE TABLE IF NOT EXISTS `resources` (
   `resource_type` varchar(50) NOT NULL,
   `cost_per_item` decimal(10,2) NOT NULL,
   `stock_qty` int DEFAULT '0',
+  `sup_id` int DEFAULT NULL,
   PRIMARY KEY (`resource_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table event_db.resources: ~7 rows (approximately)
-INSERT INTO `resources` (`resource_id`, `resource_name`, `resource_type`, `cost_per_item`, `stock_qty`) VALUES
-	('R-001', 'Professional DJ System', 'Music', 25000.00, 3),
-	('R-002', 'Wedding Photography', 'Media', 50000.00, 0),
-	('R-003', 'Floral Decorations', 'Decor', 45000.00, 10),
-	('R-004', 'Banquet Chairs', 'Furniture', 100.00, 0),
-	('R-005', 'Birthday Balloon Decor', 'Decor', 15000.00, 0),
-	('R-006', 'Birthday Cake (2kg)', 'Food', 8000.00, 5),
-	('R-007', 'jhg', 'Others', 4000.00, 3);
+INSERT INTO `resources` (`resource_id`, `resource_name`, `resource_type`, `cost_per_item`, `stock_qty`, `sup_id`) VALUES
+	('R-001', 'Professional DJ System', 'Music', 25000.00, 3, NULL),
+	('R-002', 'Wedding Photography', 'Media', 50000.00, 0, NULL),
+	('R-003', 'Floral Decorations', 'Decor', 45000.00, 10, NULL),
+	('R-004', 'Banquet Chairs', 'Furniture', 100.00, 0, NULL),
+	('R-005', 'Birthday Balloon Decor', 'Decor', 15000.00, 0, NULL),
+	('R-006', 'Birthday Cake (2kg)', 'Food', 8000.00, 5, NULL),
+	('R-007', 'jhg', 'Others', 4000.00, 3, NULL);
 
 -- Dumping structure for table event_db.staff
 CREATE TABLE IF NOT EXISTS `staff` (
@@ -176,9 +176,9 @@ CREATE TABLE IF NOT EXISTS `staff_log` (
   `login_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `logout_time` datetime DEFAULT NULL,
   PRIMARY KEY (`log_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table event_db.staff_log: ~145 rows (approximately)
+-- Dumping data for table event_db.staff_log: ~148 rows (approximately)
 INSERT INTO `staff_log` (`log_id`, `staff_id`, `login_time`, `logout_time`) VALUES
 	(1, 'S-1000', '2026-06-03 14:24:07', NULL),
 	(2, 'S-1000', '2026-06-03 14:37:46', NULL),
@@ -332,20 +332,47 @@ INSERT INTO `staff_log` (`log_id`, `staff_id`, `login_time`, `logout_time`) VALU
 	(150, 'S-1000', '2026-06-13 08:18:29', NULL),
 	(151, 'S-1000', '2026-06-13 08:19:44', NULL),
 	(152, 'S-1000', '2026-06-13 08:20:20', NULL),
-	(153, 'S-1000', '2026-06-13 08:26:06', NULL);
+	(153, 'S-1000', '2026-06-13 08:26:06', NULL),
+	(154, 'S-1000', '2026-06-14 09:09:33', NULL),
+	(155, 'S-1000', '2026-06-14 09:18:15', NULL),
+	(156, 'S-1000', '2026-06-14 09:20:33', NULL),
+	(157, 'S-1000', '2026-06-14 09:38:04', NULL),
+	(158, 'S-1000', '2026-06-14 09:40:50', NULL),
+	(159, 'S-1000', '2026-06-14 09:44:51', NULL),
+	(160, 'S-1000', '2026-06-14 09:48:33', NULL),
+	(161, 'S-1000', '2026-06-14 09:51:14', NULL),
+	(162, 'S-1000', '2026-06-14 09:53:40', NULL),
+	(163, 'S-1000', '2026-06-14 11:36:53', NULL),
+	(164, 'S-1000', '2026-06-14 11:37:44', NULL),
+	(165, 'S-1000', '2026-06-14 11:38:31', NULL),
+	(166, 'S-1000', '2026-06-14 11:40:30', NULL),
+	(167, 'S-1000', '2026-06-14 19:23:25', NULL),
+	(168, 'S-1000', '2026-06-14 19:31:46', NULL),
+	(169, 'S-1000', '2026-06-14 19:41:02', NULL),
+	(170, 'S-1000', '2026-06-14 20:00:42', NULL),
+	(171, 'S-1000', '2026-06-14 20:08:13', NULL),
+	(172, 'S-1000', '2026-06-14 20:13:50', NULL),
+	(173, 'S-1000', '2026-06-14 21:17:26', NULL),
+	(174, 'S-1000', '2026-06-14 21:18:24', NULL),
+	(175, 'S-1000', '2026-06-14 21:21:00', NULL),
+	(176, 'S-1000', '2026-06-14 21:38:58', NULL),
+	(177, 'S-1000', '2026-06-14 22:09:13', NULL);
 
 -- Dumping structure for table event_db.suppliers
 CREATE TABLE IF NOT EXISTS `suppliers` (
-  `sup_id` int NOT NULL AUTO_INCREMENT,
+  `sup_id` varchar(50) NOT NULL DEFAULT 'AUTO_INCREMENT',
   `sup_name` varchar(100) NOT NULL,
-  `company_name` varchar(150) DEFAULT NULL,
   `contact_number` varchar(15) NOT NULL,
-  `sup_email` varchar(100) DEFAULT NULL,
+  `nic` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `sup_address` varchar(200) DEFAULT NULL,
+  `vehicle_modal` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `vehicle_no` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `vehicle_Price` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `Status` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`sup_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table event_db.suppliers: ~0 rows (approximately)
+-- Dumping data for table event_db.suppliers: ~1 rows (approximately)
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

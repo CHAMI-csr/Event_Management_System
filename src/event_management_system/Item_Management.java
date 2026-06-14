@@ -478,6 +478,9 @@ public class Item_Management extends javax.swing.JFrame {
 
                 JOptionPane.showMessageDialog(null, "Item Added Successfully to Package!", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
+            txtItemName.setText("");
+            txtQty.setValue(0);
+            txtUnitPrice.setText("");
 
             loadPackageResourcesTable(packageId);
 
@@ -528,7 +531,6 @@ public class Item_Management extends javax.swing.JFrame {
         String item_total_price = iModel.getValueAt(rowIndex, 3).toString();
 
         txtItemName.setText(item_name);
-        
 
         int qtyInt = 1;
         try {
@@ -546,7 +548,7 @@ public class Item_Management extends javax.swing.JFrame {
         } catch (Exception e) {
             itemPrice = "0.00";
         }
-        
+
         txtUnitPrice.setText(item_total_price);
         this.item_id = selectedItemId;
         lblSelectPackage.setVisible(true);
@@ -559,16 +561,37 @@ public class Item_Management extends javax.swing.JFrame {
     private void btnItemUpadateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemUpadateActionPerformed
         try {
             int qty = (int) txtQty.getValue();
+
+            // Validation
+            if (qty <= 0) {
+                JOptionPane.showMessageDialog(this, "Quantity must be greater than 0!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (item_id == null || item_id.isEmpty() || package_Id == null || package_Id.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please select a resource to update!", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             String sql = "UPDATE package_resources SET quantity=? WHERE resource_id=? and package_id=?";
             pst = con.prepareStatement(sql);
             pst.setInt(1, qty);
             pst.setString(2, item_id);
             pst.setString(3, package_Id);
-            pst.executeUpdate();
-            loadPackageResourcesTable(package_Id);
+
+            int rows = pst.executeUpdate();
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this, "Resource quantity updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                loadPackageResourcesTable(package_Id);
+                txtItemName.setText("");
+                txtQty.setValue(0);
+                txtUnitPrice.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Update failed. Resource not found in the package.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
 
         } catch (SQLException ex) {
             System.getLogger(Item_Management.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnItemUpadateActionPerformed
 

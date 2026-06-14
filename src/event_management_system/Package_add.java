@@ -29,17 +29,74 @@ public class Package_add extends javax.swing.JFrame {
     ResultSet rs;
     Connection con = DBConnect.connect();
     Admin_Management aM;
+    private boolean editMode = false;
+    private String selectedPkgId = "";
+    private javax.swing.JButton btnUpdate;  // programmatic update button
 
     public Package_add() {
         initComponents();
         lblNextPackageId.setText(packageIdGenarate());
-
+        buildUpdateButton();
+        setToAddMode();
     }
 
     public Package_add(Admin_Management admin) {
         initComponents();
         this.aM = admin;
         lblNextPackageId.setText(packageIdGenarate());
+        buildUpdateButton();
+        setToAddMode();
+    }
+
+    /** Creates the Update button programmatically and adds it next to jButton1. */
+    private void buildUpdateButton() {
+        btnUpdate = new javax.swing.JButton("UPDATE PACKAGE");
+        btnUpdate.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
+        btnUpdate.setBackground(new java.awt.Color(40, 120, 40));
+        btnUpdate.setForeground(java.awt.Color.WHITE);
+        btnUpdate.setFocusPainted(false);
+        btnUpdate.setPreferredSize(new java.awt.Dimension(156, 41));
+        btnUpdate.addActionListener(e -> doUpdate());
+        // Add to jPanel5 at the same position as jButton1 but hidden initially
+        jPanel5.add(btnUpdate);
+        jPanel5.setComponentZOrder(btnUpdate, 0);
+        btnUpdate.setBounds(jButton1.getBounds());
+    }
+
+    /** Switches to Add mode — shows jButton1, hides btnUpdate. */
+    private void setToAddMode() {
+        editMode = false;
+        selectedPkgId = "";
+        setTitle("Add Event Package");
+        jButton1.setVisible(true);
+        btnUpdate.setVisible(false);
+        clearFields();
+        lblNextPackageId.setText(packageIdGenarate());
+    }
+
+    /**
+     * Switches to Update mode: pre-fills all fields with the given package data,
+     * shows btnUpdate, hides jButton1 (ADD).
+     */
+    public void fillForUpdate(String pkgId, String name, String description, String price) {
+        editMode = true;
+        selectedPkgId = pkgId;
+        setTitle("Update Package — " + pkgId);
+
+        lblNextPackageId.setText(pkgId);
+        txtPacName.setText(name);
+        txtPacDescription.setText(description);
+        txtPacPrice.setText(price);
+
+        jButton1.setVisible(false);
+        btnUpdate.setVisible(true);
+    }
+
+    /** Clears all input fields. */
+    private void clearFields() {
+        txtPacName.setText("");
+        txtPacDescription.setText("");
+        txtPacPrice.setText("");
     }
 
         /**
@@ -278,5 +335,61 @@ public class Package_add extends javax.swing.JFrame {
         }
         return newId;
 
+    }
+
+    /**
+     * Runs an UPDATE query for the selected package_id.
+     * Called when the btnUpdate button is clicked.
+     */
+    private void doUpdate() {
+        String name        = txtPacName.getText().trim();
+        String description = txtPacDescription.getText().trim();
+        String vPrice      = txtPacPrice.getText().trim();
+
+        if (name.isEmpty() || description.isEmpty() || vPrice.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Please fill in all required fields.",
+                    "Missing Information", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int price;
+        try {
+            price = Integer.parseInt(vPrice);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Price must be a valid whole number.",
+                    "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            String sql = "UPDATE `package` SET package_name=?, description=?, price=? WHERE package_id=?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, name);
+            pst.setString(2, description);
+            pst.setInt(3, price);
+            pst.setString(4, selectedPkgId);
+
+            int rows = pst.executeUpdate();
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Package updated successfully!  (ID: " + selectedPkgId + ")",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                if (aM != null) {
+                    aM.refreshPackageTable();   // refresh table in Admin panel
+                }
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Update failed. Package not found.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this,
+                    "Database Error: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

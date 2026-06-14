@@ -63,11 +63,76 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
         ui.setNorthPane(null);
+
+        // Override tbSuppliers column headers to match all 9 DB columns
+        tbSuppliers.setModel(new DefaultTableModel(
+            new Object[][]{},
+            new String[]{"Supplier ID", "Name", "Contact Number", "NIC", "Address",
+                         "Vehicle Model", "Vehicle No", "Vehicle Price", "Status"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int col) { return false; }
+        });
+
+        // Double-click on tbSuppliers row → open edit form pre-filled
+        tbSuppliers.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    int row = tbSuppliers.getSelectedRow();
+                    if (row < 0) return;
+                    DefaultTableModel m = (DefaultTableModel) tbSuppliers.getModel();
+                    String supId   = safeStr(m.getValueAt(row, 0));
+                    String name    = safeStr(m.getValueAt(row, 1));
+                    String number  = safeStr(m.getValueAt(row, 2));
+                    String nic     = safeStr(m.getValueAt(row, 3));
+                    String address = safeStr(m.getValueAt(row, 4));
+                    String vModel  = safeStr(m.getValueAt(row, 5));
+                    String vNumber = safeStr(m.getValueAt(row, 6));
+                    String vPrice  = safeStr(m.getValueAt(row, 7));
+                    String status  = safeStr(m.getValueAt(row, 8));
+
+                    Suppliers_Management sm = new Suppliers_Management(Admin_Management.this);
+                    sm.fillForEdit(supId, name, number, nic, address, vModel, vNumber, vPrice, status);
+                    sm.setVisible(true);
+                }
+            }
+        });
+
+        // ---- jTable1 (Staff table) setup ----
+        jTable1.setModel(new DefaultTableModel(
+            new Object[][]{},
+            new String[]{"Staff ID", "Name", "Contact", "Email", "Role"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int col) { return false; }
+        });
+
+        // Double-click on jTable1 → action dialog
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    int row = jTable1.getSelectedRow();
+                    if (row < 0) return;
+                    DefaultTableModel m = (DefaultTableModel) jTable1.getModel();
+                    String staffId = safeStr(m.getValueAt(row, 0));
+                    String staffName = safeStr(m.getValueAt(row, 1));
+                    onStaffRowDoubleClick(staffId, staffName);
+                }
+            }
+        });
+
+        // Wire btnPackageUpdate (no GEN handler; wired programmatically)
+        btnPackageUpdate.addActionListener(e -> btnPackageUpdateClicked());
+
         String staffid = genarateUserId();
         lblNextId.setText(staffid);
         lblNextItemID.setText(generateItemId());
         loadItemTable();
         refreshPackageTable();
+        loadSupplierTable();
+        loadStaffTable();
 
     }
 
@@ -111,6 +176,11 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel15 = new javax.swing.JLabel();
         txtPasswordConfirm = new javax.swing.JPasswordField();
         jpMannageStaff = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        txtStaffSearch = new javax.swing.JTextField();
         jpEventAdd = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
@@ -142,7 +212,10 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jLabel22 = new javax.swing.JLabel();
         txtItemQty = new javax.swing.JSpinner();
         jpSuppliers = new javax.swing.JPanel();
-        jLabel18 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tbSuppliers = new javax.swing.JTable();
+        txtSupSearch = new javax.swing.JTextField();
         header = new javax.swing.JPanel();
         btnAddStaff = new javax.swing.JButton();
         btnMannage = new javax.swing.JButton();
@@ -396,15 +469,82 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jpMannageStaff.setMinimumSize(new java.awt.Dimension(880, 530));
         jpMannageStaff.setPreferredSize(new java.awt.Dimension(880, 530));
 
+        jPanel1.setBackground(new java.awt.Color(26, 26, 36));
+
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel18.setText("Manage Staff");
+
+        jTable1.setBackground(new java.awt.Color(0, 0, 0));
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "staff_id", "staff_name", "contact_number", "staff_email", "role"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, true, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable1.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        jTable1.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        jScrollPane4.setViewportView(jTable1);
+
+        txtStaffSearch.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtStaffSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtStaffSearchKeyPressed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(300, 300, 300)
+                        .addComponent(txtStaffSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 868, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtStaffSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout jpMannageStaffLayout = new javax.swing.GroupLayout(jpMannageStaff);
         jpMannageStaff.setLayout(jpMannageStaffLayout);
         jpMannageStaffLayout.setHorizontalGroup(
             jpMannageStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1061, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jpMannageStaffLayout.setVerticalGroup(
             jpMannageStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 534, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         main.add(jpMannageStaff, "card2");
@@ -424,6 +564,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jButton1.setText("ADD PACKAGE");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
+        pakageTable.setBackground(new java.awt.Color(0, 0, 0));
+        pakageTable.setForeground(new java.awt.Color(255, 255, 255));
         pakageTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -443,6 +585,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
+        pakageTable.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        pakageTable.setSelectionForeground(new java.awt.Color(0, 0, 0));
         pakageTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 pakageTableMouseClicked(evt);
@@ -654,26 +798,80 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
         main.add(jpResourcesAdd, "card2");
 
+        jpSuppliers.setBackground(new java.awt.Color(26, 26, 36));
         jpSuppliers.setMaximumSize(new java.awt.Dimension(880, 530));
         jpSuppliers.setMinimumSize(new java.awt.Dimension(880, 530));
 
-        jLabel18.setText("jLabel18");
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jButton2.setText("Add Suppliers");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
+
+        tbSuppliers.setBackground(new java.awt.Color(0, 0, 0));
+        tbSuppliers.setForeground(new java.awt.Color(255, 255, 255));
+        tbSuppliers.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "suppliers name", "Supplier Number", "nic", "Address", "modal", "Vehicle Number", "Vehicle Price"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tbSuppliers.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        tbSuppliers.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        tbSuppliers.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbSuppliersMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tbSuppliers);
+
+        txtSupSearch.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtSupSearch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                txtSupSearchMouseEntered(evt);
+            }
+        });
+        txtSupSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSupSearchKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout jpSuppliersLayout = new javax.swing.GroupLayout(jpSuppliers);
         jpSuppliers.setLayout(jpSuppliersLayout);
         jpSuppliersLayout.setHorizontalGroup(
             jpSuppliersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSuppliersLayout.createSequentialGroup()
-                .addGap(33, 33, 33)
-                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(965, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(jpSuppliersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1055, Short.MAX_VALUE)
+                    .addGroup(jpSuppliersLayout.createSequentialGroup()
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtSupSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 457, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(30, 30, 30))))
         );
         jpSuppliersLayout.setVerticalGroup(
             jpSuppliersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSuppliersLayout.createSequentialGroup()
-                .addGap(88, 88, 88)
-                .addComponent(jLabel18)
-                .addContainerGap(430, Short.MAX_VALUE))
+                .addContainerGap(25, Short.MAX_VALUE)
+                .addGroup(jpSuppliersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSupSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         main.add(jpSuppliers, "card2");
@@ -748,6 +946,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jpMannageStaff.setVisible(false);
         jpEventAdd.setVisible(false);
         jpResourcesAdd.setVisible(false);
+        jpSuppliers.setVisible(false);
 
     }//GEN-LAST:event_btnAddStaffActionPerformed
 
@@ -756,6 +955,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jpAddStaff.setVisible(false);
         jpEventAdd.setVisible(false);
         jpResourcesAdd.setVisible(false);
+        jpSuppliers.setVisible(false);
+        loadStaffTable();
     }//GEN-LAST:event_btnMannageActionPerformed
 
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
@@ -966,6 +1167,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jpAddStaff.setVisible(false);
         jpMannageStaff.setVisible(false);
         jpResourcesAdd.setVisible(false);
+        jpSuppliers.setVisible(false);
     }//GEN-LAST:event_btnEventAddActionPerformed
 
     private void btnInventoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventoryActionPerformed
@@ -973,6 +1175,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         jpEventAdd.setVisible(false);
         jpAddStaff.setVisible(false);
         jpMannageStaff.setVisible(false);
+        jpSuppliers.setVisible(false);
     }//GEN-LAST:event_btnInventoryActionPerformed
 
     private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
@@ -1172,6 +1375,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
 
     private void pakageTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pakageTableMouseClicked
         int rowIndex = pakageTable.getSelectedRow();
+        if (rowIndex < 0) return;
 
         DefaultTableModel iModel = (DefaultTableModel) pakageTable.getModel();
 
@@ -1182,6 +1386,71 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         btnItemManage.setVisible(true);
         btnPackageUpdate.setVisible(true);
     }//GEN-LAST:event_pakageTableMouseClicked
+
+    /** Called when btnPackageUpdate is clicked — asks: Update / Delete / Cancel */
+    private void btnPackageUpdateClicked() {
+        int rowIndex = pakageTable.getSelectedRow();
+        if (rowIndex < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a package row first.",
+                    "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        DefaultTableModel m = (DefaultTableModel) pakageTable.getModel();
+        String pkgId   = safeStr(m.getValueAt(rowIndex, 0));
+        String pkgName = safeStr(m.getValueAt(rowIndex, 1));
+        String pkgDesc = safeStr(m.getValueAt(rowIndex, 2));
+        String pkgPrice= safeStr(m.getValueAt(rowIndex, 3));
+
+        String[] options = {"Update", "Delete", "Cancel"};
+        int choice = JOptionPane.showOptionDialog(
+                this,
+                "Package: " + pkgName + "  (" + pkgId + ")\nChoose an action:",
+                "Package Action",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
+
+        if (choice == 0) {   // Update
+            Package_add pa = new Package_add(this);
+            pa.fillForUpdate(pkgId, pkgName, pkgDesc, pkgPrice);
+            pa.setVisible(true);
+        } else if (choice == 1) {  // Delete
+            deletePackage(pkgId);
+        }
+        // choice == 2 or closed → Cancel — do nothing
+    }
+
+    /** Deletes a package after YES/NO confirmation, then refreshes the table. */
+    private void deletePackage(String pkgId) {
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete package: " + pkgId + "?\nThis action cannot be undone.",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+        if (confirm != JOptionPane.YES_OPTION) return;
+
+        try {
+            String sql = "DELETE FROM `package` WHERE package_id = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, pkgId);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Package " + pkgId + " deleted successfully.",
+                        "Deleted", JOptionPane.INFORMATION_MESSAGE);
+                refreshPackageTable();
+                btnItemManage.setVisible(false);
+                btnPackageUpdate.setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "Delete failed.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     private void txtPackageSearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtPackageSearchMouseClicked
         btnItemManage.setVisible(false);
@@ -1206,8 +1475,64 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtRolePopupMenuWillBecomeInvisible
 
     private void btnSuppliersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuppliersActionPerformed
-        // TODO add your handling code here:
+        jpSuppliers.setVisible(true);
+        jpResourcesAdd.setVisible(false);
+        jpEventAdd.setVisible(false);
+        jpAddStaff.setVisible(false);
+        jpMannageStaff.setVisible(false);
+        loadSupplierTable();
     }//GEN-LAST:event_btnSuppliersActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        Suppliers_Management SM = new Suppliers_Management(this);
+        SM.setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void tbSuppliersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbSuppliersMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tbSuppliersMouseClicked
+
+    private void txtSupSearchMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtSupSearchMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSupSearchMouseEntered
+
+    private void txtSupSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSupSearchKeyReleased
+        loadSupplierTable();
+        try {
+            loadItemTable();
+
+            String searchString = txtSupSearch.getText();
+
+            DefaultTableModel model = (DefaultTableModel) tbSuppliers.getModel();
+
+            TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(model);
+            tbSuppliers.setRowSorter(tr);
+
+            tr.setRowFilter(RowFilter.regexFilter("(?i)" + searchString));
+
+        } catch (Exception e) {
+            System.out.println("Search Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_txtSupSearchKeyReleased
+
+    private void txtStaffSearchKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStaffSearchKeyPressed
+       try {
+            loadItemTable();
+
+            String searchString = txtStaffSearch.getText();
+
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+            TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(model);
+            jTable1.setRowSorter(tr);
+
+            tr.setRowFilter(RowFilter.regexFilter("(?i)" + searchString));
+
+        } catch (Exception e) {
+            System.out.println("Search Error: " + e.getMessage());
+        }
+           
+    }//GEN-LAST:event_txtStaffSearchKeyPressed
 
     /**
      * @param args the command line arguments
@@ -1251,6 +1576,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JPanel header;
     private javax.swing.JTable itemTable;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1273,12 +1599,16 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTable jTable1;
     private javax.swing.JPanel jpAddStaff;
     private javax.swing.JPanel jpEventAdd;
     private javax.swing.JPanel jpMannageStaff;
@@ -1289,6 +1619,7 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblNextItemID;
     private javax.swing.JPanel main;
     public javax.swing.JTable pakageTable;
+    private javax.swing.JTable tbSuppliers;
     private javax.swing.JTextField txrPassword;
     private javax.swing.JTextField txtAddress;
     private javax.swing.JTextField txtContact;
@@ -1304,6 +1635,8 @@ public class Admin_Management extends javax.swing.JInternalFrame {
     private javax.swing.JPasswordField txtPasswordConfirm;
     private javax.swing.JComboBox<String> txtRole;
     private javax.swing.JTextField txtSearch;
+    private javax.swing.JTextField txtStaffSearch;
+    private javax.swing.JTextField txtSupSearch;
     // End of variables declaration//GEN-END:variables
 
     private String genarateUserId() {
@@ -1439,6 +1772,192 @@ public class Admin_Management extends javax.swing.JInternalFrame {
             }
         } catch (Exception ex) {
             System.out.println("Table Load Error: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Loads all supplier records from the 'suppliers' table into tbSuppliers.
+     * Columns displayed: Supplier ID | Name | Contact | NIC | Address |
+     *                    Vehicle Model | Vehicle No | Vehicle Price | Status
+     */
+    public void loadSupplierTable() {
+        try {
+            String sql = "SELECT sup_id, sup_name, contact_number, nic, "
+                    + "sup_address, vehicle_modal, vehicle_no, vehicle_Price, Status "
+                    + "FROM suppliers ORDER BY sup_id";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rsSup = ps.executeQuery();
+
+            DefaultTableModel model = (DefaultTableModel) tbSuppliers.getModel();
+            model.setRowCount(0); // clear existing rows
+
+            while (rsSup.next()) {
+                model.addRow(new Object[]{
+                    rsSup.getString("sup_id"),
+                    rsSup.getString("sup_name"),
+                    rsSup.getString("contact_number"),
+                    rsSup.getString("nic"),
+                    rsSup.getString("sup_address"),
+                    rsSup.getString("vehicle_modal"),
+                    rsSup.getString("vehicle_no"),
+                    rsSup.getString("vehicle_Price"),
+                    rsSup.getString("Status")
+                });
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this,
+                    "Failed to load supplier data: " + ex.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** Safely converts a table cell Object to a non-null String. */
+    private String safeStr(Object val) {
+        return val == null ? "" : val.toString();
+    }
+
+    // ================================================================
+    //  STAFF TABLE  –  load, double-click, history, reset, delete
+    // ================================================================
+
+    /** Loads all staff records into jTable1. */
+    public void loadStaffTable() {
+        try {
+            String sql = "SELECT staff_id, staff_name, contact_number, staff_email, role FROM staff ORDER BY staff_id";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rsStaff = ps.executeQuery();
+
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.setRowCount(0);
+
+            while (rsStaff.next()) {
+                model.addRow(new Object[]{
+                    rsStaff.getString("staff_id"),
+                    rsStaff.getString("staff_name"),
+                    rsStaff.getString("contact_number"),
+                    rsStaff.getString("staff_email"),
+                    rsStaff.getString("role")
+                });
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this,
+                    "Failed to load staff data: " + ex.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Shows an action-choice dialog when a staff row is double-clicked.
+     * Options: Log History | Reset Password | Delete Account | Cancel
+     */
+    private void onStaffRowDoubleClick(String staffId, String staffName) {
+        String[] options = {"Log History", "Reset Password", "Delete Account", "Cancel"};
+        int choice = JOptionPane.showOptionDialog(
+                this,
+                "Staff: " + staffName + "  (" + staffId + ")\nChoose an action:",
+                "Staff Action",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+
+        switch (choice) {
+            case 0 -> showStaffLogHistory(staffId, staffName);
+            case 1 -> resetStaffPassword(staffId);
+            case 2 -> deleteStaffAccount(staffId);
+            default -> { /* Cancel – do nothing */ }
+        }
+    }
+
+    /**
+     * Opens the staff_Log_History window for the given staff member.
+     * Delegates all DB querying and display to the dedicated form.
+     */
+    private void showStaffLogHistory(String staffId, String staffName) {
+        staff_Log_History historyWindow = new staff_Log_History(staffId, staffName);
+        historyWindow.setVisible(true);
+    }
+
+    /**
+     * Resets the staff member's password to their staff_id (encrypted),
+     * and sets first_time_log = 0 so they must change it on next login.
+     * Shows a confirmation dialog before proceeding.
+     */
+    private void resetStaffPassword(String staffId) {
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Reset password for " + staffId + "?\n"
+                + "The new password will be set to their Staff ID.\n"
+                + "They will be required to change it on next login.",
+                "Confirm Password Reset",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (confirm != JOptionPane.YES_OPTION) return;
+
+        try {
+            String newEncrypted = encryptMyPassword(staffId);
+
+            String sql = "UPDATE staff SET password = ?, first_time_log = 0 WHERE staff_id = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, newEncrypted);
+            ps.setString(2, staffId);
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Password reset successfully!\nNew password = Staff ID: " + staffId + "\nThe staff member must change it on next login.",
+                        "Password Reset", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Password reset failed. Staff ID not found.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this,
+                    "Database Error: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Deletes the staff account after a YES/NO confirmation.
+     * Refreshes jTable1 after a successful delete.
+     */
+    private void deleteStaffAccount(String staffId) {
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to DELETE account: " + staffId + "?\nThis action cannot be undone.",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (confirm != JOptionPane.YES_OPTION) return;
+
+        try {
+            String sql = "DELETE FROM staff WHERE staff_id = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, staffId);
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Staff account " + staffId + " deleted successfully.",
+                        "Deleted", JOptionPane.INFORMATION_MESSAGE);
+                loadStaffTable(); // refresh table
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Delete failed. Staff ID not found.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this,
+                    "Database Error: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

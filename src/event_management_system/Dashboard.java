@@ -26,7 +26,7 @@ public class Dashboard extends javax.swing.JFrame {
 
     Color defaultColor, clickColor;
     Connection conn = DBConnect.connect();
-   
+    private int lastLogId = -1;  // log_id of the current login session
 
     public Dashboard(Staff staff) {
         initComponents();
@@ -34,7 +34,6 @@ public class Dashboard extends javax.swing.JFrame {
         clickColor = new Color(102, 153, 255);
         Log_Loging(staff);
         lblID.setText(staff.getStaff_id());
-        
 
         if (staff.getRole().equals("admin")) {
             menu_Am.setVisible(true);
@@ -60,6 +59,16 @@ public class Dashboard extends javax.swing.JFrame {
         }
 
         initComponents();
+
+        // Override EXIT_ON_CLOSE so we can write logout_time before exiting
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                recordLogout();
+                System.exit(0);
+            }
+        });
     }
 
     /**
@@ -546,14 +555,34 @@ public class Dashboard extends javax.swing.JFrame {
     private void Log_Loging(Staff staff) {
         try {
             String logSql = "INSERT INTO staff_log (staff_id) VALUES (?)";
-            PreparedStatement logPst = conn.prepareStatement(logSql);
-
-           
+            PreparedStatement logPst = conn.prepareStatement(logSql,
+                    java.sql.Statement.RETURN_GENERATED_KEYS);
             logPst.setString(1, staff.getStaff_id());
-
             logPst.executeUpdate();
+
+            // Capture the auto-generated log_id for this session
+            java.sql.ResultSet generatedKeys = logPst.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                lastLogId = generatedKeys.getInt(1);
+            }
         } catch (Exception ex) {
             System.out.println("Login Log Error: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Updates the logout_time in staff_log for the current session.
+     * Called automatically when the Dashboard window is closed.
+     */
+    private void recordLogout() {
+        if (lastLogId < 0) return; // no valid session id
+        try {
+            String sql = "UPDATE staff_log SET logout_time = NOW() WHERE log_id = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, lastLogId);
+            pst.executeUpdate();
+        } catch (Exception ex) {
+            System.out.println("Logout Log Error: " + ex.getMessage());
         }
     }
 }
