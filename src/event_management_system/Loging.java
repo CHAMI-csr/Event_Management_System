@@ -166,12 +166,12 @@ public class Loging extends javax.swing.JFrame {
                 new Dashboard(staff).setVisible(true);
                 this.dispose();
             } else {
-                JOptionPane.showMessageDialog(null, "Please enter correct username and password.\n\n*Check your NetBeans Output window for details*", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Please enter correct username and password.", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 txtPassword.setText("");
                 txtPassword.requestFocus();
             }
         } else {
-            JOptionPane.showMessageDialog(null, "DB not connected! Please check XAMPP.", "Database Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "DB not connected!", "Database Error", JOptionPane.ERROR_MESSAGE);
         }
 
     }
