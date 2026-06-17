@@ -48,7 +48,7 @@ public class Package_add extends javax.swing.JFrame {
         setToAddMode();
     }
 
-    /** Creates the Update button programmatically and adds it next to jButton1. */
+    /** Creates the Update button  and adds it next to jButton1. */
     private void buildUpdateButton() {
         btnUpdate = new javax.swing.JButton("UPDATE PACKAGE");
         btnUpdate.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));

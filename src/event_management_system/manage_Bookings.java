@@ -12,6 +12,15 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import java.awt.event.KeyEvent;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class manage_Bookings extends javax.swing.JInternalFrame {
 
@@ -20,22 +29,107 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
     /**
      * Creates new form manage_Bookings
      */
-    public manage_Bookings() {
-        initComponents();
-        this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
-        ui.setNorthPane(null);
-        try {
-            // Dark theme එකට:
-            UIManager.setLookAndFeel(new FlatDarkLaf());
+    Connection con = DBConnect.connect();
+    PreparedStatement pst;
+    ResultSet rs;
+    private boolean isUpdating = false;
 
-            // එහෙමත් නැත්නම් Light theme එකට:
-            // UIManager.setLookAndFeel(new FlatDarkLaf());
+    public manage_Bookings() {
+        // FlatLaf theme initialize කිරීම - initComponents() ට කලින්
+        try {
+            UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (Exception ex) {
             System.err.println("Failed to initialize FlatLaf");
         }
+        initComponents(); // NextBid, cmbContact etc. මෙතනදී create වෙනවා
 
-        initComponents();
+        NextBid.setText(BookingIdGenarate()); // initComponents() පසුව call කිරීම
+
+        this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
+        ui.setNorthPane(null);
+
+        // cmbContact editor field ගෙන KeyListener එක add කිරීම
+        javax.swing.JTextField txtContactSearch = (javax.swing.JTextField) cmbContact.getEditor().getEditorComponent();
+
+        txtContactSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                int keyCode = evt.getKeyCode();
+
+                if (keyCode == java.awt.event.KeyEvent.VK_UP
+                        || keyCode == java.awt.event.KeyEvent.VK_DOWN) {
+                    isUpdating = true;
+                }
+
+                if (keyCode == java.awt.event.KeyEvent.VK_ENTER) {
+                    if (cmbContact.isPopupVisible()) {
+                        Object selected = cmbContact.getSelectedItem();
+                        if (selected != null) {
+                            String selectedStr = selected.toString().trim();
+                            String contactNo = selectedStr.contains(" - ")
+                                    ? selectedStr.split(" - ")[0].trim()
+                                    : selectedStr;
+
+                            isUpdating = true;
+                            cmbContact.getEditor().setItem(contactNo);
+                            cmbContact.hidePopup();
+                            isUpdating = false;
+
+                            fetchClientDetails(contactNo);
+                        }
+                        evt.consume();
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                int keyCode = evt.getKeyCode();
+
+                if (keyCode == java.awt.event.KeyEvent.VK_UP
+                        || keyCode == java.awt.event.KeyEvent.VK_DOWN) {
+                    isUpdating = false;
+                    return;
+                }
+
+                if (keyCode == java.awt.event.KeyEvent.VK_ENTER
+                        || keyCode == java.awt.event.KeyEvent.VK_LEFT
+                        || keyCode == java.awt.event.KeyEvent.VK_RIGHT) {
+                    return;
+                }
+
+                String text = txtContactSearch.getText().trim();
+                if (text.length() >= 2) {
+                    suggestContacts(text);
+                } else {
+                    cmbContact.hidePopup();
+                }
+            }
+        });
+
+        // Booking Save button
+        jButton1.addActionListener(this::addBookingActionPerformed);
+
+        // Package, time, payment status load කිරීම
+        loadPackages();
+        loadStartTimes();
+        loadPaymentStatus();
+
+        // Total / Advance change වූ විට Balance auto-calculate
+        txtTotalAmount.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                calculateBalance();
+            }
+        });
+        txtAdvance.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                calculateBalance();
+            }
+        });
     }
 
     /**
@@ -49,27 +143,40 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        txtTotalAmount = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        txtAdvance = new javax.swing.JTextField();
+        jLabel12 = new javax.swing.JLabel();
+        txtBalance = new javax.swing.JTextField();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel14 = new javax.swing.JLabel();
+        txtTotalAmount1 = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        txtAdvance1 = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        txtBalance2 = new javax.swing.JTextField();
+        jLabel17 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        cmbPaymentStatus = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        txtId = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        txtOther = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        txtVenue = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
         NextBid = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
-        jTextField7 = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
+        cmbContact = new javax.swing.JComboBox<>();
+        jLabel4 = new javax.swing.JLabel();
+        txtName = new javax.swing.JTextField();
+        cmbPackage = new javax.swing.JComboBox<>();
+        jLabel5 = new javax.swing.JLabel();
         txtEventDate = new com.toedter.calendar.JDateChooser();
-        txtType = new javax.swing.JComboBox<>();
-        lblClientName = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        txtStartTime = new javax.swing.JComboBox<>();
+        jLabel8 = new javax.swing.JLabel();
+        txtVenue = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        txtGuestCount = new javax.swing.JSpinner();
 
         setClosable(true);
         setMaximumSize(new java.awt.Dimension(1060, 600));
@@ -84,44 +191,134 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
 
         jPanel2.setBackground(new java.awt.Color(26, 26, 36));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel10.setText("TotalAmount");
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel9.setText("Status");
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel11.setText("Advance");
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel12.setText("Balance");
+
+        jPanel4.setBackground(new java.awt.Color(26, 26, 36));
+
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel14.setText("TotalAmount");
+
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel15.setText("Advance");
+
+        jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel16.setText("Balance");
+
+        jLabel17.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel17.setText("PaymentStatus");
+
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jButton1.setText("Booking Save");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap(26, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtTotalAmount1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtAdvance1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(txtBalance2, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(170, 170, 170)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(128, 128, 128)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTotalAmount1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtAdvance1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtBalance2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(72, 72, 72)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(163, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(15, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap(26, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtTotalAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtAdvance, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtBalance, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbPaymentStatus, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(128, 128, 128)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTotalAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtAdvance, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtBalance, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cmbPaymentStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(278, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 0, 540, 610));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 10, 540, 610));
 
         jPanel3.setBackground(new java.awt.Color(26, 26, 36));
         jPanel3.setForeground(new java.awt.Color(26, 26, 36));
@@ -133,95 +330,76 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel2.setText("Booking_ID");
 
-        txtId.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel3.setText("Client ID / NIC");
+        jLabel3.setText("Client Contact Number");
 
-        txtOther.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        NextBid.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+
+        cmbContact.setEditable(true);
+        cmbContact.setActionCommand("");
+        cmbContact.addActionListener(this::cmbContactActionPerformed);
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel4.setText(" Event Type");
+        jLabel4.setText("Client Name");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel5.setText("Venue");
-
-        txtVenue.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel5.setText("Package Name");
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("Event Date");
 
-        NextBid.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel7.setText("Total Cost");
-
-        jTextField6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-
-        jTextField7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel7.setText("Start Time");
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel8.setText("Advance Payment");
+        jLabel8.setText("Venue");
 
-        txtEventDate.setBackground(new java.awt.Color(255, 255, 255));
-        txtEventDate.setForeground(new java.awt.Color(255, 255, 255));
-        txtEventDate.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-
-        txtType.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        txtType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Wedding", "Corporate Party", "Birthday Party", "Other" }));
-
-        lblClientName.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        lblClientName.setText("NAME");
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel9.setText("Guest Count");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
-                        .addGap(24, 24, 24)
-                        .addComponent(txtType, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtOther, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addContainerGap()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(20, 20, 20)
-                                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(NextBid, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(94, 94, 94))
+                            .addComponent(cmbContact, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(20, 20, 20)
-                                .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(18, 18, 18))
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(123, 123, 123)))
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtVenue, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
-                                    .addComponent(txtEventDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(lblClientName, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
-                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addGroup(jPanel3Layout.createSequentialGroup()
-                                            .addComponent(NextBid, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addGap(94, 94, 94))
-                                        .addComponent(txtId, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)))))))
+                                    .addComponent(cmbPackage, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtEventDate, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtGuestCount, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -229,40 +407,42 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addGap(37, 37, 37)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(NextBid, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblClientName, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addComponent(NextBid, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(1, 1, 1)
-                        .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
+                    .addComponent(cmbContact, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtOther, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtType, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 14, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(cmbPackage, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtEventDate, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtEventDate, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(85, Short.MAX_VALUE))
+                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtGuestCount, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(84, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 520, 600));
@@ -280,6 +460,44 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cmbContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbContactActionPerformed
+
+        if (isUpdating) {
+            return;
+        }
+
+        Object item = cmbContact.getSelectedItem();
+
+        if (item != null) {
+            String selectedItem = item.toString().trim();
+            if (selectedItem.isEmpty()) {
+                return;
+            }
+
+            String contactNo = selectedItem;
+
+            if (selectedItem.contains(" - ")) {
+                contactNo = selectedItem.split(" - ")[0].trim(); // අංකය පමණක් වෙන් කිරීම
+
+                final String finalContact = contactNo;
+
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        isUpdating = true;
+                        cmbContact.getEditor().setItem(finalContact);
+                        cmbContact.hidePopup(); // ලිස්ට් එක හංගනවා
+                        isUpdating = false;
+                    }
+                });
+            }
+
+            if ("comboBoxEdited".equals(evt.getActionCommand()) || "comboBoxChanged".equals(evt.getActionCommand())) {
+
+                fetchClientDetails(contactNo);
+            }
+        }
+    }//GEN-LAST:event_cmbContactActionPerformed
 
     /**
      * @param args the command line arguments
@@ -308,7 +526,18 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel NextBid;
+    private javax.swing.JComboBox<String> cmbContact;
+    private javax.swing.JComboBox<String> cmbPackage;
+    private javax.swing.JComboBox<String> cmbPaymentStatus;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -320,15 +549,379 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JLabel lblClientName;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JTextField txtAdvance;
+    private javax.swing.JTextField txtAdvance1;
+    private javax.swing.JTextField txtBalance;
+    private javax.swing.JTextField txtBalance2;
     private com.toedter.calendar.JDateChooser txtEventDate;
-    private javax.swing.JTextField txtId;
-    private javax.swing.JTextField txtOther;
-    private javax.swing.JComboBox<String> txtType;
+    private javax.swing.JSpinner txtGuestCount;
+    private javax.swing.JTextField txtName;
+    private javax.swing.JComboBox<String> txtStartTime;
+    private javax.swing.JTextField txtTotalAmount;
+    private javax.swing.JTextField txtTotalAmount1;
     private javax.swing.JTextField txtVenue;
     // End of variables declaration//GEN-END:variables
+    private void suggestContacts(String text) {
+        isUpdating = true;
+        try (
+                java.sql.Connection conn = DBConnect.connect(); java.sql.PreparedStatement stmt = conn.prepareStatement(
+                "SELECT contact_number, client_name FROM clients WHERE contact_number LIKE ?"
+        );) {
+            stmt.setString(1, "%" + text + "%");
+            java.sql.ResultSet result = stmt.executeQuery();
+
+            cmbContact.removeAllItems();
+
+            boolean hasData = false;
+            while (result.next()) {
+                hasData = true;
+                cmbContact.addItem(result.getString("contact_number") + " - " + result.getString("client_name"));
+            }
+
+            // User type කළ text editor field එකේ restore කිරීම
+            javax.swing.JTextField editor = (javax.swing.JTextField) cmbContact.getEditor().getEditorComponent();
+            editor.setText(text);
+
+            if (hasData) {
+                cmbContact.showPopup();
+            } else {
+                cmbContact.hidePopup();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+
+            isUpdating = false;
+        }
+    }
+
+    private void fetchClientDetails(String contactNo) {
+        try {
+
+            String sql = "SELECT client_name FROM clients WHERE contact_number = ?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, contactNo);
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+
+                txtName.setText(rs.getString("client_name"));
+            } else {
+
+                txtName.setText("");
+                JOptionPane.showMessageDialog(this, "New Client! Please enter the Name.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                txtName.requestFocus();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ===================== Booking Save =====================
+
+    private void addBookingActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            // --- 1. Input Validation ---
+            String eventId = NextBid.getText().trim();
+
+            // Contact number (cmbContact editor ගෙන්)
+            String contactNo = cmbContact.getEditor().getEditorComponent() instanceof javax.swing.JTextField
+                    ? ((javax.swing.JTextField) cmbContact.getEditor().getEditorComponent()).getText().trim()
+                    : "";
+
+            if (contactNo.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter Client Contact Number.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                cmbContact.requestFocus();
+                return;
+            }
+
+            String clientName = txtName.getText().trim();
+            if (clientName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Client Name is empty. Please select a valid contact.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Package
+            Object pkgItem = cmbPackage.getSelectedItem();
+            if (pkgItem == null || pkgItem.toString().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please select a Package.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                cmbPackage.requestFocus();
+                return;
+            }
+
+            // Event Date
+            java.util.Date selectedDate = txtEventDate.getDate();
+            if (selectedDate == null) {
+                JOptionPane.showMessageDialog(this, "Please select Event Date.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                txtEventDate.requestFocus();
+                return;
+            }
+
+            // Start Time
+            Object startTimeItem = txtStartTime.getSelectedItem();
+            if (startTimeItem == null || startTimeItem.toString().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please select Start Time.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                txtStartTime.requestFocus();
+                return;
+            }
+
+            String venue = txtVenue.getText().trim();
+            if (venue.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter Venue.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                txtVenue.requestFocus();
+                return;
+            }
+
+            int guestCount = (int) txtGuestCount.getValue();
+            if (guestCount <= 0) {
+                JOptionPane.showMessageDialog(this, "Guest Count must be greater than 0.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                txtGuestCount.requestFocus();
+                return;
+            }
+
+            // Billing fields
+            String totalStr = txtTotalAmount.getText().trim();
+            String advanceStr = txtAdvance.getText().trim();
+            if (totalStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter Total Amount.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                txtTotalAmount.requestFocus();
+                return;
+            }
+
+            double totalAmount, advancePayment, balanceDue;
+            try {
+                totalAmount = Double.parseDouble(totalStr);
+                advancePayment = advanceStr.isEmpty() ? 0.0 : Double.parseDouble(advanceStr);
+                balanceDue = totalAmount - advancePayment;
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Total Amount and Advance must be valid numbers.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            Object payStatusItem = cmbPaymentStatus.getSelectedItem();
+            String paymentStatus = (payStatusItem != null) ? payStatusItem.toString() : "Pending";
+
+            // --- 2. Get client_id from contact number ---
+            String clientId = getClientId(contactNo);
+            if (clientId == null) {
+                JOptionPane.showMessageDialog(this, "Client not found for contact: " + contactNo + "\nPlease register the client first.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // --- 3. Get package_id from selected package ---
+            String pkgStr = pkgItem.toString(); // format: "P-1001 - Wedding Premium"
+            String packageId = pkgStr.contains(" - ") ? pkgStr.split(" - ")[0].trim() : pkgStr.trim();
+
+            // --- 4. Get staff_id from last login session ---
+            String staffId = getLoggedInStaffId();
+
+            // --- 5. Prepare date and time ---
+            java.sql.Date eventDate = new java.sql.Date(selectedDate.getTime());
+            String startTimeStr = startTimeItem.toString(); // format: "08:00 AM"
+            java.sql.Time startTime = parseTime(startTimeStr);
+
+            // --- 6. Insert into events table ---
+            String sqlEvent = "INSERT INTO events (event_id, client_id, staff_id, package_id, event_date, start_time, venue, guest_count, event_status) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Upcoming')";
+            pst = con.prepareStatement(sqlEvent);
+            pst.setString(1, eventId);
+            pst.setString(2, clientId);
+            pst.setString(3, staffId);
+            pst.setString(4, packageId);
+            pst.setDate(5, eventDate);
+            pst.setTime(6, startTime);
+            pst.setString(7, venue);
+            pst.setInt(8, guestCount);
+            pst.executeUpdate();
+
+            // --- 7. Insert into billing table ---
+            String billId = generateBillId();
+            String sqlBill = "INSERT INTO billing (bill_id, event_id, total_amount, advance_payment, balance_due, payment_status) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)";
+            pst = con.prepareStatement(sqlBill);
+            pst.setString(1, billId);
+            pst.setString(2, eventId);
+            pst.setDouble(3, totalAmount);
+            pst.setDouble(4, advancePayment);
+            pst.setDouble(5, balanceDue);
+            pst.setString(6, paymentStatus);
+            pst.executeUpdate();
+
+            JOptionPane.showMessageDialog(this,
+                    "Booking Saved Successfully!\nEvent ID: " + eventId + "\nBill ID: " + billId,
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // --- 8. Reset form ---
+            resetForm();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error saving booking: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    // Contact number ගෙන් client_id ලබා ගැනීම
+    private String getClientId(String contactNo) {
+        try {
+            String sql = "SELECT client_id FROM clients WHERE contact_number = ?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, contactNo);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                return rs.getString("client_id");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Currently logged-in staff_id ලබා ගැනීම (latest staff_log entry)
+    private String getLoggedInStaffId() {
+        try {
+            String sql = "SELECT staff_id FROM staff_log ORDER BY log_id DESC LIMIT 1";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                return rs.getString("staff_id");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "S-1000"; // fallback
+    }
+
+    // Bill ID generate කිරීම
+    private String generateBillId() {
+        String newId = "B-0001";
+        try {
+            String sql = "SELECT MAX(bill_id) AS max_id FROM billing";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+            if (rs.next() && rs.getString("max_id") != null) {
+                String lastId = rs.getString("max_id");
+                int num = Integer.parseInt(lastId.substring(2));
+                num++;
+                newId = String.format("B-%04d", num);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newId;
+    }
+
+    // "08:00 AM" format එකෙන් java.sql.Time ලබා ගැනීම
+    private java.sql.Time parseTime(String timeStr) {
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("hh:mm a");
+            java.util.Date parsed = sdf.parse(timeStr);
+            return new java.sql.Time(parsed.getTime());
+        } catch (Exception e) {
+            // fallback - raw HH:mm format try
+            try {
+                java.text.SimpleDateFormat sdf2 = new java.text.SimpleDateFormat("HH:mm");
+                java.util.Date parsed = sdf2.parse(timeStr);
+                return new java.sql.Time(parsed.getTime());
+            } catch (Exception ex) {
+                return java.sql.Time.valueOf("08:00:00");
+            }
+        }
+    }
+
+    // Package list DB ගෙන් load කිරීම
+    private void loadPackages() {
+        try {
+            String sql = "SELECT package_id, package_name FROM package ORDER BY package_id";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+            cmbPackage.removeAllItems();
+            cmbPackage.addItem(""); // placeholder
+            while (rs.next()) {
+                cmbPackage.addItem(rs.getString("package_id") + " - " + rs.getString("package_name"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Start time options load කිරීම
+    private void loadStartTimes() {
+        String[] times = {
+            "", "06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM", "10:00 AM",
+            "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM",
+            "04:00 PM", "05:00 PM", "06:00 PM", "07:00 PM", "08:00 PM",
+            "09:00 PM", "10:00 PM"
+        };
+        txtStartTime.removeAllItems();
+        for (String t : times) {
+            txtStartTime.addItem(t);
+        }
+    }
+
+    // Payment status options load කිරීම
+    private void loadPaymentStatus() {
+        cmbPaymentStatus.removeAllItems();
+        cmbPaymentStatus.addItem("Pending");
+        cmbPaymentStatus.addItem("Partial");
+        cmbPaymentStatus.addItem("Paid");
+    }
+
+    // Balance auto-calculate කිරීම
+    private void calculateBalance() {
+        try {
+            double total = txtTotalAmount.getText().trim().isEmpty() ? 0 : Double.parseDouble(txtTotalAmount.getText().trim());
+            double advance = txtAdvance.getText().trim().isEmpty() ? 0 : Double.parseDouble(txtAdvance.getText().trim());
+            double balance = total - advance;
+            txtBalance.setText(String.format("%.2f", balance));
+        } catch (NumberFormatException e) {
+            txtBalance.setText("");
+        }
+    }
+
+    // Form reset කිරීම (booking save කළ පසු)
+    private void resetForm() {
+        NextBid.setText(BookingIdGenarate());
+        cmbContact.getEditor().setItem("");
+        txtName.setText("");
+        cmbPackage.setSelectedIndex(0);
+        txtEventDate.setDate(null);
+        txtStartTime.setSelectedIndex(0);
+        txtVenue.setText("");
+        txtGuestCount.setValue(0);
+        txtTotalAmount.setText("");
+        txtAdvance.setText("");
+        txtBalance.setText("");
+        cmbPaymentStatus.setSelectedIndex(0);
+    }
+
+    private String BookingIdGenarate() {
+
+        String newId = "E-0001";  // default ID
+        try {
+            // MAX()
+            String sql = "SELECT MAX(event_id) AS max_id FROM events";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+
+            // Data  null 
+            if (rs.next() && rs.getString("max_id") != null) {
+                String lastId = rs.getString("max_id"); //ex : "S-0001"
+
+                // "S-" (substring(2)
+                int num = Integer.parseInt(lastId.substring(2));
+
+                num++; // (1 -> 2)
+
+                //"S-" 
+                newId = String.format("E-%04d", num); //  "S-0002"
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Admin_Management.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return newId;
+
+    }
+
 }
