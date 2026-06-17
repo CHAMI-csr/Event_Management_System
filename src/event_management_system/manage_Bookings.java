@@ -33,6 +33,7 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
     PreparedStatement pst;
     ResultSet rs;
     private boolean isUpdating = false;
+    private java.util.List<Object[]> customizedItems = null;
 
     public manage_Bookings() {
         // FlatLaf theme initialize කිරීම - initComponents() ට කලින්
@@ -41,7 +42,7 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
         } catch (Exception ex) {
             System.err.println("Failed to initialize FlatLaf");
         }
-        initComponents(); // NextBid, cmbContact etc. මෙතනදී create වෙනවා
+//        initComponents(); // NextBid, cmbContact etc. මෙතනදී create වෙනවා
 
         NextBid.setText(BookingIdGenarate()); // initComponents() පසුව call කිරීම
 
@@ -117,6 +118,9 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
         loadStartTimes();
         loadPaymentStatus();
 
+        // Hide duplicate panel (GEN block artifact — hidden at runtime)
+        jPanel4.setVisible(false);
+
         // Total / Advance change වූ විට Balance auto-calculate
         txtTotalAmount.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
@@ -130,6 +134,7 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
                 calculateBalance();
             }
         });
+    initComponents();
     }
 
     /**
@@ -177,6 +182,7 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
         txtVenue = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         txtGuestCount = new javax.swing.JSpinner();
+        btnCustomize = new javax.swing.JButton();
 
         setClosable(true);
         setMaximumSize(new java.awt.Dimension(1060, 600));
@@ -357,6 +363,10 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel9.setText("Guest Count");
 
+        btnCustomize.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Circled Right.png"))); // NOI18N
+        btnCustomize.setText("custamize ");
+        btnCustomize.addActionListener(this::btnCustomizeActionPerformed);
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -375,29 +385,32 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
                                 .addGap(94, 94, 94))
                             .addComponent(cmbContact, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cmbPackage, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addComponent(cmbPackage, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnCustomize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                     .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txtEventDate, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(txtStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(18, 18, 18)
                                 .addComponent(txtGuestCount, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -424,7 +437,9 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
                     .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(cmbPackage, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cmbPackage, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnCustomize, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -435,14 +450,14 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
                     .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtGuestCount, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(84, Short.MAX_VALUE))
+                .addContainerGap(77, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 520, 600));
@@ -499,6 +514,24 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_cmbContactActionPerformed
 
+    private void btnCustomizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomizeActionPerformed
+        // Validate that a package is selected before opening customization
+        Object pkgItem = cmbPackage.getSelectedItem();
+        if (pkgItem == null || pkgItem.toString().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please select a Package first.",
+                    "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Extract package_id from "PKG-001 - Package Name"
+        String pkgStr = pkgItem.toString();
+        String selectedPkgId = pkgStr.contains(" - ") ? pkgStr.split(" - ")[0].trim() : pkgStr.trim();
+
+        // Open customize_Resource with parent reference and package ID
+        customize_Resource cr = new customize_Resource(this, selectedPkgId);
+        cr.setVisible(true);
+    }//GEN-LAST:event_btnCustomizeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -526,6 +559,7 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel NextBid;
+    private javax.swing.JButton btnCustomize;
     private javax.swing.JComboBox<String> cmbContact;
     private javax.swing.JComboBox<String> cmbPackage;
     private javax.swing.JComboBox<String> cmbPaymentStatus;
@@ -562,6 +596,16 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtTotalAmount1;
     private javax.swing.JTextField txtVenue;
     // End of variables declaration//GEN-END:variables
+
+    // =====================================================================
+    // PUBLIC METHOD: Called by customize_Resource to pass customized data
+    // =====================================================================
+    public void setCustomizedData(double totalAmount, java.util.List<Object[]> items) {
+        this.customizedItems = items;
+        txtTotalAmount.setText(String.format("%.2f", totalAmount));
+        calculateBalance();
+    }
+
     private void suggestContacts(String text) {
         isUpdating = true;
         try (
@@ -749,6 +793,63 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
             pst.setString(6, paymentStatus);
             pst.executeUpdate();
 
+            // --- 8. Save event resources to event_resources table ---
+            int nextAssignNum = 1;
+            pst = con.prepareStatement("SELECT MAX(assignment_id) AS max_id FROM event_resources");
+            rs = pst.executeQuery();
+            if (rs.next() && rs.getString("max_id") != null) {
+                String lastId = rs.getString("max_id");
+                nextAssignNum = Integer.parseInt(lastId.substring(4)) + 1;
+            }
+
+            String sqlRes = "INSERT INTO event_resources (assignment_id, event_id, resource_id, quantity, total_cost, package_id) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)";
+
+            if (customizedItems != null && !customizedItems.isEmpty()) {
+                // User customized resources via customize_Resource form
+                pst = con.prepareStatement(sqlRes);
+                for (Object[] row : customizedItems) {
+                    String assignId = String.format("ASG-%04d", nextAssignNum++);
+                    pst.setString(1, assignId);
+                    pst.setString(2, eventId);
+                    pst.setString(3, row[0].toString());                          // resource_id
+                    pst.setInt(4, Integer.parseInt(row[2].toString()));            // quantity
+                    pst.setDouble(5, Double.parseDouble(row[4].toString()));       // total_cost
+                    String addedFrom = row[5].toString();
+                    if (!"Manual".equals(addedFrom)) {
+                        pst.setString(6, addedFrom);                              // package_id
+                    } else {
+                        pst.setNull(6, java.sql.Types.VARCHAR);
+                    }
+                    pst.executeUpdate();
+                }
+            } else {
+                // User did NOT customize — insert default package resources
+                PreparedStatement fetchPst = con.prepareStatement(
+                        "SELECT r.resource_id, pr.quantity, r.cost_per_item "
+                        + "FROM package_resources pr "
+                        + "JOIN resources r ON pr.resource_id = r.resource_id "
+                        + "WHERE pr.package_id = ?");
+                fetchPst.setString(1, packageId);
+                ResultSet fetchRs = fetchPst.executeQuery();
+
+                pst = con.prepareStatement(sqlRes);
+                while (fetchRs.next()) {
+                    String assignId = String.format("ASG-%04d", nextAssignNum++);
+                    pst.setString(1, assignId);
+                    pst.setString(2, eventId);
+                    pst.setString(3, fetchRs.getString("resource_id"));
+                    int resQty = fetchRs.getInt("quantity");
+                    pst.setInt(4, resQty);
+                    double unitCost = fetchRs.getDouble("cost_per_item");
+                    pst.setDouble(5, resQty * unitCost);
+                    pst.setString(6, packageId);
+                    pst.executeUpdate();
+                }
+                fetchRs.close();
+                fetchPst.close();
+            }
+
             JOptionPane.showMessageDialog(this,
                     "Booking Saved Successfully!\nEvent ID: " + eventId + "\nBill ID: " + billId,
                     "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -805,6 +906,25 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
                 int num = Integer.parseInt(lastId.substring(2));
                 num++;
                 newId = String.format("B-%04d", num);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newId;
+    }
+
+    // Generate unique assignment_id for event_resources (ASG-0001, ASG-0002, ...)
+    private String generateAssignmentId() {
+        String newId = "ASG-0001";
+        try (Connection conn = DBConnect.connect();
+             PreparedStatement stmt = conn.prepareStatement(
+                 "SELECT MAX(assignment_id) AS max_id FROM event_resources");
+             ResultSet result = stmt.executeQuery()) {
+            if (result.next() && result.getString("max_id") != null) {
+                String lastId = result.getString("max_id");
+                int num = Integer.parseInt(lastId.substring(4));
+                num++;
+                newId = String.format("ASG-%04d", num);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -894,6 +1014,7 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
         txtAdvance.setText("");
         txtBalance.setText("");
         cmbPaymentStatus.setSelectedIndex(0);
+        customizedItems = null;
     }
 
     private String BookingIdGenarate() {
