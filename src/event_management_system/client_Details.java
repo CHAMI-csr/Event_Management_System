@@ -44,15 +44,7 @@ public class client_Details extends javax.swing.JInternalFrame {
         btnCancelClient.setVisible(false);
         btnDelClient.setVisible(false);
         
-        try {
-            // Dark theme එකට:
-            com.formdev.flatlaf.FlatDarkLaf.setup();
-
-            // එහෙමත් නැත්නම් Light theme එකට:
-            // UIManager.setLookAndFeel(new FlatLightLaf());
-        } catch (Exception ex) {
-            System.err.println("Failed to initialize FlatLaf");
-        }
+        
 
         
     }
@@ -100,7 +92,7 @@ public class client_Details extends javax.swing.JInternalFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(1060, 600));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(26, 26, 36));
+        jPanel2.setBackground(new java.awt.Color(24, 24, 38));
         jPanel2.setPreferredSize(new java.awt.Dimension(370, 600));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -109,13 +101,16 @@ public class client_Details extends javax.swing.JInternalFrame {
         jLabel1.setText("Client ADD");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, 148, 34));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI Black", 1, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("ID CARD NO");
         jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 46, 120, 30));
 
+        txtIdNo.setBackground(new java.awt.Color(51, 51, 51));
         txtIdNo.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        txtIdNo.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        txtIdNo.setForeground(new java.awt.Color(255, 255, 255));
+        txtIdNo.setBorder(null);
+        txtIdNo.setCaretColor(new java.awt.Color(255, 255, 255));
         txtIdNo.addActionListener(this::txtIdNoActionPerformed);
         txtIdNo.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -124,22 +119,28 @@ public class client_Details extends javax.swing.JInternalFrame {
         });
         jPanel2.add(txtIdNo, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 82, 300, 30));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI Black", 1, 18)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("NAME");
         jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 130, 120, 30));
 
+        txtName.setBackground(new java.awt.Color(51, 51, 51));
         txtName.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        txtName.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        txtName.setForeground(new java.awt.Color(255, 255, 255));
+        txtName.setBorder(null);
+        txtName.setCaretColor(new java.awt.Color(255, 255, 255));
         jPanel2.add(txtName, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 166, 300, 30));
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI Black", 1, 18)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("PHONE");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 214, 120, 30));
 
+        txtPhone.setBackground(new java.awt.Color(51, 51, 51));
         txtPhone.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        txtPhone.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        txtPhone.setForeground(new java.awt.Color(255, 255, 255));
+        txtPhone.setBorder(null);
+        txtPhone.setCaretColor(new java.awt.Color(255, 255, 255));
         txtPhone.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtPhoneKeyPressed(evt);
@@ -147,47 +148,53 @@ public class client_Details extends javax.swing.JInternalFrame {
         });
         jPanel2.add(txtPhone, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 250, 300, 30));
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI Black", 1, 18)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("EMAIL");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 298, 120, 30));
 
+        txtEmail.setBackground(new java.awt.Color(51, 51, 51));
         txtEmail.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        txtEmail.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        txtEmail.setForeground(new java.awt.Color(255, 255, 255));
+        txtEmail.setBorder(null);
+        txtEmail.setCaretColor(new java.awt.Color(255, 255, 255));
         jPanel2.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 334, 300, 30));
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI Black", 1, 18)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("ADDRESS");
         jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 382, 120, 30));
 
+        txtAddress.setBackground(new java.awt.Color(51, 51, 51));
         txtAddress.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        txtAddress.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        txtAddress.setForeground(new java.awt.Color(255, 255, 255));
+        txtAddress.setBorder(null);
+        txtAddress.setCaretColor(new java.awt.Color(255, 255, 255));
         txtAddress.setMaximumSize(new java.awt.Dimension(64, 22));
         jPanel2.add(txtAddress, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 418, 300, 88));
 
-        btnCancelClient.setBackground(new java.awt.Color(255, 0, 127));
+        btnCancelClient.setBackground(new java.awt.Color(51, 51, 51));
         btnCancelClient.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnCancelClient.setForeground(new java.awt.Color(255, 255, 255));
         btnCancelClient.setText("CANCEL");
         btnCancelClient.addActionListener(this::btnCancelClientActionPerformed);
         jPanel2.add(btnCancelClient, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 530, 110, 50));
 
-        btnUpdateClient.setBackground(new java.awt.Color(0, 51, 255));
+        btnUpdateClient.setBackground(new java.awt.Color(0, 102, 179));
         btnUpdateClient.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnUpdateClient.setForeground(new java.awt.Color(255, 255, 255));
         btnUpdateClient.setText("UPDATE");
         btnUpdateClient.addActionListener(this::btnUpdateClientActionPerformed);
         jPanel2.add(btnUpdateClient, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 530, 110, 50));
 
-        btnDelClient.setBackground(new java.awt.Color(255, 0, 51));
+        btnDelClient.setBackground(new java.awt.Color(204, 0, 51));
         btnDelClient.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnDelClient.setForeground(new java.awt.Color(255, 255, 255));
         btnDelClient.setText("DElETE");
         btnDelClient.addActionListener(this::btnDelClientActionPerformed);
         jPanel2.add(btnDelClient, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 530, 110, 50));
 
-        btnAddClient.setBackground(new java.awt.Color(51, 0, 102));
+        btnAddClient.setBackground(new java.awt.Color(90, 120, 240));
         btnAddClient.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         btnAddClient.setForeground(new java.awt.Color(255, 255, 255));
         btnAddClient.setText("ADD Client");
@@ -197,9 +204,13 @@ public class client_Details extends javax.swing.JInternalFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 370, 600));
 
-        jPanel3.setBackground(new java.awt.Color(26, 26, 36));
+        jPanel3.setBackground(new java.awt.Color(24, 24, 38));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jTableClients.setBackground(new java.awt.Color(51, 51, 51));
+        jTableClients.setForeground(new java.awt.Color(255, 255, 255));
+        jTableClients.setGridColor(new java.awt.Color(102, 102, 102));
+        jTableClients.setRowHeight(30);
         jTableClients.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         jTableClients.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -246,6 +257,7 @@ public class client_Details extends javax.swing.JInternalFrame {
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Search_1.png"))); // NOI18N
         jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 10, -1, -1));
 
+        txtSearch.setBorder(null);
         txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtSearchKeyReleased(evt);
@@ -508,6 +520,7 @@ public class client_Details extends javax.swing.JInternalFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -526,7 +539,15 @@ public class client_Details extends javax.swing.JInternalFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new client_Details().setVisible(true));
+        try {
+            // Dark theme එකට:
+            com.formdev.flatlaf.FlatDarkLaf.setup();
+
+            // එහෙමත් නැත්නම් Light theme එකට:
+            // UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception ex) {
+            System.err.println("Failed to initialize FlatLaf");
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -630,42 +630,36 @@ public class assign_resources extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1       = new javax.swing.JPanel();
-        lblTitle      = new javax.swing.JLabel();
-
-        // ── Left card ────────────────────────────────
-        jPanel2       = new javax.swing.JPanel();
-        jLabel1       = new javax.swing.JLabel();
-        cmbEvent      = new javax.swing.JComboBox<>();
-        jLabel2       = new javax.swing.JLabel();
-        cmbResource   = new javax.swing.JComboBox<>();
-        jLabel3       = new javax.swing.JLabel();
-        spnQty        = new javax.swing.JSpinner();
-        jLabel4       = new javax.swing.JLabel();
-        txtUnitCost   = new javax.swing.JTextField();
-        jLabel5       = new javax.swing.JLabel();
-        txtTotalCost  = new javax.swing.JTextField();
-        btnAdd        = new javax.swing.JButton();
-        btnUpdate     = new javax.swing.JButton();
-        btnRemove     = new javax.swing.JButton();
-        btnClear      = new javax.swing.JButton();
-
-        // ── Right card ───────────────────────────────
-        jPanel3       = new javax.swing.JPanel();
-        jLabel6       = new javax.swing.JLabel();
-        txtSearch     = new javax.swing.JTextField();
-        lblRowCount   = new javax.swing.JLabel();
-        jScrollPane1  = new javax.swing.JScrollPane();
+        jPanel1 = new javax.swing.JPanel();
+        lblTitle = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        cmbEvent = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
+        cmbResource = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
+        spnQty = new javax.swing.JSpinner();
+        jLabel4 = new javax.swing.JLabel();
+        txtUnitCost = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        txtTotalCost = new javax.swing.JTextField();
+        btnAdd = new javax.swing.JButton();
+        btnUpdate = new javax.swing.JButton();
+        btnRemove = new javax.swing.JButton();
+        btnClear = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        txtSearch = new javax.swing.JTextField();
+        lblRowCount = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
         tblAssignments = new javax.swing.JTable();
 
-        // ── Frame properties ─────────────────────────
         setClosable(true);
         setMaximumSize(new java.awt.Dimension(1060, 600));
         setMinimumSize(new java.awt.Dimension(1060, 600));
         setPreferredSize(new java.awt.Dimension(1060, 600));
 
-        // ── jPanel1 (main, AbsoluteLayout) ───────────
-        jPanel1.setBackground(new java.awt.Color(14, 14, 22));
+        jPanel1.setBackground(new java.awt.Color(26, 26, 28));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblTitle.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
@@ -673,7 +667,6 @@ public class assign_resources extends javax.swing.JInternalFrame {
         lblTitle.setText("Assign Resources");
         jPanel1.add(lblTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 14, 320, 40));
 
-        // ── jPanel2 (left card, AbsoluteLayout) ──────
         jPanel2.setBackground(new java.awt.Color(24, 24, 38));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -702,7 +695,6 @@ public class assign_resources extends javax.swing.JInternalFrame {
         jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 132, 130, 36));
 
         spnQty.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        spnQty.setModel(new javax.swing.SpinnerNumberModel(1, 1, 9999, 1));
         spnQty.addChangeListener(this::spnQtyStateChanged);
         jPanel2.add(spnQty, new org.netbeans.lib.awtextra.AbsoluteConstraints(155, 132, 228, 36));
 
@@ -711,9 +703,9 @@ public class assign_resources extends javax.swing.JInternalFrame {
         jLabel4.setText("Unit Cost (Rs.)");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 188, 130, 36));
 
+        txtUnitCost.setEditable(false);
         txtUnitCost.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         txtUnitCost.setText("0.00");
-        txtUnitCost.setEditable(false);
         jPanel2.add(txtUnitCost, new org.netbeans.lib.awtextra.AbsoluteConstraints(155, 188, 228, 36));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -721,40 +713,42 @@ public class assign_resources extends javax.swing.JInternalFrame {
         jLabel5.setText("Total Cost (Rs.)");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 244, 130, 36));
 
+        txtTotalCost.setEditable(false);
         txtTotalCost.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         txtTotalCost.setText("0.00");
-        txtTotalCost.setEditable(false);
         jPanel2.add(txtTotalCost, new org.netbeans.lib.awtextra.AbsoluteConstraints(155, 244, 228, 36));
 
         btnAdd.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        btnAdd.setText("+ Add");
+        btnAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Plus Math.png"))); // NOI18N
+        btnAdd.setText("Add");
         btnAdd.addActionListener(this::btnAddActionPerformed);
         jPanel2.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 320, 170, 40));
 
         btnUpdate.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        btnUpdate.setText("\u270E Update");
+        btnUpdate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Upgrade.png"))); // NOI18N
+        btnUpdate.setText("Update");
         btnUpdate.addActionListener(this::btnUpdateActionPerformed);
         jPanel2.add(btnUpdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(213, 320, 170, 40));
 
         btnRemove.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        btnRemove.setText("\u2715 Remove");
+        btnRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Remove.png"))); // NOI18N
+        btnRemove.setText("Remove");
         btnRemove.addActionListener(this::btnRemoveActionPerformed);
         jPanel2.add(btnRemove, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 374, 170, 40));
 
         btnClear.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
-        btnClear.setText("\u21BA Clear");
+        btnClear.setText(" Clear");
         btnClear.addActionListener(this::btnClearActionPerformed);
         jPanel2.add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(213, 374, 170, 40));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 64, 400, 520));
 
-        // ── jPanel3 (right card, AbsoluteLayout) ─────
         jPanel3.setBackground(new java.awt.Color(24, 24, 38));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(90, 120, 240));
-        jLabel6.setText("\uD83D\uDCCB  Assigned Resources");
+        jLabel6.setText("📋  Assigned Resources");
         jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 8, 300, 30));
 
         txtSearch.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
@@ -766,37 +760,49 @@ public class assign_resources extends javax.swing.JInternalFrame {
         jPanel3.add(txtSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 8, 220, 30));
 
         lblRowCount.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
-        lblRowCount.setForeground(new java.awt.Color(140, 140, 175));
+        lblRowCount.setForeground(new java.awt.Color(140, 140, 170));
         lblRowCount.setText("0 records");
         jPanel3.add(lblRowCount, new org.netbeans.lib.awtextra.AbsoluteConstraints(548, 8, 70, 30));
 
         tblAssignments.setModel(new javax.swing.table.DefaultTableModel(
-            new Object[][] {},
-            new String[] {"Assign ID","Event ID","Event","Resource","Qty","Unit Cost","Total Cost"}
+            new Object [][] {
+
+            },
+            new String [] {
+                "Assign ID", "Event ID", "Event", "Resource", "Qty", "Unit Cost", "Total Cost"
+            }
         ) {
-            Class[] types = new Class[]{String.class,String.class,String.class,
-                String.class,Integer.class,Double.class,Double.class};
-            boolean[] canEdit = new boolean[]{false,false,false,false,false,false,false};
-            @Override public Class getColumnClass(int c) { return types[c]; }
-            @Override public boolean isCellEditable(int r, int c) { return canEdit[c]; }
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
         });
+        tblAssignments.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(tblAssignments);
+
         jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 46, 610, 462));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(424, 64, 626, 520));
 
-        // ── Content pane layout ───────────────────────
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
-                          javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE,
-                          600, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();

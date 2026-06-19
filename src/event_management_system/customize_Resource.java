@@ -23,6 +23,7 @@ public class customize_Resource extends javax.swing.JFrame {
     // Reference to the parent booking form (for data passing)
     private manage_Bookings parentForm;
     private String selectedPackageId;
+    private boolean isUpdating = false;
   
 
     /**
@@ -90,8 +91,106 @@ public class customize_Resource extends javax.swing.JFrame {
             }
         }
 
+        // Add search capability to cmbPackage
+        javax.swing.JTextField txtPackageSearch = (javax.swing.JTextField) cmbPackage.getEditor().getEditorComponent();
+        txtPackageSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                int keyCode = evt.getKeyCode();
+                if (keyCode == java.awt.event.KeyEvent.VK_UP || keyCode == java.awt.event.KeyEvent.VK_DOWN || 
+                    keyCode == java.awt.event.KeyEvent.VK_ENTER || keyCode == java.awt.event.KeyEvent.VK_LEFT || 
+                    keyCode == java.awt.event.KeyEvent.VK_RIGHT) {
+                    return;
+                }
+                String text = txtPackageSearch.getText().trim();
+                suggestPackages(text);
+            }
+        });
+
+        // Add search capability to cmbItems
+        javax.swing.JTextField txtItemsSearch = (javax.swing.JTextField) cmbItems.getEditor().getEditorComponent();
+        txtItemsSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                int keyCode = evt.getKeyCode();
+                if (keyCode == java.awt.event.KeyEvent.VK_UP || keyCode == java.awt.event.KeyEvent.VK_DOWN || 
+                    keyCode == java.awt.event.KeyEvent.VK_ENTER || keyCode == java.awt.event.KeyEvent.VK_LEFT || 
+                    keyCode == java.awt.event.KeyEvent.VK_RIGHT) {
+                    return;
+                }
+                String text = txtItemsSearch.getText().trim();
+                suggestItems(text);
+            }
+        });
+
         // Initialize total to 0.00
         calculateTableTotal();
+    }
+
+    private void suggestPackages(String text) {
+        isUpdating = true;
+        try (
+                java.sql.Connection conn = DBConnect.connect();
+                java.sql.PreparedStatement stmt = conn.prepareStatement(
+                        "SELECT package_id, package_name FROM packages WHERE package_name LIKE ? OR package_id LIKE ?");) {
+            stmt.setString(1, "%" + text + "%");
+            stmt.setString(2, "%" + text + "%");
+            java.sql.ResultSet result = stmt.executeQuery();
+
+            cmbPackage.removeAllItems();
+
+            boolean hasData = false;
+            while (result.next()) {
+                hasData = true;
+                cmbPackage.addItem(result.getString("package_id") + " - " + result.getString("package_name"));
+            }
+
+            javax.swing.JTextField editor = (javax.swing.JTextField) cmbPackage.getEditor().getEditorComponent();
+            editor.setText(text);
+
+            if (hasData && !text.isEmpty()) {
+                cmbPackage.showPopup();
+            } else {
+                cmbPackage.hidePopup();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            isUpdating = false;
+        }
+    }
+
+    private void suggestItems(String text) {
+        isUpdating = true;
+        try (
+                java.sql.Connection conn = DBConnect.connect();
+                java.sql.PreparedStatement stmt = conn.prepareStatement(
+                        "SELECT resource_id, resource_name FROM resources WHERE resource_name LIKE ? OR resource_id LIKE ?");) {
+            stmt.setString(1, "%" + text + "%");
+            stmt.setString(2, "%" + text + "%");
+            java.sql.ResultSet result = stmt.executeQuery();
+
+            cmbItems.removeAllItems();
+
+            boolean hasData = false;
+            while (result.next()) {
+                hasData = true;
+                cmbItems.addItem(result.getString("resource_id") + " - " + result.getString("resource_name"));
+            }
+
+            javax.swing.JTextField editor = (javax.swing.JTextField) cmbItems.getEditor().getEditorComponent();
+            editor.setText(text);
+
+            if (hasData && !text.isEmpty()) {
+                cmbItems.showPopup();
+            } else {
+                cmbItems.hidePopup();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            isUpdating = false;
+        }
     }
 
    
@@ -126,7 +225,7 @@ public class customize_Resource extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(26, 26, 36));
+        jPanel1.setBackground(new java.awt.Color(26, 26, 28));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tblResources.setModel(new javax.swing.table.DefaultTableModel(
@@ -159,37 +258,53 @@ public class customize_Resource extends javax.swing.JFrame {
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(531, 0, 510, 486));
 
+        cmbPackage.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         cmbPackage.setEditable(true);
         cmbPackage.addActionListener(this::cmbPackageActionPerformed);
         jPanel1.add(cmbPackage, new org.netbeans.lib.awtextra.AbsoluteConstraints(233, 25, 292, 42));
+
+        txtTotalAmount.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         jPanel1.add(txtTotalAmount, new org.netbeans.lib.awtextra.AbsoluteConstraints(233, 76, 292, 41));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(230, 230, 255));
         jLabel1.setText("Select package");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 25, 195, 42));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(230, 230, 255));
         jLabel2.setText("Total Price");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 73, 195, 41));
 
-        jPanel2.setBackground(new java.awt.Color(0, 12, 28));
+        jPanel2.setBackground(new java.awt.Color(24, 24, 38));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(230, 230, 255));
         jLabel3.setText("Select Item");
 
+        cmbItems.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         cmbItems.setEditable(true);
         cmbItems.addActionListener(this::cmbItemsActionPerformed);
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        spnQty.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(230, 230, 255));
         jLabel4.setText("Quantity");
 
-        btnAddItem.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnAddItem.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnAddItem.setBackground(new java.awt.Color(63, 84, 186));
+        btnAddItem.setForeground(new java.awt.Color(255, 255, 255));
         btnAddItem.setText("Add");
 
-        btnRemoveItem.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnRemoveItem.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnRemoveItem.setBackground(new java.awt.Color(180, 50, 50));
+        btnRemoveItem.setForeground(new java.awt.Color(255, 255, 255));
         btnRemoveItem.setText("Delete");
 
-        btnConfirm.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnConfirm.setBackground(new java.awt.Color(34, 139, 34));
+        btnConfirm.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnConfirm.setForeground(new java.awt.Color(255, 255, 255));
         btnConfirm.setText("Confirm");
         btnConfirm.addActionListener(this::btnConfirmActionPerformed);
 
@@ -216,7 +331,7 @@ public class customize_Resource extends javax.swing.JFrame {
                         .addGap(0, 144, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(181, 181, 181)
+                .addGap(193, 193, 193)
                 .addComponent(btnConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -257,8 +372,9 @@ public class customize_Resource extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cmbPackageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbPackageActionPerformed
-
-       
+        if (isUpdating) {
+            return;
+        }
 
         Object selectedItem = cmbPackage.getSelectedItem();
         if (selectedItem == null) {

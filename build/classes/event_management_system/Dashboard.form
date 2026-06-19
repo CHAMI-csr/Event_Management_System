@@ -40,7 +40,7 @@
     <Container class="javax.swing.JPanel" name="jPanel1">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+          <Color blue="1c" green="1a" red="1a" type="rgb"/>
         </Property>
       </Properties>
 
@@ -51,7 +51,7 @@
         <Container class="javax.swing.JPanel" name="jPanel2">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="ff" green="99" red="66" type="rgb"/>
+              <Color blue="ff" green="89" red="89" type="rgb"/>
             </Property>
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
@@ -78,7 +78,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="menuName" alignment="0" pref="120" max="32767" attributes="0"/>
+                  <Component id="menuName" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -94,7 +94,10 @@
             <Component class="javax.swing.JLabel" name="menuName">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Segoe UI Light" size="18" style="0"/>
+                  <Font name="Segoe UI Light" size="18" style="1"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/Event Management logo.png"/>
@@ -104,14 +107,14 @@
             <Component class="javax.swing.JLabel" name="lblID">
               <Properties>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="0" green="0" red="0" type="rgb"/>
+                  <Color blue="ff" green="e6" red="e6" type="rgb"/>
                 </Property>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblID1">
               <Properties>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="0" green="0" red="0" type="rgb"/>
+                  <Color blue="ff" green="e6" red="e6" type="rgb"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Your Staff ID :"/>
               </Properties>
@@ -121,7 +124,7 @@
         <Container class="javax.swing.JPanel" name="jPanel3">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="33" green="33" red="33" type="rgb"/>
+              <Color blue="26" green="18" red="18" type="rgb"/>
             </Property>
           </Properties>
           <Constraints>
@@ -192,7 +195,7 @@
             <Container class="javax.swing.JPanel" name="menu_Mb">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="33" green="33" red="33" type="rgb"/>
+                  <Color blue="26" green="18" red="18" type="rgb"/>
                 </Property>
               </Properties>
               <Events>
@@ -238,7 +241,7 @@
             <Container class="javax.swing.JPanel" name="menu_Cd">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="33" green="33" red="33" type="rgb"/>
+                  <Color blue="26" green="18" red="18" type="rgb"/>
                 </Property>
               </Properties>
               <Events>
@@ -284,7 +287,7 @@
             <Container class="javax.swing.JPanel" name="menu_Ar">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="33" green="33" red="33" type="rgb"/>
+                  <Color blue="26" green="18" red="18" type="rgb"/>
                 </Property>
               </Properties>
               <Events>
@@ -339,7 +342,7 @@
             <Container class="javax.swing.JPanel" name="menu_Es">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="33" green="33" red="33" type="rgb"/>
+                  <Color blue="26" green="18" red="18" type="rgb"/>
                 </Property>
               </Properties>
               <Events>
@@ -393,7 +396,7 @@
             <Container class="javax.swing.JPanel" name="menu_Bc">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="33" green="33" red="33" type="rgb"/>
+                  <Color blue="26" green="18" red="18" type="rgb"/>
                 </Property>
               </Properties>
               <Events>
@@ -447,7 +450,7 @@
             <Container class="javax.swing.JPanel" name="menu_Am">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="33" green="33" red="33" type="rgb"/>
+                  <Color blue="26" green="18" red="18" type="rgb"/>
                 </Property>
               </Properties>
               <Events>

@@ -29,8 +29,8 @@ public class Dashboard extends javax.swing.JFrame {
 
     public Dashboard(Staff staff) {
         initComponents();
-        defaultColor = new Color(51, 51, 51);
-        clickColor = new Color(102, 153, 255);
+        defaultColor = new Color(24, 24, 38);
+        clickColor = new Color(90, 120, 240);
         Log_Loging(staff);
         lblID.setText(staff.getStaff_id());
 
@@ -92,18 +92,19 @@ public class Dashboard extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(26, 26, 28));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(102, 153, 255));
+        jPanel2.setBackground(new java.awt.Color(137, 137, 255));
         jPanel2.setForeground(new java.awt.Color(255, 255, 255));
 
-        menuName.setFont(new java.awt.Font("Segoe UI Light", 0, 18)); // NOI18N
+        menuName.setFont(new java.awt.Font("Segoe UI Light", 1, 18)); // NOI18N
+        menuName.setForeground(new java.awt.Color(255, 255, 255));
         menuName.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Event Management logo.png"))); // NOI18N
 
-        lblID.setForeground(new java.awt.Color(0, 0, 0));
+        lblID.setForeground(new java.awt.Color(230, 230, 255));
 
-        lblID1.setForeground(new java.awt.Color(0, 0, 0));
+        lblID1.setForeground(new java.awt.Color(230, 230, 255));
         lblID1.setText("Your Staff ID :");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -120,7 +121,7 @@ public class Dashboard extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(menuName, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+            .addComponent(menuName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -131,9 +132,9 @@ public class Dashboard extends javax.swing.JFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 120));
 
-        jPanel3.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel3.setBackground(new java.awt.Color(24, 24, 38));
 
-        menu_Mb.setBackground(new java.awt.Color(51, 51, 51));
+        menu_Mb.setBackground(new java.awt.Color(24, 24, 38));
         menu_Mb.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 menu_MbMouseClicked(evt);
@@ -162,7 +163,7 @@ public class Dashboard extends javax.swing.JFrame {
             .addComponent(jLabel4)
         );
 
-        menu_Cd.setBackground(new java.awt.Color(51, 51, 51));
+        menu_Cd.setBackground(new java.awt.Color(24, 24, 38));
         menu_Cd.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 menu_CdMouseClicked(evt);
@@ -191,7 +192,7 @@ public class Dashboard extends javax.swing.JFrame {
             .addComponent(jLabel5)
         );
 
-        menu_Ar.setBackground(new java.awt.Color(51, 51, 51));
+        menu_Ar.setBackground(new java.awt.Color(24, 24, 38));
         menu_Ar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 menu_ArMouseClicked(evt);
@@ -224,7 +225,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        menu_Es.setBackground(new java.awt.Color(51, 51, 51));
+        menu_Es.setBackground(new java.awt.Color(24, 24, 38));
         menu_Es.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 menu_EsMousePressed(evt);
@@ -254,7 +255,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        menu_Bc.setBackground(new java.awt.Color(51, 51, 51));
+        menu_Bc.setBackground(new java.awt.Color(24, 24, 38));
         menu_Bc.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 menu_BcMousePressed(evt);
@@ -284,7 +285,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        menu_Am.setBackground(new java.awt.Color(51, 51, 51));
+        menu_Am.setBackground(new java.awt.Color(24, 24, 38));
         menu_Am.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 menu_AmMouseClicked(evt);
@@ -416,9 +417,9 @@ public class Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_menu_AmMouseClicked
 
     private void menu_ArMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menu_ArMouseClicked
-     assign_resources assign_resources = new assign_resources();
+        assign_resources assign_resources = new assign_resources();
         jDesktopPanel.removeAll();
-        jDesktopPanel.add(assign_resources).setVisible(true); 
+        jDesktopPanel.add(assign_resources).setVisible(true);
     }//GEN-LAST:event_menu_ArMouseClicked
 
     private void menu_MbMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_menu_MbMousePressed
@@ -500,7 +501,7 @@ public class Dashboard extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-       
+
         try {
             // Dark theme එකට:
             UIManager.setLookAndFeel(new FlatLightLaf());
@@ -510,7 +511,7 @@ public class Dashboard extends javax.swing.JFrame {
         } catch (Exception ex) {
             System.err.println("Failed to initialize FlatLaf");
         }
-        // </editor-fold>
+//         </editor-fold>
 
         /* Create and display the form */
         System.out.println();
