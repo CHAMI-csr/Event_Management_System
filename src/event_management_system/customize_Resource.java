@@ -4,10 +4,18 @@
  */
 package event_management_system;
 
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author chamika
  */
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
 public class customize_Resource extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(customize_Resource.class.getName());
@@ -15,7 +23,7 @@ public class customize_Resource extends javax.swing.JFrame {
     // Reference to the parent booking form (for data passing)
     private manage_Bookings parentForm;
     private String selectedPackageId;
-    private javax.swing.JButton btnConfirm;
+  
 
     /**
      * Parameterized constructor — called from manage_Bookings.
@@ -29,7 +37,7 @@ public class customize_Resource extends javax.swing.JFrame {
         this.selectedPackageId = packageId;
 
         // ---- Replace the table model with 6 columns (Resource ID added) ----
-        javax.swing.table.DefaultTableModel newModel = new javax.swing.table.DefaultTableModel(
+        DefaultTableModel newModel = new DefaultTableModel(
             new Object[][]{},
             new String[]{"Resource ID", "Item Name", "Quantity", "Unit Price", "Total Price", "Added From"}
         ) {
@@ -53,7 +61,7 @@ public class customize_Resource extends javax.swing.JFrame {
         // Optionally hide the Resource ID column from the user
         tblResources.getColumnModel().getColumn(0).setMinWidth(0);
         tblResources.getColumnModel().getColumn(0).setMaxWidth(0);
-        tblResources.getColumnModel().getColumn(0).setWidth(0);
+       tblResources.getColumnModel().getColumn(0).setWidth(0);
 
         // Load package dropdown from DB
         loadPackages();
@@ -70,12 +78,7 @@ public class customize_Resource extends javax.swing.JFrame {
         // Wire up Remove Item button
         btnRemoveItem.addActionListener(this::btnRemoveItemActionPerformed);
 
-        // ---- Add Confirm button programmatically ----
-        btnConfirm = new javax.swing.JButton();
-        btnConfirm.setFont(new java.awt.Font("Segoe UI", 1, 18));
-        btnConfirm.setText("Confirm");
-        btnConfirm.addActionListener(this::btnConfirmActionPerformed);
-        jPanel1.add(btnConfirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 490, 200, 42));
+
 
         // Auto-select the package if packageId was provided
         if (packageId != null && !packageId.isEmpty()) {
@@ -91,9 +94,7 @@ public class customize_Resource extends javax.swing.JFrame {
         calculateTableTotal();
     }
 
-    /**
-     * No-arg constructor for standalone testing / NetBeans compatibility.
-     */
+   
     public customize_Resource() {
         this(null, null);
     }
@@ -121,6 +122,7 @@ public class customize_Resource extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         btnAddItem = new javax.swing.JButton();
         btnRemoveItem = new javax.swing.JButton();
+        btnConfirm = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -187,6 +189,10 @@ public class customize_Resource extends javax.swing.JFrame {
         btnRemoveItem.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnRemoveItem.setText("Delete");
 
+        btnConfirm.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnConfirm.setText("Confirm");
+        btnConfirm.addActionListener(this::btnConfirmActionPerformed);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -209,6 +215,10 @@ public class customize_Resource extends javax.swing.JFrame {
                         .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 144, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(181, 181, 181)
+                .addComponent(btnConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -225,10 +235,12 @@ public class customize_Resource extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(174, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(97, Short.MAX_VALUE))
         );
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 135, 520, -1));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 135, 520, 350));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -246,11 +258,7 @@ public class customize_Resource extends javax.swing.JFrame {
 
     private void cmbPackageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbPackageActionPerformed
 
-        // ========================================================
-        // LOAD PACKAGE LOGIC
-        // When a package is selected, remove only previous package
-        // rows (preserve Manual items), then append new package items.
-        // ========================================================
+       
 
         Object selectedItem = cmbPackage.getSelectedItem();
         if (selectedItem == null) {
@@ -263,11 +271,11 @@ public class customize_Resource extends javax.swing.JFrame {
         }
 
         try {
-            // Extract the package_id from the format "PKG-001 - Package Name"
+            
             String packageId = packageStr.split(" - ")[0].trim();
             this.selectedPackageId = packageId;
 
-            javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblResources.getModel();
+            DefaultTableModel model = (DefaultTableModel) tblResources.getModel();
 
             // Remove only package-sourced rows (preserve "Manual" rows)
             for (int i = model.getRowCount() - 1; i >= 0; i--) {
@@ -278,15 +286,15 @@ public class customize_Resource extends javax.swing.JFrame {
             }
 
             // Fetch associated items via package_resources JOIN resources (including resource_id)
-            try (java.sql.Connection con = DBConnect.connect();
-                 java.sql.PreparedStatement pst = con.prepareStatement(
+            try (Connection con = DBConnect.connect();
+                 PreparedStatement pst = con.prepareStatement(
                      "SELECT r.resource_id, r.resource_name, pr.quantity, r.cost_per_item "
                      + "FROM package_resources pr "
                      + "JOIN resources r ON pr.resource_id = r.resource_id "
                      + "WHERE pr.package_id = ?")) {
 
                 pst.setString(1, packageId);
-                java.sql.ResultSet rs = pst.executeQuery();
+                ResultSet rs = pst.executeQuery();
 
                 while (rs.next()) {
                     String resId = rs.getString("resource_id");
@@ -323,9 +331,9 @@ public class customize_Resource extends javax.swing.JFrame {
 
         } catch (Exception e) {
             e.printStackTrace();
-            javax.swing.JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(this,
                     "Error loading package items: " + e.getMessage(),
-                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
 
     }//GEN-LAST:event_cmbPackageActionPerformed
@@ -333,6 +341,44 @@ public class customize_Resource extends javax.swing.JFrame {
     private void cmbItemsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbItemsActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbItemsActionPerformed
+
+    private void btnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tblResources.getModel();
+
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "No items in the table. Please add items before confirming.",
+                    "Validation", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Extract all rows into a List<Object[]>
+        List<Object[]> items = new ArrayList<>();
+        for (int i = 0; i < model.getRowCount(); i++) {
+            Object[] row = new Object[]{
+                model.getValueAt(i, 0), // Resource ID
+                model.getValueAt(i, 1), // Item Name
+                model.getValueAt(i, 2), // Quantity
+                model.getValueAt(i, 3), // Unit Price
+                model.getValueAt(i, 4), // Total Price
+                model.getValueAt(i, 5)  // Added From
+            };
+            items.add(row);
+        }
+
+        double grandTotal = 0.0;
+        try {
+            grandTotal = Double.parseDouble(txtTotalAmount.getText().trim());
+        } catch (NumberFormatException e) {
+            grandTotal = 0.0;
+        }
+
+        if (parentForm != null) {
+            parentForm.setCustomizedData(grandTotal, items);
+        }
+
+        this.dispose();
+    }//GEN-LAST:event_btnConfirmActionPerformed
 
     /**
      * @param args the command line arguments
@@ -361,6 +407,7 @@ public class customize_Resource extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddItem;
+    private javax.swing.JButton btnConfirm;
     private javax.swing.JButton btnRemoveItem;
     private javax.swing.JComboBox<String> cmbItems;
     private javax.swing.JComboBox<String> cmbPackage;
@@ -376,13 +423,9 @@ public class customize_Resource extends javax.swing.JFrame {
     private javax.swing.JTextField txtTotalAmount;
     // End of variables declaration//GEN-END:variables
 
-    // =====================================================================
-    // 1. CALCULATE TABLE TOTAL
-    //    Iterates through all rows in tblResources, sums the "Total Price"
-    //    column (index 3), and displays the formatted grand total.
-    // =====================================================================
+    
     private void calculateTableTotal() {
-        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblResources.getModel();
+       DefaultTableModel model = (DefaultTableModel) tblResources.getModel();
         double grandTotal = 0.0;
 
         for (int i = 0; i < model.getRowCount(); i++) {
@@ -392,21 +435,17 @@ public class customize_Resource extends javax.swing.JFrame {
             }
         }
 
-        // Display formatted to 2 decimal places
+        
         txtTotalAmount.setText(String.format("%.2f", grandTotal));
     }
 
-    // =====================================================================
-    // 2. LOAD PACKAGES
-    //    Fetches all packages from the database and populates cmbPackage.
-    //    Format: "package_id - package_name"
-    // =====================================================================
+    
     private void loadPackages() {
         try {
-            java.sql.Connection con = DBConnect.connect();
+           Connection con = DBConnect.connect();
             String sql = "SELECT package_id, package_name FROM package ORDER BY package_id";
-            java.sql.PreparedStatement pst = con.prepareStatement(sql);
-            java.sql.ResultSet rs = pst.executeQuery();
+            PreparedStatement pst = con.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
 
             cmbPackage.removeAllItems();
             cmbPackage.addItem("Select Package"); // Placeholder item
@@ -420,23 +459,19 @@ public class customize_Resource extends javax.swing.JFrame {
             con.close();
         } catch (Exception e) {
             e.printStackTrace();
-            javax.swing.JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(this,
                     "Error loading packages: " + e.getMessage(),
-                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // =====================================================================
-    // 3. LOAD ALL RESOURCES
-    //    Fetches all items from the resources table and populates cmbItems.
-    //    Format: "resource_id - resource_name"
-    // =====================================================================
+   
     private void loadAllResources() {
         try {
-            java.sql.Connection con = DBConnect.connect();
+            Connection con = DBConnect.connect();
             String sql = "SELECT resource_id, resource_name FROM resources ORDER BY resource_id";
-            java.sql.PreparedStatement pst = con.prepareStatement(sql);
-            java.sql.ResultSet rs = pst.executeQuery();
+            PreparedStatement pst = con.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
 
             cmbItems.removeAllItems();
             cmbItems.addItem("Select Item"); // Placeholder item
@@ -450,46 +485,37 @@ public class customize_Resource extends javax.swing.JFrame {
             con.close();
         } catch (Exception e) {
             e.printStackTrace();
-            javax.swing.JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(this,
                     "Error loading resources: " + e.getMessage(),
-                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // =====================================================================
-    // 4. ADD MANUAL ITEM (btnAddItem ActionPerformed)
-    //    - Gets selected item from cmbItems and quantity from spnQty
-    //    - Fetches cost_per_item from the database
-    //    - If item already exists in the table, updates its qty & total
-    //    - If not, adds a new row with "Added From" = "Manual"
-    //    - Recalculates the grand total
-    // =====================================================================
     private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {
 
         // Validate that an item is selected
         Object selectedItem = cmbItems.getSelectedItem();
         if (selectedItem == null || selectedItem.toString().equals("Select Item")) {
-            javax.swing.JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(this,
                     "Please select an item from the dropdown.",
-                    "Validation", javax.swing.JOptionPane.WARNING_MESSAGE);
+                    "Validation",JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         String itemStr = selectedItem.toString().trim();
 
-        // Extract resource_id and resource_name from "resource_id - resource_name"
+      
         String resourceId = itemStr.split(" - ")[0].trim();
         String resourceName = itemStr.substring(itemStr.indexOf(" - ") + 3).trim();
 
-        // Get quantity from spinner
         int quantity = (int) spnQty.getValue();
 
-        try (java.sql.Connection con = DBConnect.connect();
-             java.sql.PreparedStatement pst = con.prepareStatement(
+        try (Connection con = DBConnect.connect();
+             PreparedStatement pst = con.prepareStatement(
                  "SELECT cost_per_item FROM resources WHERE resource_id = ?")) {
 
             pst.setString(1, resourceId);
-            java.sql.ResultSet rs = pst.executeQuery();
+           ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
                 double unitPrice = rs.getDouble("cost_per_item");
@@ -517,7 +543,7 @@ public class customize_Resource extends javax.swing.JFrame {
                     }
                 }
 
-                // If item does not exist, add a new row
+              
                 if (!itemExists) {
                     model.addRow(new Object[]{
                         resourceId,      // Resource ID (col 0)
@@ -546,30 +572,26 @@ public class customize_Resource extends javax.swing.JFrame {
         }
     }
 
-    // =====================================================================
-    // 5. REMOVE ITEM (btnRemoveItem ActionPerformed)
-    //    Removes the currently selected row from tblResources and
-    //    recalculates the grand total.
-    // =====================================================================
+   
     private void btnRemoveItemActionPerformed(java.awt.event.ActionEvent evt) {
 
         int selectedRow = tblResources.getSelectedRow();
 
         if (selectedRow == -1) {
-            // No row selected — show warning
-            javax.swing.JOptionPane.showMessageDialog(this,
+          
+            JOptionPane.showMessageDialog(this,
                     "Please select a row to remove.",
                     "No Selection", javax.swing.JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         // Confirm before removing
-        int confirm = javax.swing.JOptionPane.showConfirmDialog(this,
+        int confirm = JOptionPane.showConfirmDialog(this,
                 "Are you sure you want to remove the selected item?",
                 "Confirm Removal", javax.swing.JOptionPane.YES_NO_OPTION);
 
-        if (confirm == javax.swing.JOptionPane.YES_OPTION) {
-            javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblResources.getModel();
+        if (confirm ==JOptionPane.YES_OPTION) {
+           DefaultTableModel model = (DefaultTableModel) tblResources.getModel();
             model.removeRow(selectedRow);
 
             // Recalculate the grand total
@@ -577,47 +599,5 @@ public class customize_Resource extends javax.swing.JFrame {
         }
     }
 
-    // =====================================================================
-    // CONFIRM BUTTON — passes customized data back to parentForm
-    // =====================================================================
-    private void btnConfirmActionPerformed(java.awt.event.ActionEvent evt) {
-        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblResources.getModel();
 
-        if (model.getRowCount() == 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "No items in the table. Please add items before confirming.",
-                    "Validation", javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Extract all rows into a List<Object[]>
-        java.util.List<Object[]> items = new java.util.ArrayList<>();
-        for (int i = 0; i < model.getRowCount(); i++) {
-            Object[] row = new Object[]{
-                model.getValueAt(i, 0), // Resource ID
-                model.getValueAt(i, 1), // Item Name
-                model.getValueAt(i, 2), // Quantity
-                model.getValueAt(i, 3), // Unit Price
-                model.getValueAt(i, 4), // Total Price
-                model.getValueAt(i, 5)  // Added From
-            };
-            items.add(row);
-        }
-
-        // Get the grand total from txtTotalAmount
-        double grandTotal = 0.0;
-        try {
-            grandTotal = Double.parseDouble(txtTotalAmount.getText().trim());
-        } catch (NumberFormatException e) {
-            grandTotal = 0.0;
-        }
-
-        // Pass data back to the parent form
-        if (parentForm != null) {
-            parentForm.setCustomizedData(grandTotal, items);
-        }
-
-        // Close this window
-        this.dispose();
-    }
 }

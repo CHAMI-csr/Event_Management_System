@@ -23,7 +23,6 @@ public class Dashboard extends javax.swing.JFrame {
     /**
      * Creates new form Dashboard
      */
-
     Color defaultColor, clickColor;
     Connection conn = DBConnect.connect();
     private int lastLogId = -1;  // log_id of the current login session
@@ -47,18 +46,6 @@ public class Dashboard extends javax.swing.JFrame {
         menu_Es.setBackground(defaultColor);
         menu_Bc.setBackground(defaultColor);
         menu_Am.setBackground(defaultColor);
-
-        try {
-            // Dark theme එකට:
-            UIManager.setLookAndFeel(new FlatLightLaf());
-
-            // එහෙමත් නැත්නම් Light theme එකට:
-            // UIManager.setLookAndFeel(new FlatLightLaf());
-        } catch (Exception ex) {
-            System.err.println("Failed to initialize FlatLaf");
-        }
-
-        initComponents();
 
         // Override EXIT_ON_CLOSE so we can write logout_time before exiting
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -206,6 +193,9 @@ public class Dashboard extends javax.swing.JFrame {
 
         menu_Ar.setBackground(new java.awt.Color(51, 51, 51));
         menu_Ar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                menu_ArMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 menu_ArMousePressed(evt);
             }
@@ -425,6 +415,12 @@ public class Dashboard extends javax.swing.JFrame {
 
     }//GEN-LAST:event_menu_AmMouseClicked
 
+    private void menu_ArMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menu_ArMouseClicked
+     assign_resources assign_resources = new assign_resources();
+        jDesktopPanel.removeAll();
+        jDesktopPanel.add(assign_resources).setVisible(true); 
+    }//GEN-LAST:event_menu_ArMouseClicked
+
     private void menu_MbMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_menu_MbMousePressed
         // TODO add your handling code here:
         menu_Mb.setBackground(clickColor);
@@ -504,24 +500,15 @@ public class Dashboard extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
-        // (optional) ">
-        /*
-         * If Nimbus (introduced in Java SE 6) is not available, stay with the default
-         * look and feel.
-         * For details see
-         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
+       
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
+            // Dark theme එකට:
+            UIManager.setLookAndFeel(new FlatLightLaf());
+
+            // එහෙමත් නැත්නම් Light theme එකට:
+            // UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception ex) {
+            System.err.println("Failed to initialize FlatLaf");
         }
         // </editor-fold>
 
@@ -571,11 +558,13 @@ public class Dashboard extends javax.swing.JFrame {
     }
 
     /**
-     * Updates the logout_time in staff_log for the current session.
-     * Called automatically when the Dashboard window is closed.
+     * Updates the logout_time in staff_log for the current session. Called
+     * automatically when the Dashboard window is closed.
      */
     private void recordLogout() {
-        if (lastLogId < 0) return; // no valid session id
+        if (lastLogId < 0) {
+            return; // no valid session id
+        }
         try {
             String sql = "UPDATE staff_log SET logout_time = NOW() WHERE log_id = ?";
             PreparedStatement pst = conn.prepareStatement(sql);
