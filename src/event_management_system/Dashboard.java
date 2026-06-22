@@ -257,6 +257,9 @@ public class Dashboard extends javax.swing.JFrame {
 
         menu_Bc.setBackground(new java.awt.Color(24, 24, 38));
         menu_Bc.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                menu_BcMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 menu_BcMousePressed(evt);
             }
@@ -421,6 +424,12 @@ public class Dashboard extends javax.swing.JFrame {
         jDesktopPanel.removeAll();
         jDesktopPanel.add(assign_resources).setVisible(true);
     }//GEN-LAST:event_menu_ArMouseClicked
+
+    private void menu_BcMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menu_BcMouseClicked
+      Billing_and_Cost bc =new Billing_and_Cost();
+      jDesktopPanel.removeAll();
+      jDesktopPanel.add(bc).setVisible(true);
+    }//GEN-LAST:event_menu_BcMouseClicked
 
     private void menu_MbMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_menu_MbMousePressed
         // TODO add your handling code here:

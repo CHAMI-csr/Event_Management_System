@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS `billing` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table event_db.billing: ~0 rows (approximately)
+INSERT INTO `billing` (`bill_id`, `event_id`, `total_amount`, `advance_payment`, `balance_due`, `payment_status`) VALUES
+	('B-0001', 'E-0001', 113000.00, 70000.00, 43000.00, 'Pending');
 
 -- Dumping structure for table event_db.clients
 CREATE TABLE IF NOT EXISTS `clients` (
@@ -54,6 +56,7 @@ CREATE TABLE IF NOT EXISTS `event_resources` (
   `assignment_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `event_id` varchar(50) DEFAULT NULL,
   `resource_id` varchar(50) DEFAULT NULL,
+  `package_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `quantity` int DEFAULT '1',
   `total_cost` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`assignment_id`),
@@ -63,7 +66,12 @@ CREATE TABLE IF NOT EXISTS `event_resources` (
   CONSTRAINT `event_resources_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resources` (`resource_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table event_db.event_resources: ~0 rows (approximately)
+-- Dumping data for table event_db.event_resources: ~4 rows (approximately)
+INSERT INTO `event_resources` (`assignment_id`, `event_id`, `resource_id`, `package_id`, `quantity`, `total_cost`) VALUES
+	('ASG-0002', 'E-0001', 'R-002', 'P-1001', 3, 150000.00),
+	('ASG-0003', 'E-0001', 'R-004', 'P-1001', 140, 14000.00),
+	('ASG-0004', 'E-0001', 'R-006', 'P-1001', 3, 24000.00),
+	('ASG-0005', 'E-0001', 'R-001', NULL, 2, 50000.00);
 
 -- Dumping structure for table event_db.events
 CREATE TABLE IF NOT EXISTS `events` (
@@ -90,6 +98,8 @@ CREATE TABLE IF NOT EXISTS `events` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table event_db.events: ~0 rows (approximately)
+INSERT INTO `events` (`event_id`, `client_id`, `staff_id`, `package_id`, `sup_id`, `event_type`, `event_date`, `start_time`, `end_time`, `venue`, `guest_count`, `event_status`, `Event_Add_Date`) VALUES
+	('E-0001', 'C-1001', 'S-1000', 'P-1001', NULL, NULL, '2026-06-18', '08:00:00', NULL, 'Aradana', 28, 'Upcoming', '2026-06-19 20:45:39');
 
 -- Dumping structure for table event_db.package
 CREATE TABLE IF NOT EXISTS `package` (
@@ -104,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `package` (
 INSERT INTO `package` (`package_id`, `package_name`, `description`, `price`) VALUES
 	('P-1001', 'Wedding Premium', 'Full Wedding Package with all services', 210005),
 	('P-1002', 'Basic Birthday', 'Simple Birthday Package', 40000),
-	('S-1003', 'gh', 'ghg', 60000);
+	('P-1003', 'Custamize Pack', 'No Need any think', 0);
 
 -- Dumping structure for table event_db.package_resources
 CREATE TABLE IF NOT EXISTS `package_resources` (
@@ -119,11 +129,11 @@ CREATE TABLE IF NOT EXISTS `package_resources` (
   CONSTRAINT `package_resources_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resources` (`resource_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table event_db.package_resources: ~7 rows (approximately)
+-- Dumping data for table event_db.package_resources: ~6 rows (approximately)
 INSERT INTO `package_resources` (`id`, `package_id`, `resource_id`, `quantity`) VALUES
 	(1, 'P-1001', 'R-001', 1),
 	(2, 'P-1001', 'R-002', 1),
-	(4, 'P-1001', 'R-004', 151),
+	(4, 'P-1001', 'R-004', 140),
 	(5, 'P-1002', 'R-005', 1),
 	(6, 'P-1002', 'R-006', 5),
 	(10, 'P-1001', 'R-006', 3);
@@ -144,10 +154,10 @@ INSERT INTO `resources` (`resource_id`, `resource_name`, `resource_type`, `cost_
 	('R-001', 'Professional DJ System', 'Music', 25000.00, 3, NULL),
 	('R-002', 'Wedding Photography', 'Media', 50000.00, 0, NULL),
 	('R-003', 'Floral Decorations', 'Decor', 45000.00, 10, NULL),
-	('R-004', 'Banquet Chairs', 'Furniture', 100.00, 0, NULL),
+	('R-004', 'Banquet Chairs', 'Furniture', 100.00, 1, NULL),
 	('R-005', 'Birthday Balloon Decor', 'Decor', 15000.00, 0, NULL),
 	('R-006', 'Birthday Cake (2kg)', 'Food', 8000.00, 5, NULL),
-	('R-007', 'jhg', 'Others', 4000.00, 3, NULL);
+	('R-007', 'jhg', 'Others', 4000.00, 2, NULL);
 
 -- Dumping structure for table event_db.staff
 CREATE TABLE IF NOT EXISTS `staff` (
@@ -167,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `staff` (
 -- Dumping data for table event_db.staff: ~2 rows (approximately)
 INSERT INTO `staff` (`staff_id`, `staff_name`, `contact_number`, `staff_email`, `staff_address`, `Id`, `role`, `password`, `first_time_log`, `make_time`) VALUES
 	('S-1000', 'chamika', '0728880547', 'infor.chami1@gmail.com', 'galle', '200625103468', 'admin', '1HNeOiZeFu7gP1lxi5tdAwGcB9i2xR+Q2jpmbuwTqzU=', 0, '2026-06-03 10:19:14'),
-	('S-1001', 'sdf', '0710000654', 'trt@gmmail.com', 'rter', '5646546', 'Event Planner', 'HtF789ToNT3KjKvwvhKs39c0Sz6renmG5IUEQberXo8=', 1, '2026-06-03 10:19:14');
+	('S-1001', 'sdf', '0710000654', 'trt@gmmail.com', 'rter', '5646546', 'Event Planner', 'HtF789ToNT3KjKvwvhKs39c0Sz6renmG5IUEQberXo8=', 0, '2026-06-03 10:19:14');
 
 -- Dumping structure for table event_db.staff_log
 CREATE TABLE IF NOT EXISTS `staff_log` (
@@ -176,187 +186,13 @@ CREATE TABLE IF NOT EXISTS `staff_log` (
   `login_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `logout_time` datetime DEFAULT NULL,
   PRIMARY KEY (`log_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=242 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table event_db.staff_log: ~148 rows (approximately)
+-- Dumping data for table event_db.staff_log: ~3 rows (approximately)
 INSERT INTO `staff_log` (`log_id`, `staff_id`, `login_time`, `logout_time`) VALUES
-	(1, 'S-1000', '2026-06-03 14:24:07', NULL),
-	(2, 'S-1000', '2026-06-03 14:37:46', NULL),
-	(3, 'S-1000', '2026-06-03 14:38:37', NULL),
-	(4, 'S-1000', '2026-06-04 11:30:27', NULL),
-	(5, 'S-1000', '2026-06-04 11:38:14', NULL),
-	(6, 'S-1000', '2026-06-04 11:55:56', NULL),
-	(7, 'S-1000', '2026-06-04 11:56:40', NULL),
-	(8, 'S-1000', '2026-06-04 11:58:28', NULL),
-	(9, 'S-1000', '2026-06-04 12:02:44', NULL),
-	(10, 'S-1000', '2026-06-04 12:03:14', NULL),
-	(11, 'S-1000', '2026-06-04 12:03:59', NULL),
-	(12, 'S-1000', '2026-06-04 12:30:38', NULL),
-	(13, 'S-1000', '2026-06-04 12:36:52', NULL),
-	(14, 'S-1000', '2026-06-06 22:14:18', NULL),
-	(15, 'S-1000', '2026-06-06 22:19:38', NULL),
-	(16, 'S-1000', '2026-06-07 11:08:18', NULL),
-	(17, 'S-1000', '2026-06-07 11:12:18', NULL),
-	(18, 'S-1000', '2026-06-07 11:12:42', NULL),
-	(19, 'S-1000', '2026-06-07 11:40:12', NULL),
-	(20, 'S-1000', '2026-06-07 11:45:22', NULL),
-	(21, 'S-1000', '2026-06-07 11:48:17', NULL),
-	(22, 'S-1000', '2026-06-07 12:04:25', NULL),
-	(23, 'S-1000', '2026-06-07 12:07:21', NULL),
-	(24, 'S-1000', '2026-06-07 12:09:33', NULL),
-	(25, 'S-1000', '2026-06-07 12:15:43', NULL),
-	(26, 'S-1000', '2026-06-07 12:16:34', NULL),
-	(27, 'S-1000', '2026-06-07 12:22:36', NULL),
-	(28, 'S-1000', '2026-06-07 12:49:33', NULL),
-	(29, 'S-1000', '2026-06-07 13:04:52', NULL),
-	(30, 'S-1000', '2026-06-07 20:36:00', NULL),
-	(31, 'S-1000', '2026-06-07 20:37:14', NULL),
-	(32, 'S-1000', '2026-06-07 20:39:31', NULL),
-	(33, 'S-1000', '2026-06-07 20:40:09', NULL),
-	(34, 'S-1000', '2026-06-07 20:41:10', NULL),
-	(35, 'S-1000', '2026-06-07 20:41:49', NULL),
-	(36, 'S-1000', '2026-06-07 20:42:40', NULL),
-	(37, 'S-1000', '2026-06-07 20:43:08', NULL),
-	(38, 'S-1000', '2026-06-07 20:44:59', NULL),
-	(39, 'S-1000', '2026-06-07 20:48:40', NULL),
-	(40, 'S-1000', '2026-06-07 20:49:08', NULL),
-	(41, 'S-1000', '2026-06-07 20:49:29', NULL),
-	(42, 'S-1000', '2026-06-07 20:49:50', NULL),
-	(43, 'S-1000', '2026-06-07 20:50:19', NULL),
-	(44, 'S-1000', '2026-06-07 20:50:39', NULL),
-	(45, 'S-1000', '2026-06-07 20:51:16', NULL),
-	(46, 'S-1000', '2026-06-07 20:54:23', NULL),
-	(47, 'S-1000', '2026-06-07 20:57:21', NULL),
-	(48, 'S-1000', '2026-06-07 20:58:26', NULL),
-	(49, 'S-1000', '2026-06-07 21:03:37', NULL),
-	(50, 'S-1000', '2026-06-07 21:03:52', NULL),
-	(51, 'S-1000', '2026-06-07 21:05:10', NULL),
-	(52, 'S-1000', '2026-06-07 21:07:41', NULL),
-	(53, 'S-1000', '2026-06-07 21:09:15', NULL),
-	(54, 'S-1000', '2026-06-07 21:09:52', NULL),
-	(55, 'S-1000', '2026-06-07 21:11:48', NULL),
-	(56, 'S-1000', '2026-06-07 21:13:06', NULL),
-	(57, 'S-1000', '2026-06-07 21:13:45', NULL),
-	(58, 'S-1000', '2026-06-07 21:14:25', NULL),
-	(59, 'S-1000', '2026-06-07 21:14:54', NULL),
-	(60, 'S-1000', '2026-06-07 21:16:56', NULL),
-	(61, 'S-1000', '2026-06-07 21:18:41', NULL),
-	(62, 'S-1000', '2026-06-07 21:44:59', NULL),
-	(63, 'S-1000', '2026-06-07 21:46:09', NULL),
-	(64, 'S-1000', '2026-06-07 21:48:47', NULL),
-	(65, 'S-1000', '2026-06-07 21:49:30', NULL),
-	(66, 'S-1000', '2026-06-07 21:55:48', NULL),
-	(67, 'S-1000', '2026-06-07 21:58:34', NULL),
-	(68, 'S-1000', '2026-06-07 22:10:06', NULL),
-	(69, 'S-1000', '2026-06-07 22:13:23', NULL),
-	(70, 'S-1000', '2026-06-07 22:14:37', NULL),
-	(71, 'S-1000', '2026-06-07 22:16:12', NULL),
-	(72, 'S-1000', '2026-06-07 22:17:34', NULL),
-	(73, 'S-1000', '2026-06-08 21:06:25', NULL),
-	(74, 'S-1000', '2026-06-08 21:10:58', NULL),
-	(75, 'S-1000', '2026-06-08 21:11:50', NULL),
-	(76, 'S-1000', '2026-06-08 21:14:07', NULL),
-	(77, 'S-1000', '2026-06-08 21:16:58', NULL),
-	(78, 'S-1000', '2026-06-08 21:27:35', NULL),
-	(79, 'S-1000', '2026-06-08 21:29:33', NULL),
-	(80, 'S-1000', '2026-06-08 21:46:57', NULL),
-	(81, 'S-1000', '2026-06-08 21:56:17', NULL),
-	(82, 'S-1000', '2026-06-08 21:59:38', NULL),
-	(83, 'S-1000', '2026-06-08 22:02:09', NULL),
-	(84, 'S-1000', '2026-06-08 22:16:32', NULL),
-	(85, 'S-1000', '2026-06-08 22:52:30', NULL),
-	(86, 'S-1000', '2026-06-08 22:53:08', NULL),
-	(87, 'S-1000', '2026-06-08 23:20:17', NULL),
-	(88, 'S-1000', '2026-06-08 23:22:21', NULL),
-	(89, 'S-1000', '2026-06-08 23:22:54', NULL),
-	(90, 'S-1000', '2026-06-08 23:25:51', NULL),
-	(91, 'S-1000', '2026-06-08 23:26:46', NULL),
-	(92, 'S-1000', '2026-06-08 23:30:27', NULL),
-	(93, 'S-1000', '2026-06-08 23:31:15', NULL),
-	(94, 'S-1000', '2026-06-08 23:32:06', NULL),
-	(95, 'S-1000', '2026-06-08 23:35:28', NULL),
-	(96, 'S-1000', '2026-06-08 23:36:18', NULL),
-	(97, 'S-1000', '2026-06-08 23:36:57', NULL),
-	(98, 'S-1000', '2026-06-08 23:39:40', NULL),
-	(99, 'S-1000', '2026-06-08 23:41:18', NULL),
-	(100, 'S-1000', '2026-06-08 23:41:48', NULL),
-	(101, 'S-1000', '2026-06-08 23:52:54', NULL),
-	(102, 'S-1000', '2026-06-08 23:55:49', NULL),
-	(103, 'S-1000', '2026-06-08 23:57:32', NULL),
-	(104, 'S-1000', '2026-06-09 19:34:22', NULL),
-	(105, 'S-1000', '2026-06-09 19:35:03', NULL),
-	(106, 'S-1000', '2026-06-09 19:42:10', NULL),
-	(107, 'S-1000', '2026-06-09 19:42:56', NULL),
-	(108, 'S-1000', '2026-06-09 19:54:20', NULL),
-	(109, 'S-1000', '2026-06-09 20:00:08', NULL),
-	(110, 'S-1000', '2026-06-09 20:01:15', NULL),
-	(111, 'S-1000', '2026-06-09 20:04:37', NULL),
-	(112, 'S-1000', '2026-06-09 20:05:35', NULL),
-	(113, 'S-1000', '2026-06-09 20:06:09', NULL),
-	(114, 'S-1000', '2026-06-09 20:07:38', NULL),
-	(115, 'S-1000', '2026-06-09 20:08:13', NULL),
-	(116, 'S-1000', '2026-06-09 20:10:32', NULL),
-	(117, 'S-1000', '2026-06-09 20:11:53', NULL),
-	(118, 'S-1000', '2026-06-09 20:13:49', NULL),
-	(119, 'S-1000', '2026-06-09 20:14:41', NULL),
-	(120, 'S-1000', '2026-06-09 20:15:48', NULL),
-	(121, 'S-1000', '2026-06-09 20:16:39', NULL),
-	(122, 'S-1000', '2026-06-09 20:17:59', NULL),
-	(123, 'S-1000', '2026-06-09 20:22:11', NULL),
-	(124, 'S-1000', '2026-06-09 20:29:53', NULL),
-	(125, 'S-1000', '2026-06-09 20:33:53', NULL),
-	(126, 'S-1000', '2026-06-09 20:41:59', NULL),
-	(127, 'S-1000', '2026-06-09 21:09:29', NULL),
-	(128, 'S-1000', '2026-06-09 21:11:04', NULL),
-	(129, 'S-1000', '2026-06-09 21:16:38', NULL),
-	(130, 'S-1000', '2026-06-09 21:22:18', NULL),
-	(131, 'S-1000', '2026-06-09 21:56:24', NULL),
-	(132, 'S-1000', '2026-06-09 21:59:17', NULL),
-	(133, 'S-1000', '2026-06-09 22:00:28', NULL),
-	(134, 'S-1000', '2026-06-09 22:03:03', NULL),
-	(135, 'S-1000', '2026-06-09 22:22:14', NULL),
-	(136, 'S-1000', '2026-06-09 22:23:25', NULL),
-	(137, 'S-1000', '2026-06-09 22:24:04', NULL),
-	(138, 'S-1000', '2026-06-09 22:41:58', NULL),
-	(139, 'S-1000', '2026-06-09 22:43:31', NULL),
-	(140, 'S-1000', '2026-06-09 22:45:57', NULL),
-	(141, 'S-1000', '2026-06-09 22:47:01', NULL),
-	(142, 'S-1000', '2026-06-09 22:53:58', NULL),
-	(143, 'S-1000', '2026-06-09 22:54:49', NULL),
-	(144, 'S-1000', '2026-06-09 22:55:17', NULL),
-	(145, 'S-1000', '2026-06-09 23:11:59', NULL),
-	(146, 'S-1000', '2026-06-09 23:12:46', NULL),
-	(147, 'S-1000', '2026-06-09 23:13:31', NULL),
-	(148, 'S-1000', '2026-06-09 23:16:39', NULL),
-	(149, 'S-1000', '2026-06-09 23:17:19', NULL),
-	(150, 'S-1000', '2026-06-13 08:18:29', NULL),
-	(151, 'S-1000', '2026-06-13 08:19:44', NULL),
-	(152, 'S-1000', '2026-06-13 08:20:20', NULL),
-	(153, 'S-1000', '2026-06-13 08:26:06', NULL),
-	(154, 'S-1000', '2026-06-14 09:09:33', NULL),
-	(155, 'S-1000', '2026-06-14 09:18:15', NULL),
-	(156, 'S-1000', '2026-06-14 09:20:33', NULL),
-	(157, 'S-1000', '2026-06-14 09:38:04', NULL),
-	(158, 'S-1000', '2026-06-14 09:40:50', NULL),
-	(159, 'S-1000', '2026-06-14 09:44:51', NULL),
-	(160, 'S-1000', '2026-06-14 09:48:33', NULL),
-	(161, 'S-1000', '2026-06-14 09:51:14', NULL),
-	(162, 'S-1000', '2026-06-14 09:53:40', NULL),
-	(163, 'S-1000', '2026-06-14 11:36:53', NULL),
-	(164, 'S-1000', '2026-06-14 11:37:44', NULL),
-	(165, 'S-1000', '2026-06-14 11:38:31', NULL),
-	(166, 'S-1000', '2026-06-14 11:40:30', NULL),
-	(167, 'S-1000', '2026-06-14 19:23:25', NULL),
-	(168, 'S-1000', '2026-06-14 19:31:46', NULL),
-	(169, 'S-1000', '2026-06-14 19:41:02', NULL),
-	(170, 'S-1000', '2026-06-14 20:00:42', NULL),
-	(171, 'S-1000', '2026-06-14 20:08:13', NULL),
-	(172, 'S-1000', '2026-06-14 20:13:50', NULL),
-	(173, 'S-1000', '2026-06-14 21:17:26', NULL),
-	(174, 'S-1000', '2026-06-14 21:18:24', NULL),
-	(175, 'S-1000', '2026-06-14 21:21:00', NULL),
-	(176, 'S-1000', '2026-06-14 21:38:58', NULL),
-	(177, 'S-1000', '2026-06-14 22:09:13', NULL);
+	(239, 'S-1000', '2026-06-22 20:05:17', '2026-06-22 20:05:44'),
+	(240, 'S-1000', '2026-06-22 20:19:24', '2026-06-22 20:19:32'),
+	(241, 'S-1000', '2026-06-22 20:21:48', '2026-06-22 20:21:55');
 
 -- Dumping structure for table event_db.suppliers
 CREATE TABLE IF NOT EXISTS `suppliers` (
@@ -372,7 +208,10 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
   PRIMARY KEY (`sup_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table event_db.suppliers: ~1 rows (approximately)
+-- Dumping data for table event_db.suppliers: ~2 rows (approximately)
+INSERT INTO `suppliers` (`sup_id`, `sup_name`, `contact_number`, `nic`, `sup_address`, `vehicle_modal`, `vehicle_no`, `vehicle_Price`, `Status`) VALUES
+	('S-0001', 'asdsad', '243323123', '123123123', 'fdsfas', 'dsfs', 'hgj-1211', '230000.0', 'On Goin'),
+	('S-0002', 'gfreagfrefr', '324324', '3432432', 'fdgf', 'bda-1991', '3243242343', '3423424.0', 'Active');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
