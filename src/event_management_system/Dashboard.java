@@ -4,8 +4,8 @@ import java.awt.Color;
 import javax.swing.UIManager;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.*;
+import javax.swing.*;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -227,6 +227,9 @@ public class Dashboard extends javax.swing.JFrame {
 
         menu_Es.setBackground(new java.awt.Color(24, 24, 38));
         menu_Es.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                menu_EsMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 menu_EsMousePressed(evt);
             }
@@ -431,6 +434,12 @@ public class Dashboard extends javax.swing.JFrame {
       jDesktopPanel.add(bc).setVisible(true);
     }//GEN-LAST:event_menu_BcMouseClicked
 
+    private void menu_EsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menu_EsMouseClicked
+       Event_Schedule ev = new Event_Schedule();
+       jDesktopPanel.removeAll();
+       jDesktopPanel.add(ev).setVisible(true);
+    }//GEN-LAST:event_menu_EsMouseClicked
+
     private void menu_MbMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_menu_MbMousePressed
         // TODO add your handling code here:
         menu_Mb.setBackground(clickColor);
@@ -584,4 +593,82 @@ public class Dashboard extends javax.swing.JFrame {
             System.out.println("Logout Log Error: " + ex.getMessage());
         }
     }
+
+    // --- Custom Dashboard Methods ---
+
+    private void applyRoleRestrictions() {
+        if (UserSession.loggedUserRole != null && UserSession.loggedUserRole.equals("Staff")) {
+            try {
+                btnAdminSettings.setVisible(false);
+            } catch (Exception e) {
+                // Ignore if not present
+            }
+            try {
+                btnPackageAdd.setVisible(false);
+            } catch (Exception e) {
+                // Ignore if not present
+            }
+        }
+    }
+
+    private void loadExecutiveSummary() {
+        try {
+            if (conn == null || conn.isClosed()) {
+                conn = DBConnect.connect();
+            }
+            if (conn != null) {
+                // Count of bookings in current month
+                String q1 = "SELECT COUNT(*) AS total FROM events WHERE MONTH(event_date) = MONTH(CURRENT_DATE()) AND YEAR(event_date) = YEAR(CURRENT_DATE())";
+                try (PreparedStatement pst1 = conn.prepareStatement(q1); ResultSet rs1 = pst1.executeQuery()) {
+                    if (rs1.next()) {
+                        try {
+                            lblTotalEvents.setText(String.valueOf(rs1.getInt("total")));
+                        } catch (Exception e) {}
+                    }
+                }
+
+                // Sum of grand_total where payment_status = 'Paid'
+                String q2 = "SELECT SUM(total_amount) AS revenue FROM billing WHERE payment_status = 'Paid'";
+                try (PreparedStatement pst2 = conn.prepareStatement(q2); ResultSet rs2 = pst2.executeQuery()) {
+                    if (rs2.next()) {
+                        double rev = rs2.getDouble("revenue");
+                        try {
+                            lblRevenue.setText(String.format("Rs. %.2f", rev));
+                        } catch (Exception e) {}
+                    }
+                }
+
+                // Sum of (grand_total - advance_amount) where payment_status != 'Paid'
+                String q3 = "SELECT SUM(total_amount - advance_payment) AS pending FROM billing WHERE payment_status != 'Paid'";
+                try (PreparedStatement pst3 = conn.prepareStatement(q3); ResultSet rs3 = pst3.executeQuery()) {
+                    if (rs3.next()) {
+                        double pend = rs3.getDouble("pending");
+                        try {
+                            lblPendingDebts.setText(String.format("Rs. %.2f", pend));
+                        } catch (Exception e) {}
+                    }
+                }
+
+                // Count of inventory items where available_qty < 5
+                String q4 = "SELECT COUNT(*) AS low_stock FROM resources WHERE stock_qty < 5";
+                try (PreparedStatement pst4 = conn.prepareStatement(q4); ResultSet rs4 = pst4.executeQuery()) {
+                    if (rs4.next()) {
+                        try {
+                            lblLowStock.setText(String.valueOf(rs4.getInt("low_stock")));
+                        } catch (Exception e) {}
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println("Error loading executive summary: " + ex.getMessage());
+        }
+    }
+
+    // Placeholders to ensure compilation; NetBeans GUI will override/bind these
+    private javax.swing.JButton btnAdminSettings;
+    private javax.swing.JButton btnPackageAdd;
+    private javax.swing.JLabel lblTotalEvents;
+    private javax.swing.JLabel lblRevenue;
+    private javax.swing.JLabel lblPendingDebts;
+    private javax.swing.JLabel lblLowStock;
 }

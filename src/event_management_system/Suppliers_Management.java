@@ -39,6 +39,10 @@ public class Suppliers_Management extends javax.swing.JFrame {
         initComponents();
         lblNextId.setText(nextsupId());
         btnSave.addActionListener(this::btnSaveActionPerformed);
+        
+        //UITheme.removeInternalFrameChrome(this);
+        customizeUI();
+        setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
 
         // ---- Create Delete & Cancel buttons ----
         btnDelete = new javax.swing.JButton("Delete");
@@ -151,7 +155,7 @@ public class Suppliers_Management extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(0, 12, 28));
+        jPanel1.setBackground(UITheme.BG_DEEP);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel23.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -491,6 +495,30 @@ public class Suppliers_Management extends javax.swing.JFrame {
     private javax.swing.JTextField lblSupVehicleNumber;
     private javax.swing.JTextField lblSupVehiclePrice;
     // End of variables declaration//GEN-END:variables
+    
+    private void customizeUI() {
+        getContentPane().setBackground(UITheme.BG_DEEP);
+        
+        UITheme.styleTextField(lblSupName);
+        UITheme.styleTextField(lblSupNumber);
+        UITheme.styleTextField(lblSupNic);
+        UITheme.styleTextField(lblSupAddress);
+        UITheme.styleTextField(lblSupVehicleModel);
+        UITheme.styleTextField(lblSupVehicleNumber);
+        UITheme.styleTextField(lblSupVehiclePrice);
+        
+        UITheme.styleComboBox(lblSupStatus);
+        
+        UITheme.styleButton(btnSave, UITheme.BTN_BLUE);
+        UITheme.styleButton(btnUpdate, UITheme.BTN_BLUE);
+        
+        javax.swing.JLabel[] labels = {
+            jLabel23, jLabel24, jLabel25, jLabel26, jLabel27, jLabel28, jLabel29, jLabel30, jLabel31, lblNextId
+        };
+        for (javax.swing.JLabel lbl : labels) {
+            lbl.setForeground(UITheme.FG_WHITE);
+        }
+    }
 
     private String nextsupId() {
 

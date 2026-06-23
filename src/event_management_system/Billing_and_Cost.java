@@ -23,7 +23,8 @@ import javax.swing.JOptionPane;
  */
 public class Billing_and_Cost extends javax.swing.JInternalFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Billing_and_Cost.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger
+            .getLogger(Billing_and_Cost.class.getName());
     private static final DecimalFormat MONEY_FMT = new DecimalFormat("#,##0.00");
 
     Connection con = DBConnect.connect();
@@ -37,11 +38,21 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         initComponents();
 
         // Remove internal frame decorations
-        this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        javax.swing.plaf.basic.BasicInternalFrameUI ui =
-                (javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI();
-        ui.setNorthPane(null);
-
+        UITheme.removeInternalFrameChrome(this);
+        customizeUI();
+        
+        // Manually link the Quotation buttons (in case NetBeans UI builder dropped them)
+        btnQuotation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnQuotationActionPerformed(evt);
+            }
+        });
+        btnQuotationPdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnQuotationPdfActionPerformed(evt);
+            }
+        });
+        
         // Make result fields read-only (txtExtraCost stays editable)
         txtClientName.setEditable(false);
         txtPackageName.setEditable(false);
@@ -50,13 +61,15 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         txtAdvance.setEditable(false);
         txtDueBalance.setEditable(false);
 
-        // Live recalc when user edits Extra Cost manually
-        txtExtraCost.addKeyListener(new java.awt.event.KeyAdapter() {
+        // Live recalc when user edits Extra Cost or New Payment manually
+        java.awt.event.KeyAdapter recalcAdapter = new java.awt.event.KeyAdapter() {
             @Override
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 recalculateTotals();
             }
-        });
+        };
+        txtExtraCost.addKeyListener(recalcAdapter);
+        txtNewPayment.addKeyListener(recalcAdapter);
 
         // Load status combo
         cmbStatus.removeAllItems();
@@ -66,6 +79,8 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         cmbStatus.addItem("Cancelled");
     }
 
+
+
     // =========================================================
     // HELPER – re-calculate Grand Total & Due Balance
     // =========================================================
@@ -73,18 +88,33 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         try {
             // Parse base price (stored as "Rs. 1,234.00")
             String baseTxt = txtBasePrice.getText().replace("Rs.", "").replace(",", "").trim();
-            double basePrice  = baseTxt.isEmpty() ? 0.0 : Double.parseDouble(baseTxt);
+            double basePrice = baseTxt.isEmpty() ? 0.0 : Double.parseDouble(baseTxt);
 
             // Parse extra cost – user may type plain number or "Rs. x"
             String extraTxt = txtExtraCost.getText().replace("Rs.", "").replace(",", "").trim();
-            double extraCost  = extraTxt.isEmpty() ? 0.0 : Double.parseDouble(extraTxt);
+            double extraCost = extraTxt.isEmpty() ? 0.0 : Double.parseDouble(extraTxt);
+            
+            // Parse transport cost
+            String transTxt = txtTransportCost.getText().replace("Rs.", "").replace(",", "").trim();
+            double transportCost = transTxt.isEmpty() ? 0.0 : Double.parseDouble(transTxt);
 
             // Parse advance
             String advTxt = txtAdvance.getText().replace("Rs.", "").replace(",", "").trim();
-            double advance    = advTxt.isEmpty() ? 0.0 : Double.parseDouble(advTxt);
+            double advance = advTxt.isEmpty() ? 0.0 : Double.parseDouble(advTxt);
+            
+            // Parse new payment
+            String newPayTxt = txtNewPayment.getText().replace("Rs.", "").replace(",", "").trim();
+            double newPayment = newPayTxt.isEmpty() ? 0.0 : Double.parseDouble(newPayTxt);
 
-            double grandTotal = basePrice + extraCost;
-            double dueBalance = grandTotal - advance;
+            double grandTotal = basePrice + extraCost + transportCost;
+            double dueBalance = grandTotal - advance - newPayment;
+            
+            // Auto-select Payment Status based on due balance
+            if (dueBalance <= 0 && grandTotal > 0) {
+                cmbStatus.setSelectedItem("Paid");
+            } else if (advance + newPayment > 0 && dueBalance > 0) {
+                cmbStatus.setSelectedItem("Partial");
+            }
 
             txtGrandTotal.setText("Rs. " + MONEY_FMT.format(grandTotal));
             txtDueBalance.setText("Rs. " + MONEY_FMT.format(dueBalance));
@@ -94,8 +124,116 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
     }
 
     // =========================================================
-    // STORY 1 – SEARCH  (btnSearch)
-    // Accepts: Event ID  OR  Customer Contact Number
+    // HELPER – update Grand Total with Transport Cost
+    // =========================================================
+    public void updateGrandTotal(String eventID) {
+        if (eventID == null || eventID.trim().isEmpty()) {
+            return;
+        }
+        
+        try (Connection conn = DBConnect.connect()) {
+            // 1. Get transport_cost from events table
+            String sql = "SELECT transport_cost FROM events WHERE event_id = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, eventID);
+            ResultSet rs = pst.executeQuery();
+            
+            double transportCost = 0.0;
+            if (rs.next()) {
+                transportCost = rs.getDouble("transport_cost");
+            }
+            rs.close();
+            pst.close();
+
+            // 2. Add to existing totals
+            // Retrieve current values
+            String baseTxt = txtBasePrice.getText().replace("Rs.", "").replace(",", "").trim();
+            double basePrice = baseTxt.isEmpty() ? 0.0 : Double.parseDouble(baseTxt);
+
+            String extraTxt = txtExtraCost.getText().replace("Rs.", "").replace(",", "").trim();
+            double extraCost = extraTxt.isEmpty() ? 0.0 : Double.parseDouble(extraTxt);
+
+            String advTxt = txtAdvance.getText().replace("Rs.", "").replace(",", "").trim();
+            double advance = advTxt.isEmpty() ? 0.0 : Double.parseDouble(advTxt);
+
+            // New calculation
+            double grandTotal = basePrice + extraCost + transportCost;
+            double dueBalance = grandTotal - advance;
+
+            // Update UI
+            txtGrandTotal.setText("Rs. " + MONEY_FMT.format(grandTotal));
+            txtDueBalance.setText("Rs. " + MONEY_FMT.format(dueBalance));
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error updating transport cost: " + e.getMessage(), "DB Error", JOptionPane.ERROR_MESSAGE);
+            logger.log(java.util.logging.Level.SEVERE, null, e);
+        }
+    }
+
+    // =========================================================
+    // STORY 3: Logistics - calculateFinalBill
+    // =========================================================
+    public void calculateFinalBill(String eventID) {
+        if (eventID == null || eventID.trim().isEmpty()) {
+            return;
+        }
+        
+        double packagePrice = 0.0;
+        double transportCost = 0.0;
+        double totalExtraCost = 0.0;
+        
+        // Use JOIN to get package price since price is in package table
+        String sqlEvents = "SELECT p.price AS package_price, e.transport_cost FROM events e " +
+                           "LEFT JOIN package p ON e.package_id = p.package_id WHERE e.event_id = ?";
+        
+        String sqlExtraCost = "SELECT SUM(total_cost) as sum_extra FROM event_resources WHERE event_id = ?";
+        
+        try (Connection conn = DBConnect.connect()) {
+            
+            // Fetch Event Costs
+            try (PreparedStatement pstEvents = conn.prepareStatement(sqlEvents)) {
+                pstEvents.setString(1, eventID);
+                try (ResultSet rsEvents = pstEvents.executeQuery()) {
+                    if (rsEvents.next()) {
+                        packagePrice = rsEvents.getDouble("package_price");
+                        transportCost = rsEvents.getDouble("transport_cost");
+                    }
+                }
+            }
+            
+            // Fetch Extra Costs
+            try (PreparedStatement pstExtra = conn.prepareStatement(sqlExtraCost)) {
+                pstExtra.setString(1, eventID);
+                try (ResultSet rsExtra = pstExtra.executeQuery()) {
+                    if (rsExtra.next()) {
+                        totalExtraCost = rsExtra.getDouble("sum_extra");
+                    }
+                }
+            }
+            
+            // Calculate Grand Total
+            double grandTotal = packagePrice + totalExtraCost + transportCost;
+            
+            // Update the relevant UI components on the billing form
+            txtBasePrice.setText("Rs. " + MONEY_FMT.format(packagePrice));
+            txtExtraCost.setText(MONEY_FMT.format(totalExtraCost));
+            txtTransportCost.setText(MONEY_FMT.format(transportCost));
+            txtGrandTotal.setText("Rs. " + MONEY_FMT.format(grandTotal));
+            
+            // Optional: calculate due balance based on advance
+            String advTxt = txtAdvance.getText().replace("Rs.", "").replace(",", "").trim();
+            double advance = advTxt.isEmpty() ? 0.0 : Double.parseDouble(advTxt);
+            txtDueBalance.setText("Rs. " + MONEY_FMT.format(grandTotal - advance));
+            
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error calculating final bill: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
+    // =========================================================
+    // STORY 1 – SEARCH (btnSearch)
+    // Accepts: Event ID OR Customer Contact Number
     // =========================================================
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {
         String input = txtBookingId.getText().trim();
@@ -115,7 +253,8 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
                 resolvedEventId = resolveByContactNumber(conn, input);
             }
 
-            if (resolvedEventId == null) return; // user cancelled or nothing found
+            if (resolvedEventId == null)
+                return; // user cancelled or nothing found
 
             loadBillingData(conn, resolvedEventId);
 
@@ -134,7 +273,8 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         st.setString(1, input);
         ResultSet rs2 = st.executeQuery();
         String id = rs2.next() ? rs2.getString(1) : null;
-        rs2.close(); st.close();
+        rs2.close();
+        st.close();
         return id;
     }
 
@@ -150,9 +290,10 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
 
         java.util.List<String[]> clients = new java.util.ArrayList<>();
         while (rsClient.next()) {
-            clients.add(new String[]{rsClient.getString("client_id"), rsClient.getString("client_name")});
+            clients.add(new String[] { rsClient.getString("client_id"), rsClient.getString("client_name") });
         }
-        rsClient.close(); stClient.close();
+        rsClient.close();
+        stClient.close();
 
         if (clients.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -161,29 +302,30 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
             return null;
         }
 
-        String clientId   = clients.get(0)[0];
+        String clientId = clients.get(0)[0];
         String clientName = clients.get(0)[1];
 
         // Load all events for this client
-        String sqlEvents =
-            "SELECT e.event_id, e.event_date, e.event_type, p.package_name " +
-            "FROM events e " +
-            "LEFT JOIN package p ON e.package_id = p.package_id " +
-            "WHERE e.client_id = ? ORDER BY e.event_date DESC";
+        String sqlEvents = "SELECT e.event_id, e.event_date, e.event_type, p.package_name " +
+                "FROM events e " +
+                "LEFT JOIN package p ON e.package_id = p.package_id " +
+                "WHERE e.client_id = ? ORDER BY e.event_date DESC";
         PreparedStatement stEvents = conn.prepareStatement(sqlEvents);
         stEvents.setString(1, clientId);
         ResultSet rsEvents = stEvents.executeQuery();
 
         java.util.List<String[]> events = new java.util.ArrayList<>();
         while (rsEvents.next()) {
-            events.add(new String[]{
-                rsEvents.getString("event_id"),
-                rsEvents.getString("event_date") + " | " +
-                (rsEvents.getString("event_type") != null ? rsEvents.getString("event_type") : "Event") +
-                " | " + (rsEvents.getString("package_name") != null ? rsEvents.getString("package_name") : "")
+            events.add(new String[] {
+                    rsEvents.getString("event_id"),
+                    rsEvents.getString("event_date") + " | " +
+                            (rsEvents.getString("event_type") != null ? rsEvents.getString("event_type") : "Event") +
+                            " | "
+                            + (rsEvents.getString("package_name") != null ? rsEvents.getString("package_name") : "")
             });
         }
-        rsEvents.close(); stEvents.close();
+        rsEvents.close();
+        stEvents.close();
 
         if (events.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -210,7 +352,8 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
                 options,
                 options[0]);
 
-        if (chosen == null) return null; // cancelled
+        if (chosen == null)
+            return null; // cancelled
 
         String eventId = chosen.split("  –  ")[0].trim();
         txtBookingId.setText(eventId);
@@ -221,13 +364,12 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
      * Load and display all billing data for a given event_id.
      */
     private void loadBillingData(Connection conn, String eventId) throws Exception {
-        String sqlMain =
-            "SELECT c.client_name, p.package_name, p.price, b.advance_payment " +
-            "FROM events e " +
-            "JOIN clients  c ON e.client_id  = c.client_id " +
-            "JOIN package  p ON e.package_id  = p.package_id " +
-            "LEFT JOIN billing b ON b.event_id = e.event_id " +
-            "WHERE e.event_id = ?";
+        String sqlMain = "SELECT c.client_name, p.package_name, p.price, b.advance_payment, e.transport_cost " +
+                "FROM events e " +
+                "JOIN clients  c ON e.client_id  = c.client_id " +
+                "JOIN package  p ON e.package_id  = p.package_id " +
+                "LEFT JOIN billing b ON b.event_id = e.event_id " +
+                "WHERE e.event_id = ?";
 
         PreparedStatement stmtMain = conn.prepareStatement(sqlMain);
         stmtMain.setString(1, eventId);
@@ -239,36 +381,40 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
             return;
         }
 
-        String clientName  = rsMain.getString("client_name");
+        String clientName = rsMain.getString("client_name");
         String packageName = rsMain.getString("package_name");
-        double basePrice   = rsMain.getDouble("price");
+        double basePrice = rsMain.getDouble("price");
         double advancePaid = rsMain.getDouble("advance_payment");
-        rsMain.close(); stmtMain.close();
+        double transportCost = rsMain.getDouble("transport_cost");
+        rsMain.close();
+        stmtMain.close();
 
         // Extra cost – items added outside base package
-        String sqlExtra =
-            "SELECT SUM(total_cost) AS extra_total FROM event_resources " +
-            "WHERE event_id = ? AND package_id IS NULL";
+        String sqlExtra = "SELECT SUM(total_cost) AS extra_total FROM event_resources " +
+                "WHERE event_id = ? AND package_id IS NULL";
         PreparedStatement stmtExtra = conn.prepareStatement(sqlExtra);
         stmtExtra.setString(1, eventId);
         ResultSet rsExtra = stmtExtra.executeQuery();
         double extraCost = rsExtra.next() ? rsExtra.getDouble("extra_total") : 0.0;
-        rsExtra.close(); stmtExtra.close();
+        rsExtra.close();
+        stmtExtra.close();
 
-        double grandTotal = basePrice + extraCost;
+        double grandTotal = basePrice + extraCost + transportCost;
         double dueBalance = grandTotal - advancePaid;
 
         txtClientName.setText(clientName);
         txtPackageName.setText(packageName);
         txtBasePrice.setText("Rs. " + MONEY_FMT.format(basePrice));
-        txtExtraCost.setText(MONEY_FMT.format(extraCost));   // plain number – user can edit
+        txtExtraCost.setText(MONEY_FMT.format(extraCost)); // plain number – user can edit
+        txtTransportCost.setText(MONEY_FMT.format(transportCost)); // supplier cost
         txtGrandTotal.setText("Rs. " + MONEY_FMT.format(grandTotal));
         txtAdvance.setText("Rs. " + MONEY_FMT.format(advancePaid));
+        txtNewPayment.setText("0.00"); // Reset new payment on load
         txtDueBalance.setText("Rs. " + MONEY_FMT.format(dueBalance));
     }
 
     // =========================================================
-    // STORY 2 – GENERATE RECEIPT  (btnGenerate)
+    // STORY 2 – GENERATE RECEIPT (btnGenerate)
     // =========================================================
     private void btnGenerateActionPerformed(java.awt.event.ActionEvent evt) {
         String bookingId = txtBookingId.getText().trim();
@@ -280,14 +426,15 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
             return;
         }
 
-        String clientName   = txtClientName.getText();
-        String packageName  = txtPackageName.getText();
-        String basePrice    = txtBasePrice.getText();
-        String extraCost    = txtExtraCost.getText();
-        String grandTotal   = txtGrandTotal.getText();
-        String advance      = txtAdvance.getText();
-        String dueBalance   = txtDueBalance.getText();
-        String dateStr      = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
+        String clientName = txtClientName.getText();
+        String packageName = txtPackageName.getText();
+        String basePrice = txtBasePrice.getText();
+        String extraCost = txtExtraCost.getText();
+        String transportCost = txtTransportCost.getText();
+        String grandTotal = txtGrandTotal.getText();
+        String advance = txtAdvance.getText();
+        String dueBalance = txtDueBalance.getText();
+        String dateStr = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
 
         String div = "=".repeat(48);
         String sep = "-".repeat(48);
@@ -309,7 +456,8 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         receipt.append(sep).append("\n");
         receipt.append(String.format("  Package      : %s%n", packageName));
         receipt.append(String.format("  Base Price   : %s%n", basePrice));
-        receipt.append(String.format("  Extra Cost   : %s%n", extraCost));
+        receipt.append(String.format("  Extra Cost   : Rs. %s%n", extraCost));
+        receipt.append(String.format("  Supplier Cost: Rs. %s%n", transportCost));
         receipt.append(sep).append("\n");
         receipt.append("  BILLING SUMMARY\n");
         receipt.append(sep).append("\n");
@@ -325,7 +473,7 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
     }
 
     // =========================================================
-    // STORY 3 – UPDATE STATUS  (btnUpdateStatus)
+    // STORY 3 – UPDATE STATUS (btnUpdateStatus)
     // =========================================================
     private void btnUpdateStatusActionPerformed(java.awt.event.ActionEvent evt) {
         String bookingId = txtBookingId.getText().trim();
@@ -337,27 +485,56 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
 
         String newStatus = (String) cmbStatus.getSelectedItem();
         if (newStatus == null) {
-            JOptionPane.showMessageDialog(this, "Please select a payment status.", "Validation", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a payment status.", "Validation",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
+        
+        // Parse the new payment
+        String newPayTxt = txtNewPayment.getText().replace("Rs.", "").replace(",", "").trim();
+        double newPayment = newPayTxt.isEmpty() ? 0.0 : Double.parseDouble(newPayTxt);
 
         try (Connection conn = DBConnect.connect()) {
-            String sql = "UPDATE billing SET payment_status = ? WHERE event_id = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, newStatus);
-            stmt.setString(2, bookingId);
-            int rows = stmt.executeUpdate();
-            stmt.close();
+            if (newPayment > 0) {
+                // If a new payment is made, add it to the existing advance_payment
+                String sql = "UPDATE billing SET payment_status = ?, advance_payment = advance_payment + ? WHERE event_id = ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setString(1, newStatus);
+                stmt.setDouble(2, newPayment);
+                stmt.setString(3, bookingId);
+                int rows = stmt.executeUpdate();
+                stmt.close();
 
-            if (rows > 0) {
-                JOptionPane.showMessageDialog(this,
-                        "✔  Transaction Closed!\nPayment status updated to: " + newStatus,
-                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                if (rows > 0) {
+                    JOptionPane.showMessageDialog(this,
+                            "✔ Payment of Rs. " + MONEY_FMT.format(newPayment) + " received!\nPayment status updated to: " + newStatus,
+                            "Success", JOptionPane.INFORMATION_MESSAGE);
+                    // Reload to reflect new totals
+                    loadBillingData(conn, bookingId);
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "No billing record found for Booking ID: " + bookingId,
+                            "Warning", JOptionPane.WARNING_MESSAGE);
+                }
             } else {
-                JOptionPane.showMessageDialog(this,
-                        "No billing record found for Booking ID: " + bookingId +
-                        "\nPlease ensure billing record exists.",
-                        "Warning", JOptionPane.WARNING_MESSAGE);
+                // Just update status if no new payment
+                String sql = "UPDATE billing SET payment_status = ? WHERE event_id = ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setString(1, newStatus);
+                stmt.setString(2, bookingId);
+                int rows = stmt.executeUpdate();
+                stmt.close();
+
+                if (rows > 0) {
+                    JOptionPane.showMessageDialog(this,
+                            "✔ Transaction Closed!\nPayment status updated to: " + newStatus,
+                            "Success", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "No billing record found for Booking ID: " + bookingId +
+                                    "\nPlease ensure billing record exists.",
+                            "Warning", JOptionPane.WARNING_MESSAGE);
+                }
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error updating status: " + e.getMessage(),
@@ -367,7 +544,7 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
     }
 
     // =========================================================
-    // STORY 4a – PRINT  (btnPrint)
+    // STORY 4a – PRINT (btnPrint)
     // =========================================================
     private void btnPrintActionPerformed(java.awt.event.ActionEvent evt) {
         try {
@@ -379,14 +556,15 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
     }
 
     // =========================================================
-    // STORY 4b – WHATSAPP  (btnWhatsApp)
+    // STORY 4b – WHATSAPP (btnWhatsApp)
     // =========================================================
     private void btnWhatsAppActionPerformed(java.awt.event.ActionEvent evt) {
         String phone = JOptionPane.showInputDialog(this,
                 "Enter client's WhatsApp number\n(include country code, e.g. 94711234567):",
                 "WhatsApp Share", JOptionPane.QUESTION_MESSAGE);
 
-        if (phone == null || phone.trim().isEmpty()) return;
+        if (phone == null || phone.trim().isEmpty())
+            return;
         phone = phone.trim().replaceAll("[^0-9]", "");
 
         String invoiceText = txtBillArea.getText();
@@ -407,14 +585,15 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
     }
 
     // =========================================================
-    // STORY 4c – EMAIL  (btnEmail)
+    // STORY 4c – EMAIL (btnEmail)
     // =========================================================
     private void btnEmailActionPerformed(java.awt.event.ActionEvent evt) {
         String email = JOptionPane.showInputDialog(this,
                 "Enter client's email address:",
                 "Email Invoice", JOptionPane.QUESTION_MESSAGE);
 
-        if (email == null || email.trim().isEmpty()) return;
+        if (email == null || email.trim().isEmpty())
+            return;
 
         String subject = "Your Event Invoice - " + txtBookingId.getText().trim();
         String invoiceText = txtBillArea.getText();
@@ -427,7 +606,7 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
 
         try {
             String encodedSubject = URLEncoder.encode(subject, StandardCharsets.UTF_8.toString()).replace("+", "%20");
-            String encodedBody    = URLEncoder.encode(invoiceText, StandardCharsets.UTF_8.toString()).replace("+", "%20");
+            String encodedBody = URLEncoder.encode(invoiceText, StandardCharsets.UTF_8.toString()).replace("+", "%20");
             String mailtoUri = "mailto:" + email + "?subject=" + encodedSubject + "&body=" + encodedBody;
             Desktop.getDesktop().mail(new URI(mailtoUri));
         } catch (Exception e) {
@@ -437,7 +616,7 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
     }
 
     // =========================================================
-    // STORY 5 – GENERATE QUOTATION  (btnQuotation)
+    // STORY 5 – GENERATE QUOTATION (btnQuotation)
     // =========================================================
     private void btnQuotationActionPerformed(java.awt.event.ActionEvent evt) {
         // Validate that search has been performed
@@ -449,19 +628,24 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         }
 
         // Collect current field values
-        String eventId     = txtBookingId.getText().trim();
-        String clientName  = txtClientName.getText();
+        String eventId = txtBookingId.getText().trim();
+        String clientName = txtClientName.getText();
         String packageName = txtPackageName.getText();
-        String basePrice   = txtBasePrice.getText();
-        String extraCost   = txtExtraCost.getText();
-        String grandTotal  = txtGrandTotal.getText();
-        String advance     = txtAdvance.getText();
-        String dueBalance  = txtDueBalance.getText();
+        String basePrice = txtBasePrice.getText();
+        
+        // Combine extra cost and transport cost for the quotation view
+        double parsedExtra = txtExtraCost.getText().replace("Rs.", "").replace(",", "").trim().isEmpty() ? 0 : Double.parseDouble(txtExtraCost.getText().replace("Rs.", "").replace(",", "").trim());
+        double parsedTrans = txtTransportCost.getText().replace("Rs.", "").replace(",", "").trim().isEmpty() ? 0 : Double.parseDouble(txtTransportCost.getText().replace("Rs.", "").replace(",", "").trim());
+        String combinedExtraCost = String.format("%.2f", parsedExtra + parsedTrans);
+        
+        String grandTotal = txtGrandTotal.getText();
+        String advance = txtAdvance.getText();
+        String dueBalance = txtDueBalance.getText();
 
         // Open quotation window with all data pre-filled
         quotation q = new quotation(
                 eventId, clientName, packageName,
-                basePrice, extraCost, grandTotal,
+                basePrice, combinedExtraCost, grandTotal,
                 advance, dueBalance);
         q.setLocationRelativeTo(null); // centre on screen
         q.setVisible(true);
@@ -475,15 +659,20 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
             return;
         }
 
-        String eventId     = txtBookingId.getText().trim();
-        String clientName  = txtClientName.getText();
+        String eventId = txtBookingId.getText().trim();
+        String clientName = txtClientName.getText();
         String packageName = txtPackageName.getText();
-        String basePrice   = txtBasePrice.getText();
-        String extraCost   = txtExtraCost.getText();
-        String advance     = txtAdvance.getText();
-        String dueBalance  = txtDueBalance.getText();
+        String basePrice = txtBasePrice.getText();
+        
+        double parsedExtra = txtExtraCost.getText().replace("Rs.", "").replace(",", "").trim().isEmpty() ? 0 : Double.parseDouble(txtExtraCost.getText().replace("Rs.", "").replace(",", "").trim());
+        double parsedTrans = txtTransportCost.getText().replace("Rs.", "").replace(",", "").trim().isEmpty() ? 0 : Double.parseDouble(txtTransportCost.getText().replace("Rs.", "").replace(",", "").trim());
+        String combinedExtraCost = String.format("%.2f", parsedExtra + parsedTrans);
+        
+        String advance = txtAdvance.getText();
+        String dueBalance = txtDueBalance.getText();
 
-        QuotationPDFGenerator.generateAndOpenPDF(eventId, clientName, packageName, basePrice, extraCost, advance, dueBalance);
+        QuotationPDFGenerator.generateAndOpenPDF(eventId, clientName, packageName, basePrice, combinedExtraCost, advance,
+                dueBalance);
     }
 
     /**
@@ -492,6 +681,7 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -511,10 +701,14 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         txtBasePrice = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         txtExtraCost = new javax.swing.JTextField();
+        lblTransportCost = new javax.swing.JLabel();
+        txtTransportCost = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         txtGrandTotal = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         txtAdvance = new javax.swing.JTextField();
+        lblNewPayment = new javax.swing.JLabel();
+        txtNewPayment = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         txtDueBalance = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
@@ -605,51 +799,69 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         txtExtraCost.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         jPanel2.add(txtExtraCost, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 280, 228, 34));
 
+        lblTransportCost.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        lblTransportCost.setForeground(new java.awt.Color(200, 210, 255));
+        lblTransportCost.setText("Supplier Cost (Rs.):");
+        jPanel2.add(lblTransportCost, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 324, 150, 34));
+
+        txtTransportCost.setEditable(false);
+        txtTransportCost.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        jPanel2.add(txtTransportCost, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 324, 228, 34));
+
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(200, 210, 255));
         jLabel8.setText("Grand Total (Rs.):");
-        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 324, 150, 34));
+        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 362, 150, 34));
 
         txtGrandTotal.setEditable(false);
         txtGrandTotal.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jPanel2.add(txtGrandTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 324, 228, 34));
+        jPanel2.add(txtGrandTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 362, 228, 34));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(200, 210, 255));
         jLabel9.setText("Advance Paid (Rs.):");
-        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 368, 150, 34));
+        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 400, 150, 34));
 
         txtAdvance.setEditable(false);
         txtAdvance.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        jPanel2.add(txtAdvance, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 368, 228, 34));
+        jPanel2.add(txtAdvance, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 400, 228, 34));
+
+        lblNewPayment.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        lblNewPayment.setForeground(new java.awt.Color(130, 255, 130));
+        lblNewPayment.setText("New Payment (Rs.):");
+        jPanel2.add(lblNewPayment, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 438, 150, 34));
+
+        txtNewPayment.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        txtNewPayment.setText("0.00");
+        jPanel2.add(txtNewPayment, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 438, 228, 34));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(200, 210, 255));
         jLabel10.setText("Due Balance (Rs.):");
-        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 412, 150, 34));
+        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 476, 150, 34));
 
         txtDueBalance.setEditable(false);
         txtDueBalance.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jPanel2.add(txtDueBalance, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 412, 228, 34));
+        jPanel2.add(txtDueBalance, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 476, 228, 34));
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(200, 210, 255));
         jLabel11.setText("Payment Status:");
-        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 462, 150, 34));
+        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 514, 150, 34));
 
         cmbStatus.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pending", "Partial", "Paid", "Cancelled" }));
-        jPanel2.add(cmbStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 462, 228, 34));
+        jPanel2.add(cmbStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 514, 228, 34));
 
         btnUpdateStatus.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         btnUpdateStatus.setText("Update Status");
         btnUpdateStatus.addActionListener(this::btnUpdateStatusActionPerformed);
-        jPanel2.add(btnUpdateStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 512, 174, 38));
+        jPanel2.add(btnUpdateStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 560, 174, 38));
 
         btnGenerate.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         btnGenerate.setText("Generate Receipt");
         btnGenerate.addActionListener(this::btnGenerateActionPerformed);
-        jPanel2.add(btnGenerate, new org.netbeans.lib.awtextra.AbsoluteConstraints(198, 512, 202, 38));
+        jPanel2.add(btnGenerate, new org.netbeans.lib.awtextra.AbsoluteConstraints(198, 560, 202, 38));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 420, 620));
 
@@ -683,17 +895,11 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         btnEmail.addActionListener(this::btnEmailActionPerformed);
         jPanel3.add(btnEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 510, 120, 36));
 
-        btnQuotation.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnQuotation.setText("Quotation");
-        btnQuotation.addActionListener(this::btnQuotationActionPerformed);
-        jPanel3.add(btnQuotation, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 50, 150, 40));
+        jPanel3.add(btnQuotation, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 50, 130, 40));
 
-        btnQuotationPdf.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btnQuotationPdf.setText("Quotation PDF");
-        btnQuotationPdf.setBackground(new java.awt.Color(180, 30, 80));
-        btnQuotationPdf.setForeground(java.awt.Color.WHITE);
-        btnQuotationPdf.addActionListener(this::btnQuotationPdfActionPerformed);
-        jPanel3.add(btnQuotationPdf, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 100, 150, 40));
+        btnQuotationPdf.setText("QuotationPdf");
+        jPanel3.add(btnQuotationPdf, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 100, 130, 40));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 0, 640, 620));
 
@@ -729,6 +935,45 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
         java.awt.EventQueue.invokeLater(() -> new Billing_and_Cost().setVisible(true));
     }
 
+    private void customizeUI() {
+        getContentPane().setBackground(UITheme.BG_DEEP);
+        
+        UITheme.styleTextField(txtBookingId);
+        UITheme.styleTextField(txtClientName);
+        UITheme.styleTextField(txtPackageName);
+        UITheme.styleTextField(txtBasePrice);
+        UITheme.styleTextField(txtExtraCost);
+        UITheme.styleTextField(txtGrandTotal);
+        UITheme.styleTextField(txtAdvance);
+        UITheme.styleTextField(txtDueBalance);
+        
+        UITheme.styleComboBox(cmbStatus);
+        
+        UITheme.styleButton(btnSearch, UITheme.BTN_GREY);
+        UITheme.styleButton(btnUpdateStatus, UITheme.BTN_BLUE);
+        UITheme.styleButton(btnGenerate, new java.awt.Color(40, 150, 80));
+        UITheme.styleButton(btnPrint, UITheme.BTN_GREY);
+        UITheme.styleButton(btnWhatsApp, new java.awt.Color(37, 211, 102));
+        UITheme.styleButton(btnEmail, new java.awt.Color(219, 68, 55));
+        UITheme.styleButton(btnQuotation, UITheme.BTN_BLUE);
+        UITheme.styleButton(btnQuotationPdf, new java.awt.Color(180, 30, 80));
+        
+        txtBillArea.setBackground(UITheme.BG_INPUT);
+        txtBillArea.setForeground(UITheme.FG_WHITE);
+        txtBillArea.setBorder(new javax.swing.border.EmptyBorder(10, 10, 10, 10));
+        jScrollPane1.setBorder(new javax.swing.border.LineBorder(UITheme.BORDER_COL));
+        
+        javax.swing.JLabel[] labels = {
+            jLabel1, jLabel2, jLabel3, jLabel4, jLabel5, jLabel6, jLabel7,
+            jLabel8, jLabel9, jLabel10, jLabel11, jLabel12
+        };
+        for (javax.swing.JLabel lbl : labels) {
+            lbl.setForeground(UITheme.FG_WHITE);
+        }
+        jLabel1.setFont(UITheme.F_TITLE);
+        jLabel12.setFont(UITheme.F_TITLE);
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEmail;
     private javax.swing.JButton btnGenerate;
@@ -756,6 +1001,8 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel lblNewPayment;
+    private javax.swing.JLabel lblTransportCost;
     private javax.swing.JTextField txtAdvance;
     private javax.swing.JTextField txtBasePrice;
     private javax.swing.JTextArea txtBillArea;
@@ -764,6 +1011,8 @@ public class Billing_and_Cost extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtDueBalance;
     private javax.swing.JTextField txtExtraCost;
     private javax.swing.JTextField txtGrandTotal;
+    private javax.swing.JTextField txtNewPayment;
     private javax.swing.JTextField txtPackageName;
+    private javax.swing.JTextField txtTransportCost;
     // End of variables declaration//GEN-END:variables
 }

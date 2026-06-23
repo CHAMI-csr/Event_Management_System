@@ -23,35 +23,36 @@ import javax.swing.table.*;
 
 public class assign_resources extends javax.swing.JInternalFrame {
 
-    private static final Logger logger =
-            Logger.getLogger(assign_resources.class.getName());
+    private static final Logger logger = Logger.getLogger(assign_resources.class.getName());
 
     // ── Colour palette ────────────────────────────────────────────────────────
-    private static final Color BG_DEEP      = new Color( 14,  14,  22);
-    private static final Color BG_CARD      = new Color( 24,  24,  38);
-    private static final Color BG_INPUT     = new Color( 38,  38,  60);
-    private static final Color BG_HDR       = new Color( 55,  74, 195);
-    private static final Color BG_ROW_ODD   = new Color( 28,  28,  44);
-    private static final Color BG_ROW_EVEN  = new Color( 34,  34,  52);
-    private static final Color BG_ROW_SEL   = new Color( 70,  96, 215);
-    private static final Color BTN_BLUE     = new Color( 63,  84, 186);
-    private static final Color BTN_RED      = new Color(195,  55,  55);
-    private static final Color BTN_GREY     = new Color( 60,  60,  85);
-    private static final Color FG_WHITE     = new Color(230, 230, 255);
-    private static final Color FG_MUTED     = new Color(140, 140, 175);
-    private static final Color BORDER_COL   = new Color( 55,  55,  85);
-    private static final Color ACCENT       = new Color( 90, 120, 240);
+    private static final Color BG_DEEP = new Color(14, 14, 22);
+    private static final Color BG_CARD = new Color(24, 24, 38);
+    private static final Color BG_INPUT = new Color(38, 38, 60);
+    private static final Color BG_HDR = new Color(55, 74, 195);
+    private static final Color BG_ROW_ODD = new Color(28, 28, 44);
+    private static final Color BG_ROW_EVEN = new Color(34, 34, 52);
+    private static final Color BG_ROW_SEL = new Color(70, 96, 215);
+    private static final Color BTN_BLUE = new Color(63, 84, 186);
+    private static final Color BTN_RED = new Color(195, 55, 55);
+    private static final Color BTN_GREY = new Color(60, 60, 85);
+    private static final Color FG_WHITE = new Color(230, 230, 255);
+    private static final Color FG_MUTED = new Color(140, 140, 175);
+    private static final Color BORDER_COL = new Color(55, 55, 85);
+    private static final Color ACCENT = new Color(90, 120, 240);
 
     // ── Fonts ─────────────────────────────────────────────────────────────────
-    private static final Font F_TITLE = new Font("Segoe UI", Font.BOLD,  22);
-    private static final Font F_LABEL = new Font("Segoe UI", Font.BOLD,  13);
+    private static final Font F_TITLE = new Font("Segoe UI", Font.BOLD, 22);
+    private static final Font F_LABEL = new Font("Segoe UI", Font.BOLD, 13);
     private static final Font F_INPUT = new Font("Segoe UI", Font.PLAIN, 13);
-    private static final Font F_BTN   = new Font("Segoe UI", Font.BOLD,  13);
-    private static final Font F_HDR   = new Font("Segoe UI", Font.BOLD,  12);
+    private static final Font F_BTN = new Font("Segoe UI", Font.BOLD, 13);
+    private static final Font F_HDR = new Font("Segoe UI", Font.BOLD, 12);
     private static final Font F_TABLE = new Font("Segoe UI", Font.PLAIN, 12);
 
     // ── State ─────────────────────────────────────────────────────────────────
     private DefaultTableModel tableModel;
+    private javax.swing.JButton btnAssignSupplier;
+
 
     // ─────────────────────────────────────────────────────────────────────────
     public assign_resources() {
@@ -72,26 +73,75 @@ public class assign_resources extends javax.swing.JInternalFrame {
         cmbResource.addActionListener(this::cmbResourceActionPerformed);
         spnQty.addChangeListener(e -> recalcTotal());
         tblAssignments.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) populateFormFromTable();
+            if (!e.getValueIsAdjusting())
+                populateFormFromTable();
         });
 
         // Load data from DB
         loadEvents();
         loadResources();
         loadAllAssignments();
+
+
+    }
+
+    public assign_resources(String passedBookingID) {
+        initComponents();
+
+        // Strip NetBeans internal-frame chrome
+        this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
+        ui.setNorthPane(null);
+
+        // Build the DefaultTableModel and wire it to the table
+        setupTableModel();
+
+        // Apply modern dark styling
+        customizeUI();
+
+        // Wire spinner + combo listeners (not possible in GEN block)
+        cmbResource.addActionListener(this::cmbResourceActionPerformed);
+        spnQty.addChangeListener(e -> recalcTotal());
+        tblAssignments.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting())
+                populateFormFromTable();
+        });
+
+        // Load data from DB
+        loadEvents();
+        loadResources();
+        loadAllAssignments();
+
+
+
+        // Select this event in cmbEvent if it matches the prefix
+        for (int i = 0; i < cmbEvent.getItemCount(); i++) {
+            if (cmbEvent.getItemAt(i).startsWith(passedBookingID)) {
+                cmbEvent.setSelectedIndex(i);
+                break;
+            }
+        }
+
+
     }
 
     // =========================================================================
-    //  TABLE MODEL SETUP
+    // TABLE MODEL SETUP
     // =========================================================================
     private void setupTableModel() {
         tableModel = new DefaultTableModel(
-            new String[]{"Assign ID","Event ID","Event","Resource","Qty","Unit Cost","Total Cost"}, 0
-        ) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
-            @Override public Class<?> getColumnClass(int c) {
-                if (c == 4) return Integer.class;
-                if (c == 5 || c == 6) return Double.class;
+                new String[] { "Assign ID", "Event ID", "Event", "Resource", "Qty", "Unit Cost", "Total Cost" }, 0) {
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
+
+            @Override
+            public Class<?> getColumnClass(int c) {
+                if (c == 4)
+                    return Integer.class;
+                if (c == 5 || c == 6)
+                    return Double.class;
                 return String.class;
             }
         };
@@ -106,7 +156,7 @@ public class assign_resources extends javax.swing.JInternalFrame {
     }
 
     // =========================================================================
-    //  STYLING
+    // STYLING
     // =========================================================================
     private void customizeUI() {
         // Content pane + main panel
@@ -128,7 +178,7 @@ public class assign_resources extends javax.swing.JInternalFrame {
                 new EmptyBorder(8, 8, 8, 8)));
 
         // Form labels
-        for (JLabel lbl : new JLabel[]{jLabel1, jLabel2, jLabel3, jLabel4, jLabel5}) {
+        for (JLabel lbl : new JLabel[] { jLabel1, jLabel2, jLabel3, jLabel4, jLabel5 }) {
             lbl.setFont(F_LABEL);
             lbl.setForeground(FG_WHITE);
         }
@@ -151,10 +201,17 @@ public class assign_resources extends javax.swing.JInternalFrame {
         styleSpinner(spnQty);
 
         // Buttons
-        styleButton(btnAdd,    BTN_BLUE);
+        styleButton(btnAdd, BTN_BLUE);
         styleButton(btnUpdate, BTN_GREY);
         styleButton(btnRemove, BTN_RED);
-        styleButton(btnClear,  BTN_GREY);
+        styleButton(btnClear, BTN_GREY);
+
+        // Add dynamically created Assign Supplier button
+        btnAssignSupplier = new javax.swing.JButton("Assign Supplier");
+        styleButton(btnAssignSupplier, new Color(50, 100, 255));
+        btnAssignSupplier.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Plus Math.png"))); // Reuse an existing icon if needed, or leave without
+        btnAssignSupplier.addActionListener(e -> openAssignSupplier());
+        jPanel2.add(btnAssignSupplier, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 428, 367, 45));
 
         // Table
         styleTable(tblAssignments);
@@ -178,7 +235,8 @@ public class assign_resources extends javax.swing.JInternalFrame {
         cb.setForeground(FG_WHITE);
         cb.setFont(F_INPUT);
         cb.setRenderer(new DefaultListCellRenderer() {
-            @Override public Component getListCellRendererComponent(
+            @Override
+            public Component getListCellRendererComponent(
                     JList<?> l, Object v, int i, boolean sel, boolean foc) {
                 super.getListCellRendererComponent(l, v, i, sel, foc);
                 setBackground(sel ? BTN_BLUE : new Color(30, 30, 48));
@@ -216,8 +274,15 @@ public class assign_resources extends javax.swing.JInternalFrame {
         btn.putClientProperty("Button.arc", 14);
         Color hover = bg.brighter();
         btn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) { btn.setBackground(hover); }
-            @Override public void mouseExited (MouseEvent e) { btn.setBackground(bg);    }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(hover);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                btn.setBackground(bg);
+            }
         });
     }
 
@@ -241,8 +306,12 @@ public class assign_resources extends javax.swing.JInternalFrame {
         hdr.setPreferredSize(new Dimension(hdr.getWidth(), 36));
         hdr.setReorderingAllowed(false);
         hdr.setDefaultRenderer(new DefaultTableCellRenderer() {
-            { setHorizontalAlignment(SwingConstants.LEFT); }
-            @Override public Component getTableCellRendererComponent(
+            {
+                setHorizontalAlignment(SwingConstants.LEFT);
+            }
+
+            @Override
+            public Component getTableCellRendererComponent(
                     JTable t, Object v, boolean s, boolean f, int r, int c) {
                 super.getTableCellRendererComponent(t, v, s, f, r, c);
                 setBackground(BG_HDR);
@@ -256,7 +325,8 @@ public class assign_resources extends javax.swing.JInternalFrame {
         });
 
         DefaultTableCellRenderer rowRend = new DefaultTableCellRenderer() {
-            @Override public Component getTableCellRendererComponent(
+            @Override
+            public Component getTableCellRendererComponent(
                     JTable t, Object v, boolean sel, boolean foc, int row, int col) {
                 super.getTableCellRendererComponent(t, v, sel, foc, row, col);
                 setBackground(sel ? BG_ROW_SEL : (row % 2 == 0 ? BG_ROW_EVEN : BG_ROW_ODD));
@@ -273,18 +343,18 @@ public class assign_resources extends javax.swing.JInternalFrame {
     }
 
     // =========================================================================
-    //  DATABASE LOADERS
+    // DATABASE LOADERS
     // =========================================================================
 
     private void loadEvents() {
         cmbEvent.removeAllItems();
         cmbEvent.addItem("Select Event");
         try (Connection con = DBConnect.connect();
-             PreparedStatement pst = con.prepareStatement(
-                     "SELECT e.event_id, c.client_name, e.event_date " +
-                     "FROM events e JOIN clients c ON e.client_id = c.client_id " +
-                     "ORDER BY e.event_id DESC");
-             ResultSet rs = pst.executeQuery()) {
+                PreparedStatement pst = con.prepareStatement(
+                        "SELECT e.event_id, c.client_name, e.event_date " +
+                                "FROM events e JOIN clients c ON e.client_id = c.client_id " +
+                                "ORDER BY e.event_id DESC");
+                ResultSet rs = pst.executeQuery()) {
             while (rs.next()) {
                 cmbEvent.addItem(rs.getString("event_id")
                         + " - " + rs.getString("client_name")
@@ -300,9 +370,9 @@ public class assign_resources extends javax.swing.JInternalFrame {
         cmbResource.removeAllItems();
         cmbResource.addItem("Select Resource");
         try (Connection con = DBConnect.connect();
-             PreparedStatement pst = con.prepareStatement(
-                     "SELECT resource_id, resource_name FROM resources ORDER BY resource_id");
-             ResultSet rs = pst.executeQuery()) {
+                PreparedStatement pst = con.prepareStatement(
+                        "SELECT resource_id, resource_name FROM resources ORDER BY resource_id");
+                ResultSet rs = pst.executeQuery()) {
             while (rs.next()) {
                 cmbResource.addItem(rs.getString("resource_id")
                         + " - " + rs.getString("resource_name"));
@@ -316,25 +386,25 @@ public class assign_resources extends javax.swing.JInternalFrame {
     private void loadAllAssignments() {
         tableModel.setRowCount(0);
         try (Connection con = DBConnect.connect();
-             PreparedStatement pst = con.prepareStatement(
-                     "SELECT er.assignment_id, er.event_id, " +
-                     "       CONCAT(c.client_name, ' (', e.event_date, ')') AS event_label, " +
-                     "       r.resource_name, er.quantity, r.cost_per_item, er.total_cost " +
-                     "FROM event_resources er " +
-                     "JOIN events    e ON er.event_id    = e.event_id " +
-                     "JOIN clients   c ON e.client_id    = c.client_id " +
-                     "JOIN resources r ON er.resource_id = r.resource_id " +
-                     "ORDER BY er.assignment_id DESC");
-             ResultSet rs = pst.executeQuery()) {
+                PreparedStatement pst = con.prepareStatement(
+                        "SELECT er.assignment_id, er.event_id, " +
+                                "       CONCAT(c.client_name, ' (', e.event_date, ')') AS event_label, " +
+                                "       r.resource_name, er.quantity, r.cost_per_item, er.total_cost " +
+                                "FROM event_resources er " +
+                                "JOIN events    e ON er.event_id    = e.event_id " +
+                                "JOIN clients   c ON e.client_id    = c.client_id " +
+                                "JOIN resources r ON er.resource_id = r.resource_id " +
+                                "ORDER BY er.assignment_id DESC");
+                ResultSet rs = pst.executeQuery()) {
             while (rs.next()) {
-                tableModel.addRow(new Object[]{
-                    rs.getString("assignment_id"),
-                    rs.getString("event_id"),
-                    rs.getString("event_label"),
-                    rs.getString("resource_name"),
-                    rs.getInt("quantity"),
-                    rs.getDouble("cost_per_item"),
-                    rs.getDouble("total_cost")
+                tableModel.addRow(new Object[] {
+                        rs.getString("assignment_id"),
+                        rs.getString("event_id"),
+                        rs.getString("event_label"),
+                        rs.getString("resource_name"),
+                        rs.getInt("quantity"),
+                        rs.getDouble("cost_per_item"),
+                        rs.getDouble("total_cost")
                 });
             }
         } catch (Exception ex) {
@@ -345,112 +415,139 @@ public class assign_resources extends javax.swing.JInternalFrame {
     }
 
     // =========================================================================
-    //  GEN EVENT HANDLERS  (called by initComponents via addActionListener)
+    // GEN EVENT HANDLERS (called by initComponents via addActionListener)
     // =========================================================================
 
-    private void cmbEventActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbEventActionPerformed
+    private void cmbEventActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmbEventActionPerformed
         // No auto-action needed; event is chosen by user
-    }//GEN-LAST:event_cmbEventActionPerformed
+    }// GEN-LAST:event_cmbEventActionPerformed
 
-    private void cmbResourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbResourceActionPerformed
+    private void cmbResourceActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmbResourceActionPerformed
         autoFillUnitCost();
-    }//GEN-LAST:event_cmbResourceActionPerformed
+    }// GEN-LAST:event_cmbResourceActionPerformed
 
-    private void spnQtyStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spnQtyStateChanged
+    private void spnQtyStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_spnQtyStateChanged
         recalcTotal();
-    }//GEN-LAST:event_spnQtyStateChanged
+    }// GEN-LAST:event_spnQtyStateChanged
 
-    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAddActionPerformed
         handleAdd();
-    }//GEN-LAST:event_btnAddActionPerformed
+    }// GEN-LAST:event_btnAddActionPerformed
 
-    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnUpdateActionPerformed
         handleUpdate();
-    }//GEN-LAST:event_btnUpdateActionPerformed
+    }// GEN-LAST:event_btnUpdateActionPerformed
 
-    private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
+    private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnRemoveActionPerformed
         handleRemove();
-    }//GEN-LAST:event_btnRemoveActionPerformed
+    }// GEN-LAST:event_btnRemoveActionPerformed
 
-    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnClearActionPerformed
         clearForm();
-    }//GEN-LAST:event_btnClearActionPerformed
+    }// GEN-LAST:event_btnClearActionPerformed
 
-    private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
+    private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txtSearchKeyReleased
         filterTable();
-    }//GEN-LAST:event_txtSearchKeyReleased
+    }// GEN-LAST:event_txtSearchKeyReleased
 
     // =========================================================================
-    //  BUSINESS LOGIC
+    // BUSINESS LOGIC
     // =========================================================================
 
     private void handleAdd() {
         String eventId = getSelectedEventId();
-        if (eventId == null) { showWarn("Please select an Event."); return; }
+        if (eventId == null) {
+            showWarn("Please select an Event.");
+            return;
+        }
 
         String resourceId = getSelectedResourceId();
-        if (resourceId == null) { showWarn("Please select a Resource."); return; }
+        if (resourceId == null) {
+            showWarn("Please select a Resource.");
+            return;
+        }
 
         int qty = (int) spnQty.getValue();
         double unitCost, totalCost;
         try {
-            unitCost  = Double.parseDouble(txtUnitCost.getText().trim());
+            unitCost = Double.parseDouble(txtUnitCost.getText().trim());
             totalCost = Double.parseDouble(txtTotalCost.getText().trim());
-        } catch (NumberFormatException ex) { showWarn("Invalid cost values."); return; }
+        } catch (NumberFormatException ex) {
+            showWarn("Invalid cost values.");
+            return;
+        }
 
         if (assignmentExists(eventId, resourceId)) {
             int choice = JOptionPane.showConfirmDialog(this,
                     "This resource is already assigned to this event.\n" +
-                    "Do you want to ADD to the existing quantity?",
+                            "Do you want to ADD to the existing quantity?",
                     "Duplicate", JOptionPane.YES_NO_OPTION);
-            if (choice != JOptionPane.YES_OPTION) return;
+            if (choice != JOptionPane.YES_OPTION)
+                return;
             updateExistingQty(eventId, resourceId, qty);
-            loadAllAssignments(); clearForm(); return;
+            loadAllAssignments();
+            clearForm();
+            return;
         }
 
         String newId = generateAssignmentId();
         try (Connection con = DBConnect.connect();
-             PreparedStatement pst = con.prepareStatement(
-                     "INSERT INTO event_resources " +
-                     "(assignment_id, event_id, resource_id, quantity, total_cost) VALUES (?,?,?,?,?)")) {
+                PreparedStatement pst = con.prepareStatement(
+                        "INSERT INTO event_resources " +
+                                "(assignment_id, event_id, resource_id, quantity, total_cost) VALUES (?,?,?,?,?)")) {
             pst.setString(1, newId);
             pst.setString(2, eventId);
             pst.setString(3, resourceId);
-            pst.setInt   (4, qty);
+            pst.setInt(4, qty);
             pst.setDouble(5, totalCost);
             pst.executeUpdate();
             showInfo("Resource assigned!\nAssignment ID: " + newId);
-            loadAllAssignments(); clearForm();
-        } catch (Exception ex) { showError("Add failed: " + ex.getMessage()); }
+            loadAllAssignments();
+            clearForm();
+        } catch (Exception ex) {
+            showError("Add failed: " + ex.getMessage());
+        }
     }
 
     private void handleUpdate() {
         int row = tblAssignments.getSelectedRow();
-        if (row == -1) { showWarn("Please select a row to update."); return; }
+        if (row == -1) {
+            showWarn("Please select a row to update.");
+            return;
+        }
 
         String assignId = tableModel.getValueAt(row, 0).toString();
-        int    qty      = (int) spnQty.getValue();
+        int qty = (int) spnQty.getValue();
         double unitCost, totalCost;
         try {
-            unitCost  = Double.parseDouble(txtUnitCost.getText().trim());
+            unitCost = Double.parseDouble(txtUnitCost.getText().trim());
             totalCost = qty * unitCost;
-        } catch (NumberFormatException ex) { showWarn("Invalid cost values."); return; }
+        } catch (NumberFormatException ex) {
+            showWarn("Invalid cost values.");
+            return;
+        }
 
         try (Connection con = DBConnect.connect();
-             PreparedStatement pst = con.prepareStatement(
-                     "UPDATE event_resources SET quantity=?, total_cost=? WHERE assignment_id=?")) {
-            pst.setInt   (1, qty);
+                PreparedStatement pst = con.prepareStatement(
+                        "UPDATE event_resources SET quantity=?, total_cost=? WHERE assignment_id=?")) {
+            pst.setInt(1, qty);
             pst.setDouble(2, totalCost);
             pst.setString(3, assignId);
             pst.executeUpdate();
             showInfo("Assignment updated!");
-            loadAllAssignments(); clearForm();
-        } catch (Exception ex) { showError("Update failed: " + ex.getMessage()); }
+            loadAllAssignments();
+            clearForm();
+        } catch (Exception ex) {
+            showError("Update failed: " + ex.getMessage());
+        }
     }
 
     private void handleRemove() {
         int row = tblAssignments.getSelectedRow();
-        if (row == -1) { showWarn("Please select a row to remove."); return; }
+        if (row == -1) {
+            showWarn("Please select a row to remove.");
+            return;
+        }
 
         String assignId = tableModel.getValueAt(row, 0).toString();
         String resource = tableModel.getValueAt(row, 3).toString();
@@ -458,55 +555,74 @@ public class assign_resources extends javax.swing.JInternalFrame {
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Remove assignment for: " + resource + "?",
                 "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-        if (confirm != JOptionPane.YES_OPTION) return;
+        if (confirm != JOptionPane.YES_OPTION)
+            return;
 
         try (Connection con = DBConnect.connect();
-             PreparedStatement pst = con.prepareStatement(
-                     "DELETE FROM event_resources WHERE assignment_id=?")) {
+                PreparedStatement pst = con.prepareStatement(
+                        "DELETE FROM event_resources WHERE assignment_id=?")) {
             pst.setString(1, assignId);
             pst.executeUpdate();
             showInfo("Assignment removed.");
-            loadAllAssignments(); clearForm();
-        } catch (Exception ex) { showError("Remove failed: " + ex.getMessage()); }
+            loadAllAssignments();
+            clearForm();
+        } catch (Exception ex) {
+            showError("Remove failed: " + ex.getMessage());
+        }
     }
 
     private void autoFillUnitCost() {
         String resourceId = getSelectedResourceId();
-        if (resourceId == null) { txtUnitCost.setText("0.00"); txtTotalCost.setText("0.00"); return; }
+        if (resourceId == null) {
+            txtUnitCost.setText("0.00");
+            txtTotalCost.setText("0.00");
+            return;
+        }
         try (Connection con = DBConnect.connect();
-             PreparedStatement pst = con.prepareStatement(
-                     "SELECT cost_per_item FROM resources WHERE resource_id=?")) {
+                PreparedStatement pst = con.prepareStatement(
+                        "SELECT cost_per_item FROM resources WHERE resource_id=?")) {
             pst.setString(1, resourceId);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 txtUnitCost.setText(String.format("%.2f", rs.getDouble("cost_per_item")));
                 recalcTotal();
             }
-        } catch (Exception ex) { txtUnitCost.setText("0.00"); }
+        } catch (Exception ex) {
+            txtUnitCost.setText("0.00");
+        }
     }
 
     private void recalcTotal() {
         try {
             double unit = Double.parseDouble(txtUnitCost.getText().trim());
-            int    qty  = (int) spnQty.getValue();
+            int qty = (int) spnQty.getValue();
             txtTotalCost.setText(String.format("%.2f", unit * qty));
-        } catch (NumberFormatException ex) { txtTotalCost.setText("0.00"); }
+        } catch (NumberFormatException ex) {
+            txtTotalCost.setText("0.00");
+        }
     }
 
     private void populateFormFromTable() {
         int row = tblAssignments.getSelectedRow();
-        if (row == -1) return;
-        String eventId   = tableModel.getValueAt(row, 1).toString();
-        String resource  = tableModel.getValueAt(row, 3).toString();
-        int    qty       = Integer.parseInt(tableModel.getValueAt(row, 4).toString());
-        double unitCost  = Double.parseDouble(tableModel.getValueAt(row, 5).toString());
+        if (row == -1)
+            return;
+        String eventId = tableModel.getValueAt(row, 1).toString();
+        String resource = tableModel.getValueAt(row, 3).toString();
+        int qty = Integer.parseInt(tableModel.getValueAt(row, 4).toString());
+        double unitCost = Double.parseDouble(tableModel.getValueAt(row, 5).toString());
         double totalCost = Double.parseDouble(tableModel.getValueAt(row, 6).toString());
 
         for (int i = 0; i < cmbEvent.getItemCount(); i++) {
-            if (cmbEvent.getItemAt(i).startsWith(eventId)) { cmbEvent.setSelectedIndex(i); break; }
+            if (cmbEvent.getItemAt(i).startsWith(eventId)) {
+                cmbEvent.setSelectedIndex(i);
+                break;
+            }
         }
         for (int i = 0; i < cmbResource.getItemCount(); i++) {
-            if (cmbResource.getItemAt(i).contains(resource)) { cmbResource.setSelectedIndex(i); break; }
+            if (cmbResource.getItemAt(i).contains(resource)) {
+                cmbResource.setSelectedIndex(i);
+                break;
+            }
         }
         spnQty.setValue(qty);
         txtUnitCost.setText(String.format("%.2f", unitCost));
@@ -517,90 +633,110 @@ public class assign_resources extends javax.swing.JInternalFrame {
         String q = "%" + txtSearch.getText().trim().toLowerCase() + "%";
         tableModel.setRowCount(0);
         try (Connection con = DBConnect.connect();
-             PreparedStatement pst = con.prepareStatement(
-                     "SELECT er.assignment_id, er.event_id, " +
-                     "       CONCAT(c.client_name,' (',e.event_date,')') AS event_label, " +
-                     "       r.resource_name, er.quantity, r.cost_per_item, er.total_cost " +
-                     "FROM event_resources er " +
-                     "JOIN events e ON er.event_id=e.event_id " +
-                     "JOIN clients c ON e.client_id=c.client_id " +
-                     "JOIN resources r ON er.resource_id=r.resource_id " +
-                     "WHERE LOWER(er.event_id) LIKE ? OR LOWER(r.resource_name) LIKE ? " +
-                     "   OR LOWER(c.client_name) LIKE ? ORDER BY er.assignment_id DESC")) {
-            pst.setString(1, q); pst.setString(2, q); pst.setString(3, q);
+                PreparedStatement pst = con.prepareStatement(
+                        "SELECT er.assignment_id, er.event_id, " +
+                                "       CONCAT(c.client_name,' (',e.event_date,')') AS event_label, " +
+                                "       r.resource_name, er.quantity, r.cost_per_item, er.total_cost " +
+                                "FROM event_resources er " +
+                                "JOIN events e ON er.event_id=e.event_id " +
+                                "JOIN clients c ON e.client_id=c.client_id " +
+                                "JOIN resources r ON er.resource_id=r.resource_id " +
+                                "WHERE LOWER(er.event_id) LIKE ? OR LOWER(r.resource_name) LIKE ? " +
+                                "   OR LOWER(c.client_name) LIKE ? ORDER BY er.assignment_id DESC")) {
+            pst.setString(1, q);
+            pst.setString(2, q);
+            pst.setString(3, q);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                tableModel.addRow(new Object[]{
-                    rs.getString("assignment_id"), rs.getString("event_id"),
-                    rs.getString("event_label"),   rs.getString("resource_name"),
-                    rs.getInt("quantity"),          rs.getDouble("cost_per_item"),
-                    rs.getDouble("total_cost")
+                tableModel.addRow(new Object[] {
+                        rs.getString("assignment_id"), rs.getString("event_id"),
+                        rs.getString("event_label"), rs.getString("resource_name"),
+                        rs.getInt("quantity"), rs.getDouble("cost_per_item"),
+                        rs.getDouble("total_cost")
                 });
             }
-        } catch (Exception ex) { logger.log(Level.WARNING, "Filter error", ex); }
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Filter error", ex);
+        }
         updateRowCount();
     }
 
     private boolean assignmentExists(String eventId, String resourceId) {
         try (Connection con = DBConnect.connect();
-             PreparedStatement pst = con.prepareStatement(
-                     "SELECT 1 FROM event_resources WHERE event_id=? AND resource_id=?")) {
-            pst.setString(1, eventId); pst.setString(2, resourceId);
+                PreparedStatement pst = con.prepareStatement(
+                        "SELECT 1 FROM event_resources WHERE event_id=? AND resource_id=?")) {
+            pst.setString(1, eventId);
+            pst.setString(2, resourceId);
             return pst.executeQuery().next();
-        } catch (Exception ex) { return false; }
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     private void updateExistingQty(String eventId, String resourceId, int additionalQty) {
         try (Connection con = DBConnect.connect()) {
-            double unitCost = 0; int curQty = 0; String assignId = "";
+            double unitCost = 0;
+            int curQty = 0;
+            String assignId = "";
             try (PreparedStatement pst = con.prepareStatement(
                     "SELECT er.assignment_id, er.quantity, r.cost_per_item " +
-                    "FROM event_resources er JOIN resources r ON er.resource_id=r.resource_id " +
-                    "WHERE er.event_id=? AND er.resource_id=?")) {
-                pst.setString(1, eventId); pst.setString(2, resourceId);
+                            "FROM event_resources er JOIN resources r ON er.resource_id=r.resource_id " +
+                            "WHERE er.event_id=? AND er.resource_id=?")) {
+                pst.setString(1, eventId);
+                pst.setString(2, resourceId);
                 ResultSet rs = pst.executeQuery();
                 if (rs.next()) {
                     assignId = rs.getString("assignment_id");
-                    curQty   = rs.getInt("quantity");
+                    curQty = rs.getInt("quantity");
                     unitCost = rs.getDouble("cost_per_item");
                 }
             }
             int newQty = curQty + additionalQty;
             try (PreparedStatement pst = con.prepareStatement(
                     "UPDATE event_resources SET quantity=?, total_cost=? WHERE assignment_id=?")) {
-                pst.setInt(1, newQty); pst.setDouble(2, newQty * unitCost); pst.setString(3, assignId);
+                pst.setInt(1, newQty);
+                pst.setDouble(2, newQty * unitCost);
+                pst.setString(3, assignId);
                 pst.executeUpdate();
             }
             showInfo("Quantity updated to " + newQty + " (+" + additionalQty + ").");
-        } catch (Exception ex) { showError("Update failed: " + ex.getMessage()); }
+        } catch (Exception ex) {
+            showError("Update failed: " + ex.getMessage());
+        }
     }
 
     private String generateAssignmentId() {
         try (Connection con = DBConnect.connect();
-             PreparedStatement pst = con.prepareStatement(
-                     "SELECT MAX(assignment_id) AS max_id FROM event_resources");
-             ResultSet rs = pst.executeQuery()) {
+                PreparedStatement pst = con.prepareStatement(
+                        "SELECT MAX(assignment_id) AS max_id FROM event_resources");
+                ResultSet rs = pst.executeQuery()) {
             if (rs.next() && rs.getString("max_id") != null) {
                 return String.format("ASG-%04d",
                         Integer.parseInt(rs.getString("max_id").substring(4)) + 1);
             }
-        } catch (Exception ex) { logger.log(Level.WARNING, "ID gen error", ex); }
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "ID gen error", ex);
+        }
         return "ASG-0001";
     }
 
     private String getSelectedEventId() {
         Object o = cmbEvent.getSelectedItem();
-        if (o == null) return null;
+        if (o == null)
+            return null;
         String s = o.toString().trim();
-        if (s.isEmpty() || s.equals("Select Event")) return null;
+        if (s.isEmpty() || s.equals("Select Event"))
+            return null;
         return s.split(" - ")[0].trim();
     }
 
     private String getSelectedResourceId() {
         Object o = cmbResource.getSelectedItem();
-        if (o == null) return null;
+        if (o == null)
+            return null;
         String s = o.toString().trim();
-        if (s.isEmpty() || s.equals("Select Resource")) return null;
+        if (s.isEmpty() || s.equals("Select Resource"))
+            return null;
         return s.split(" - ")[0].trim();
     }
 
@@ -618,15 +754,45 @@ public class assign_resources extends javax.swing.JInternalFrame {
         lblRowCount.setText(n + (n == 1 ? " record" : " records"));
     }
 
-    private void showInfo (String m) { JOptionPane.showMessageDialog(this, m, "Success",    JOptionPane.INFORMATION_MESSAGE); }
-    private void showWarn (String m) { JOptionPane.showMessageDialog(this, m, "Validation", JOptionPane.WARNING_MESSAGE);     }
-    private void showError(String m) { JOptionPane.showMessageDialog(this, m, "Error",      JOptionPane.ERROR_MESSAGE);       }
+    private void showInfo(String m) {
+        JOptionPane.showMessageDialog(this, m, "Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void showWarn(String m) {
+        JOptionPane.showMessageDialog(this, m, "Validation", JOptionPane.WARNING_MESSAGE);
+    }
+
+    private void showError(String m) {
+        JOptionPane.showMessageDialog(this, m, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void openAssignSupplier() {
+        String eventId = getSelectedEventId();
+        if (eventId == null || eventId.trim().isEmpty() || eventId.equals("Select Event")) {
+            showWarn("Please select an Event before assigning a supplier.");
+            return;
+        }
+        assign_suppliers as = new assign_suppliers(eventId);
+        JDesktopPane desktop = this.getDesktopPane();
+        if (desktop != null) {
+            desktop.removeAll();
+            desktop.add(as).setVisible(true);
+            desktop.repaint();
+        } else {
+            // Fallback if not added to desktop pane
+            as.setVisible(true);
+        }
+    }
+
+
+
 
     // =========================================================================
-    //  NetBeans generated code — DO NOT MODIFY
-    //  (Mirrors the assign_resources.form XML exactly)
+    // NetBeans generated code — DO NOT MODIFY
+    // (Mirrors the assign_resources.form XML exactly)
     // =========================================================================
     @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -741,7 +907,7 @@ public class assign_resources extends javax.swing.JInternalFrame {
         btnClear.addActionListener(this::btnClearActionPerformed);
         jPanel2.add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(213, 374, 170, 40));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 64, 400, 520));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 64, 420, 510));
 
         jPanel3.setBackground(new java.awt.Color(24, 24, 38));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -812,8 +978,11 @@ public class assign_resources extends javax.swing.JInternalFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        try { javax.swing.UIManager.setLookAndFeel(new FlatDarkLaf()); }
-        catch (Exception ex) { logger.log(Level.SEVERE, null, ex); }
+        try {
+            javax.swing.UIManager.setLookAndFeel(new FlatDarkLaf());
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, null, ex);
+        }
         java.awt.EventQueue.invokeLater(() -> new assign_resources().setVisible(true));
     }
 

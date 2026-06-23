@@ -36,6 +36,11 @@ public class Package_add extends javax.swing.JFrame {
     public Package_add() {
         initComponents();
         lblNextPackageId.setText(packageIdGenarate());
+        
+        //UITheme.removeInternalFrameChrome(this);
+        customizeUI();
+        setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+        
         buildUpdateButton();
         setToAddMode();
     }
@@ -44,6 +49,11 @@ public class Package_add extends javax.swing.JFrame {
         initComponents();
         this.aM = admin;
         lblNextPackageId.setText(packageIdGenarate());
+        
+        //UITheme.removeInternalFrameChrome(this);
+        customizeUI();
+        setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+        
         buildUpdateButton();
         setToAddMode();
     }
@@ -51,10 +61,7 @@ public class Package_add extends javax.swing.JFrame {
     /** Creates the Update button  and adds it next to jButton1. */
     private void buildUpdateButton() {
         btnUpdate = new javax.swing.JButton("UPDATE PACKAGE");
-        btnUpdate.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
-        btnUpdate.setBackground(new java.awt.Color(40, 120, 40));
-        btnUpdate.setForeground(java.awt.Color.WHITE);
-        btnUpdate.setFocusPainted(false);
+        UITheme.styleButton(btnUpdate, UITheme.BTN_BLUE);
         btnUpdate.setPreferredSize(new java.awt.Dimension(156, 41));
         btnUpdate.addActionListener(e -> doUpdate());
         // Add to jPanel5 at the same position as jButton1 but hidden initially
@@ -122,9 +129,8 @@ public class Package_add extends javax.swing.JFrame {
         txtPacPrice = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setResizable(false);
 
-        jPanel5.setBackground(new java.awt.Color(26, 26, 36));
+        jPanel5.setBackground(UITheme.BG_DEEP);
 
         jLabel17.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel17.setText("EVENT PACKAGE ADD");
@@ -309,6 +315,24 @@ public class Package_add extends javax.swing.JFrame {
     private javax.swing.JTextField txtPacName;
     private javax.swing.JTextField txtPacPrice;
     // End of variables declaration//GEN-END:variables
+    
+    private void customizeUI() {
+        getContentPane().setBackground(UITheme.BG_DEEP);
+        
+        UITheme.styleTextField(txtPacName);
+        UITheme.styleTextField(txtPacPrice);
+        UITheme.styleButton(jButton1, UITheme.BTN_BLUE);
+        
+        txtPacDescription.setBackground(UITheme.BG_CARD);
+        txtPacDescription.setForeground(UITheme.FG_WHITE);
+        
+        javax.swing.JLabel[] labels = {
+            jLabel17, jLabel18, jLabel22, jLabel23, jLabel24, lblNextPackageId
+        };
+        for (javax.swing.JLabel lbl : labels) {
+            lbl.setForeground(UITheme.FG_WHITE);
+        }
+    }
 
     private String packageIdGenarate() {
         String newId = "P-0001";  // default ID

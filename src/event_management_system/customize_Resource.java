@@ -16,7 +16,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
-public class customize_Resource extends javax.swing.JFrame {
+public class customize_Resource extends javax.swing.JInternalFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(customize_Resource.class.getName());
 
@@ -33,6 +33,10 @@ public class customize_Resource extends javax.swing.JFrame {
      */
     public customize_Resource(manage_Bookings parentForm, String packageId) {
         initComponents();
+        
+        UITheme.removeInternalFrameChrome(this);
+        customizeUI();
+        setClosable(true);
 
         this.parentForm = parentForm;
         this.selectedPackageId = packageId;
@@ -225,7 +229,7 @@ public class customize_Resource extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(26, 26, 28));
+        jPanel1.setBackground(UITheme.BG_DEEP);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tblResources.setModel(new javax.swing.table.DefaultTableModel(
@@ -276,7 +280,7 @@ public class customize_Resource extends javax.swing.JFrame {
         jLabel2.setText("Total Price");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 73, 195, 41));
 
-        jPanel2.setBackground(new java.awt.Color(24, 24, 38));
+        jPanel2.setBackground(UITheme.BG_CARD);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(230, 230, 255));
@@ -539,6 +543,28 @@ public class customize_Resource extends javax.swing.JFrame {
     private javax.swing.JTextField txtTotalAmount;
     // End of variables declaration//GEN-END:variables
 
+    
+    private void customizeUI() {
+        getContentPane().setBackground(UITheme.BG_DEEP);
+        
+        UITheme.styleComboBox(cmbPackage);
+        UITheme.styleComboBox(cmbItems);
+        UITheme.styleSpinner(spnQty);
+        UITheme.styleTextField(txtTotalAmount);
+        
+        UITheme.styleButton(btnAddItem, UITheme.BTN_BLUE);
+        UITheme.styleButton(btnRemoveItem, UITheme.BTN_RED);
+        UITheme.styleButton(btnConfirm, new java.awt.Color(34, 139, 34));
+        
+        UITheme.styleTable(tblResources);
+        
+        javax.swing.JLabel[] labels = {
+            jLabel1, jLabel2, jLabel3, jLabel4
+        };
+        for (javax.swing.JLabel lbl : labels) {
+            lbl.setForeground(UITheme.FG_WHITE);
+        }
+    }
     
     private void calculateTableTotal() {
        DefaultTableModel model = (DefaultTableModel) tblResources.getModel();

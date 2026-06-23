@@ -146,35 +146,15 @@ public class Loging extends javax.swing.JFrame {
     }// GEN-LAST:event_txtUsernameActionPerformed
 
     private void btnLogingActionPerformed(java.awt.event.ActionEvent evt) {
-//        txtUsername.setText("S-1000");
-//        txtPassword.setText("2");
-
         String enteredUsername = txtUsername.getText().trim();
-        char[] passwordChars = txtPassword.getPassword();
+        char[] passwordChars   = txtPassword.getPassword();
         String enteredPassword = new String(passwordChars).trim();
+        java.util.Arrays.fill(passwordChars, ' '); // wipe char array
 
-        if (enteredUsername.isEmpty() || enteredPassword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter both username and password.", "Warning", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        if (conn != null) {
-            Staff staff = CheckStaff(enteredUsername, enteredPassword);
-
-            if (staff != null) {
-                JOptionPane.showMessageDialog(this, "Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                new Dashboard(staff).setVisible(true);
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(null, "Please enter correct username and password.", "Login Failed", JOptionPane.ERROR_MESSAGE);
-                txtPassword.setText("");
-                txtPassword.requestFocus();
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "DB not connected!", "Database Error", JOptionPane.ERROR_MESSAGE);
-        }
-
+        // Delegate ALL authentication (including first-time reset) to performLogin
+        performLogin(enteredUsername, enteredPassword);
     }
+
 
     private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtPasswordActionPerformed
         // TODO add your handling code here:
@@ -249,6 +229,113 @@ public class Loging extends javax.swing.JFrame {
     private void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             btnLoging.doClick();
+        }
+    }
+
+    /**
+     * Core authentication method with first-time password-reset enforcement.
+     *
+     * Flow:
+     *  1. Hash the entered password and query the staff table.
+     *  2. On match, read first_time_log column.
+     *     a) first_time_log == 0 → open First_time_log dialog to force a new password.
+     *        If the user successfully sets one, proceed to Dashboard.
+     *        If the user cancels, abort — do NOT open Dashboard.
+     *     b) first_time_log == 1 → normal login; open Dashboard immediately.
+     *
+     * @param username  staff_id, staff_email, or national Id entered by the user
+     * @param password  plain-text password entered by the user
+     */
+    private void performLogin(String username, String password) {
+        // ── 1. Basic null / empty guard ───────────────────────────────────────
+        if (username == null || username.trim().isEmpty()
+                || password == null || password.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Please enter both username and password.",
+                "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // ── 2. Ensure DB connection ───────────────────────────────────────────
+        if (conn == null) {
+            conn = DBConnect.connect();
+        }
+        if (conn == null) {
+            JOptionPane.showMessageDialog(this,
+                "Cannot connect to the database!\nPlease check your MySQL server.",
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // ── 3. Query staff table ──────────────────────────────────────────────
+        try {
+            String encryptedPassword = encryptMyPassword(password);
+            String query =
+                "SELECT *, first_time_log FROM staff " +
+                "WHERE (staff_id = ? OR staff_email = ? OR Id = ?) AND password = ?";
+            pst = conn.prepareStatement(query);
+            pst.setString(1, username);
+            pst.setString(2, username);
+            pst.setString(3, username);
+            pst.setString(4, encryptedPassword);
+            rs = pst.executeQuery();
+
+            if (!rs.next()) {
+                // ── Wrong credentials ─────────────────────────────────────────
+                JOptionPane.showMessageDialog(this,
+                    "Incorrect username or password.\nPlease try again.",
+                    "Login Failed", JOptionPane.ERROR_MESSAGE);
+                txtPassword.setText("");
+                txtPassword.requestFocus();
+                return;
+            }
+
+            // ── 4. Credentials OK — build Staff object ────────────────────────
+            Staff staff = new Staff(
+                rs.getString(1),   // staff_id
+                rs.getString(2),   // staff_name
+                rs.getInt(3),      // contact_number
+                rs.getString(4),   // staff_email
+                rs.getString(5),   // staff_address
+                rs.getString(6),   // Id (NIC)
+                rs.getString(7)    // role
+            );
+            int firstTimeLog = rs.getInt("first_time_log");
+
+            // Store in global session
+            UserSession.loggedUserRole = staff.getRole();
+            UserSession.loggedUserName = staff.getStaff_name();
+
+            // ── 5. First-time login? ──────────────────────────────────────────
+            if (firstTimeLog == 0) {
+                // Open the force-password-reset dialog (MODAL)
+                First_time_log resetDialog = new First_time_log(this, staff);
+                resetDialog.setVisible(true);
+
+                // After the dialog closes, check whether the user actually changed it
+                if (!resetDialog.isPasswordChanged()) {
+                    // User cancelled — abort login entirely
+                    JOptionPane.showMessageDialog(this,
+                        "Password change was cancelled.\nYou must set a new password on your first login.",
+                        "Login Aborted", JOptionPane.WARNING_MESSAGE);
+                    UserSession.clear();
+                    return;
+                }
+                // Password changed successfully — fall through to Dashboard
+            }
+
+            // ── 6. Normal (or post-reset) login — open Dashboard ──────────────
+            JOptionPane.showMessageDialog(this,
+                "Welcome, " + staff.getStaff_name() + "!\nLogin successful.",
+                "Success", JOptionPane.INFORMATION_MESSAGE);
+            new Dashboard(staff).setVisible(true);
+            this.dispose();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Loging.class.getName()).log(Level.SEVERE, "Login query failed", ex);
+            JOptionPane.showMessageDialog(this,
+                "A database error occurred:\n" + ex.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

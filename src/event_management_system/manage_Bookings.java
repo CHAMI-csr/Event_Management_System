@@ -36,6 +36,7 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
     ResultSet rs;
     private boolean isUpdating = false;
     private java.util.List<Object[]> customizedItems = null;
+    private client_Details clientDetailsInstance = null;
 
     public manage_Bookings() {
         initComponents();
@@ -44,9 +45,9 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
 
         NextBid.setText(BookingIdGenarate()); // initComponents() පසුව call කිරීම
 
-        this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
-        ui.setNorthPane(null);
+        UITheme.removeInternalFrameChrome(this);
+        customizeUI();
+
         txtTotalAmount.setEditable(false);
         txtBalance.setEditable(false);
         // cmbContact editor field ගෙන KeyListener එක add කිරීම
@@ -197,13 +198,13 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
         setPreferredSize(new java.awt.Dimension(1060, 600));
         setVisible(true);
 
-        jPanel1.setBackground(new java.awt.Color(26, 26, 28));
+        jPanel1.setBackground(UITheme.BG_DEEP);
         jPanel1.setMaximumSize(new java.awt.Dimension(1060, 600));
         jPanel1.setMinimumSize(new java.awt.Dimension(1060, 600));
         jPanel1.setPreferredSize(new java.awt.Dimension(1060, 600));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(24, 24, 38));
+        jPanel2.setBackground(UITheme.BG_CARD);
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(230, 230, 255));
@@ -289,7 +290,7 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 0, 540, 620));
 
-        jPanel3.setBackground(new java.awt.Color(24, 24, 38));
+        jPanel3.setBackground(UITheme.BG_CARD);
         jPanel3.setForeground(new java.awt.Color(24, 24, 38));
         jPanel3.setToolTipText("");
 
@@ -516,7 +517,19 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
 
         // Open customize_Resource with parent reference and package ID
         customize_Resource cr = new customize_Resource(this, selectedPkgId);
-        cr.setVisible(true);
+        
+        // Add customize_Resource to the parent JDesktopPane
+        javax.swing.JDesktopPane desktop = this.getDesktopPane();
+        if (desktop != null) {
+            desktop.add(cr);
+            cr.setVisible(true);
+            try {
+                cr.setSelected(true);
+            } catch (java.beans.PropertyVetoException e) {
+            }
+        } else {
+            cr.setVisible(true);
+        }
     }// GEN-LAST:event_btnCustomizeActionPerformed
 
     /**
@@ -589,6 +602,34 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
     // =====================================================================
     // PUBLIC METHOD: Called by customize_Resource to pass customized data
     // =====================================================================
+    private void customizeUI() {
+        getContentPane().setBackground(UITheme.BG_DEEP);
+        
+        UITheme.styleTextField(txtTotalAmount);
+        UITheme.styleTextField(txtAdvance);
+        UITheme.styleTextField(txtBalance);
+        UITheme.styleComboBox(cmbPaymentStatus);
+        UITheme.styleButton(jButton1, UITheme.BTN_BLUE);
+        
+        UITheme.styleComboBox(cmbContact);
+        UITheme.styleTextField(txtName);
+        UITheme.styleComboBox(cmbPackage);
+        UITheme.styleComboBox(txtStartTime);
+        UITheme.styleTextField(txtVenue);
+        UITheme.styleSpinner(txtGuestCount);
+        UITheme.styleButton(btnCustomize, new java.awt.Color(200, 130, 30));
+        
+        // Apply label styling
+        javax.swing.JLabel[] labels = {
+            jLabel1, jLabel2, jLabel3, jLabel4, jLabel5, jLabel6, jLabel7, jLabel8, jLabel9,
+            jLabel10, jLabel11, jLabel12, jLabel17
+        };
+        for (javax.swing.JLabel lbl : labels) {
+            lbl.setForeground(UITheme.FG_WHITE);
+        }
+        jLabel1.setFont(UITheme.F_TITLE);
+    }
+
     public void setCustomizedData(double totalAmount, java.util.List<Object[]> items) {
         this.customizedItems = items;
         txtTotalAmount.setText(String.format("%.2f", totalAmount));
@@ -1081,4 +1122,20 @@ public class manage_Bookings extends javax.swing.JInternalFrame {
 
     }
 
+    private void btnOpenClientDetailsActionPerformed(java.awt.event.ActionEvent evt) {
+        if (clientDetailsInstance == null || clientDetailsInstance.isClosed()) {
+            clientDetailsInstance = new client_Details();
+            getDesktopPane().add(clientDetailsInstance);
+            clientDetailsInstance.setVisible(true);
+        } else {
+            try {
+                clientDetailsInstance.setSelected(true);
+            } catch (java.beans.PropertyVetoException e) {
+                e.printStackTrace();
+            }
+            clientDetailsInstance.toFront();
+        }
+    }
+
+    private javax.swing.JButton btnOpenClientDetails;
 }

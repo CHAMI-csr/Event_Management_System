@@ -37,8 +37,8 @@ public class client_Details extends javax.swing.JInternalFrame {
     public client_Details() {
         initComponents();
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
-        ui.setNorthPane(null);
+        UITheme.removeInternalFrameChrome(this);
+        customizeUI();
         loadClientTable();
         btnUpdateClient.setVisible(false);
         btnCancelClient.setVisible(false);
@@ -92,7 +92,7 @@ public class client_Details extends javax.swing.JInternalFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(1060, 600));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(24, 24, 38));
+        jPanel2.setBackground(UITheme.BG_CARD);
         jPanel2.setPreferredSize(new java.awt.Dimension(370, 600));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -204,7 +204,7 @@ public class client_Details extends javax.swing.JInternalFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 370, 600));
 
-        jPanel3.setBackground(new java.awt.Color(24, 24, 38));
+        jPanel3.setBackground(UITheme.BG_DEEP);
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jTableClients.setBackground(new java.awt.Color(51, 51, 51));
@@ -602,5 +602,31 @@ public class client_Details extends javax.swing.JInternalFrame {
             System.getLogger(client_Details.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
 
+    }
+    
+    private void customizeUI() {
+        getContentPane().setBackground(UITheme.BG_DEEP);
+        
+        UITheme.styleTextField(txtIdNo);
+        UITheme.styleTextField(txtName);
+        UITheme.styleTextField(txtPhone);
+        UITheme.styleTextField(txtEmail);
+        UITheme.styleTextField(txtAddress);
+        UITheme.styleTextField(txtSearch);
+        
+        UITheme.styleButton(btnAddClient, UITheme.BTN_BLUE);
+        UITheme.styleButton(btnUpdateClient, new java.awt.Color(0, 102, 179));
+        UITheme.styleButton(btnDelClient, UITheme.BTN_RED);
+        UITheme.styleButton(btnCancelClient, UITheme.BTN_GREY);
+        
+        UITheme.styleTable(jTableClients);
+        
+        javax.swing.JLabel[] labels = {
+            jLabel1, jLabel2, jLabel3, jLabel4, jLabel5, jLabel6, jLabel7
+        };
+        for (javax.swing.JLabel lbl : labels) {
+            lbl.setForeground(UITheme.FG_WHITE);
+        }
+        jLabel1.setFont(UITheme.F_TITLE);
     }
 }

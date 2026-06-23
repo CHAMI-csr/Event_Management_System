@@ -40,7 +40,11 @@ public class Item_Management extends javax.swing.JFrame {
         TableColumn hiddenColumn = itemTable.getColumnModel().getColumn(0); // Targets index 1
         itemTable.removeColumn(hiddenColumn);
         TableColumn hiddenColumn1 = tbPackageResources.getColumnModel().getColumn(0); // Targets index 1
-        itemTable.removeColumn(hiddenColumn1);
+        tbPackageResources.removeColumn(hiddenColumn1);
+        
+        //UITheme.removeInternalFrameChrome(this);
+        customizeUI();
+        setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
 
         txtItemName.setEditable(false);
         txtUnitPrice.setEditable(false);
@@ -95,9 +99,8 @@ public class Item_Management extends javax.swing.JFrame {
         btnItemUpadate = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setResizable(false);
 
-        jPanel3.setBackground(new java.awt.Color(16, 6, 0));
+        jPanel3.setBackground(UITheme.BG_DEEP);
         jPanel3.setToolTipText("");
 
         package_id.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -150,10 +153,10 @@ public class Item_Management extends javax.swing.JFrame {
                 .addContainerGap(54, Short.MAX_VALUE))
         );
 
-        jPanel4.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel4.setBackground(UITheme.BG_DEEP);
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel5.setBackground(new java.awt.Color(26, 26, 36));
+        jPanel5.setBackground(UITheme.BG_CARD);
         jPanel5.setPreferredSize(new java.awt.Dimension(500, 529));
 
         itemTable.setBackground(new java.awt.Color(0, 0, 0));
@@ -212,7 +215,7 @@ public class Item_Management extends javax.swing.JFrame {
 
         jPanel4.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 480, -1));
 
-        jPanel1.setBackground(new java.awt.Color(26, 26, 36));
+        jPanel1.setBackground(UITheme.BG_CARD);
         jPanel1.setPreferredSize(new java.awt.Dimension(400, 529));
         jPanel1.setRequestFocusEnabled(false);
 
@@ -318,7 +321,7 @@ public class Item_Management extends javax.swing.JFrame {
 
         jPanel4.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(717, 0, 480, -1));
 
-        jPanel6.setBackground(new java.awt.Color(0, 12, 28));
+        jPanel6.setBackground(UITheme.BG_DEEP);
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         txtItemName.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -654,6 +657,31 @@ public class Item_Management extends javax.swing.JFrame {
     private javax.swing.JSpinner txtQty;
     private javax.swing.JTextField txtUnitPrice;
     // End of variables declaration//GEN-END:variables
+    
+    private void customizeUI() {
+        getContentPane().setBackground(UITheme.BG_DEEP);
+        
+        UITheme.styleTextField(txtItemName);
+        UITheme.styleTextField(txtUnitPrice);
+        UITheme.styleTextField(lblGrandTotal);
+        UITheme.styleTextField(lblEstimatePrice);
+        UITheme.styleSpinner(txtQty);
+        
+        UITheme.styleTable(itemTable);
+        UITheme.styleTable(tbPackageResources);
+        
+        UITheme.styleButton(btnItemAdd, UITheme.BTN_BLUE);
+        UITheme.styleButton(btnItemUpadate, new java.awt.Color(0, 102, 179));
+        UITheme.styleButton(btnUpdate, UITheme.BTN_BLUE);
+        
+        javax.swing.JLabel[] labels = {
+            jLabel1, jLabel2, jLabel3, jLabel4, jLabel5, jLabel6, jLabel7, jLabel8, jLabel9, jLabel10,
+            package_id, lblPackageName, lblPackagePrice
+        };
+        for (javax.swing.JLabel lbl : labels) {
+            lbl.setForeground(UITheme.FG_WHITE);
+        }
+    }
 
     private void detailsLoad(String pakage_Id) {
         String name, price;
