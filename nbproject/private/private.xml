@@ -3,25 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/Admin_Management.java</file>
             <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/Dashboard.java</file>
             <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/Loging.java</file>
             <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/Staff.java</file>
             <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/client_Details.java</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/DBConnect.java</file>
+            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/manage_Bookings.java</file>
             <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/assign_resources.java</file>
             <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/Package_add.java</file>
             <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/Item_Management.java</file>
+            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/DBConnect.java</file>
             <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/Suppliers_Management.java</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/staff_Log_History.java</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/customize_Resource.java</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/manage_Bookings.java</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/Billing%20Machine.png</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/Admin_Management.java</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/Event_Schedule.java</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/Billing_and_Cost.java</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/quotation.java</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/First_time_log.java</file>
-            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/Event%20Management%20logo.png</file>
+            <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/QuotationPDFGenerator.java</file>
             <file>file:/C:/Users/chamika/Documents/NetBeansProjects/Event_Management_System/src/event_management_system/assign_suppliers.java</file>
         </group>
     </open-files>
