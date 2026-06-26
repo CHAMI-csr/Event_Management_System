@@ -33,11 +33,32 @@ public class Dashboard extends javax.swing.JFrame {
         clickColor = new Color(90, 120, 240);
         Log_Loging(staff);
         lblID.setText(staff.getStaff_id());
+        lblName.setText(staff.getStaff_name());
+        lblRole.setText(staff.getRole());
 
         if (staff.getRole().equals("admin")) {
             menu_Am.setVisible(true);
+            menu_Mb.setBackground(defaultColor);
+            menu_Cd.setBackground(defaultColor);
+            menu_Ar.setBackground(defaultColor);
+            menu_Es.setBackground(defaultColor);
+            menu_Bc.setBackground(defaultColor);
+            menu_Am.setBackground(clickColor);
+            Admin_Management admin_Management = new Admin_Management();
+            jDesktopPanel.removeAll();
+            jDesktopPanel.add(admin_Management).setVisible(true);
         } else {
             menu_Am.setVisible(false);
+            manage_Bookings manage_Bookings = new manage_Bookings();
+            jDesktopPanel.removeAll();
+            jDesktopPanel.add(manage_Bookings).setVisible(true);
+            menu_Mb.setBackground(clickColor);
+            menu_Cd.setBackground(defaultColor);
+            menu_Ar.setBackground(defaultColor);
+            menu_Es.setBackground(defaultColor);
+            menu_Bc.setBackground(defaultColor);
+            menu_Am.setBackground(defaultColor);
+
         }
 
         menu_Mb.setBackground(defaultColor);
@@ -73,6 +94,9 @@ public class Dashboard extends javax.swing.JFrame {
         menuName = new javax.swing.JLabel();
         lblID = new javax.swing.JLabel();
         lblID1 = new javax.swing.JLabel();
+        lblName = new javax.swing.JLabel();
+        lblName1 = new javax.swing.JLabel();
+        lblRole = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         menu_Mb = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -107,26 +131,54 @@ public class Dashboard extends javax.swing.JFrame {
         lblID1.setForeground(new java.awt.Color(230, 230, 255));
         lblID1.setText("Your Staff ID :");
 
+        lblName.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblName.setForeground(new java.awt.Color(255, 255, 255));
+        lblName.setText("name");
+
+        lblName1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblName1.setForeground(new java.awt.Color(255, 255, 255));
+        lblName1.setText("WELLCOME ,");
+
+        lblRole.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        lblRole.setForeground(new java.awt.Color(255, 255, 255));
+        lblRole.setText("role");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(menuName, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 788, Short.MAX_VALUE)
-                .addComponent(lblID1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblID, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(19, 19, 19))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 610, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(lblID1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblID, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(19, 19, 19))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(lblName1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblName, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(lblRole, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(menuName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(menuName, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblID1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblID, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblName, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblName1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblRole, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -429,15 +481,15 @@ public class Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_menu_ArMouseClicked
 
     private void menu_BcMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menu_BcMouseClicked
-      Billing_and_Cost bc =new Billing_and_Cost();
-      jDesktopPanel.removeAll();
-      jDesktopPanel.add(bc).setVisible(true);
+        Billing_and_Cost bc = new Billing_and_Cost();
+        jDesktopPanel.removeAll();
+        jDesktopPanel.add(bc).setVisible(true);
     }//GEN-LAST:event_menu_BcMouseClicked
 
     private void menu_EsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menu_EsMouseClicked
-       Event_Schedule ev = new Event_Schedule();
-       jDesktopPanel.removeAll();
-       jDesktopPanel.add(ev).setVisible(true);
+        Event_Schedule ev = new Event_Schedule();
+        jDesktopPanel.removeAll();
+        jDesktopPanel.add(ev).setVisible(true);
     }//GEN-LAST:event_menu_EsMouseClicked
 
     private void menu_MbMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_menu_MbMousePressed
@@ -549,6 +601,9 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lblID;
     private javax.swing.JLabel lblID1;
+    private javax.swing.JLabel lblName;
+    private javax.swing.JLabel lblName1;
+    private javax.swing.JLabel lblRole;
     private javax.swing.JLabel menuName;
     private javax.swing.JPanel menu_Am;
     private javax.swing.JPanel menu_Ar;
@@ -595,7 +650,6 @@ public class Dashboard extends javax.swing.JFrame {
     }
 
     // --- Custom Dashboard Methods ---
-
     private void applyRoleRestrictions() {
         if (UserSession.loggedUserRole != null && UserSession.loggedUserRole.equals("Staff")) {
             try {
@@ -623,7 +677,8 @@ public class Dashboard extends javax.swing.JFrame {
                     if (rs1.next()) {
                         try {
                             lblTotalEvents.setText(String.valueOf(rs1.getInt("total")));
-                        } catch (Exception e) {}
+                        } catch (Exception e) {
+                        }
                     }
                 }
 
@@ -634,7 +689,8 @@ public class Dashboard extends javax.swing.JFrame {
                         double rev = rs2.getDouble("revenue");
                         try {
                             lblRevenue.setText(String.format("Rs. %.2f", rev));
-                        } catch (Exception e) {}
+                        } catch (Exception e) {
+                        }
                     }
                 }
 
@@ -645,7 +701,8 @@ public class Dashboard extends javax.swing.JFrame {
                         double pend = rs3.getDouble("pending");
                         try {
                             lblPendingDebts.setText(String.format("Rs. %.2f", pend));
-                        } catch (Exception e) {}
+                        } catch (Exception e) {
+                        }
                     }
                 }
 
@@ -655,7 +712,8 @@ public class Dashboard extends javax.swing.JFrame {
                     if (rs4.next()) {
                         try {
                             lblLowStock.setText(String.valueOf(rs4.getInt("low_stock")));
-                        } catch (Exception e) {}
+                        } catch (Exception e) {
+                        }
                     }
                 }
             }

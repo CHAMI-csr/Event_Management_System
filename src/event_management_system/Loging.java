@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import java.util.Arrays;
 
 /**
  *
@@ -149,7 +150,7 @@ public class Loging extends javax.swing.JFrame {
         String enteredUsername = txtUsername.getText().trim();
         char[] passwordChars   = txtPassword.getPassword();
         String enteredPassword = new String(passwordChars).trim();
-        java.util.Arrays.fill(passwordChars, ' '); // wipe char array
+        Arrays.fill(passwordChars, ' '); // wipe char array
 
         // Delegate ALL authentication (including first-time reset) to performLogin
         performLogin(enteredUsername, enteredPassword);
@@ -201,30 +202,7 @@ public class Loging extends javax.swing.JFrame {
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 
-    private Staff CheckStaff(String enteredUsername, String enteredPassword) {
-        try {
-            String finalPassword = encryptMyPassword(enteredPassword);
-            String msg = "select * from staff where (staff_id = ? OR staff_email = ? OR Id = ?) and password=?";
-            pst = conn.prepareStatement(msg);
-            pst.setString(1, enteredUsername);
-            pst.setString(2, enteredUsername);
-            pst.setString(3, enteredUsername);
-            pst.setString(4, finalPassword);
-            
-           
-
-            rs = pst.executeQuery();
-            System.out.println(finalPassword);
-
-            if (rs.next()) {
-                return new Staff(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7));
-            }
-        } catch (SQLException ex) {
-            System.getLogger(Loging.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-        return null;
-
-    }
+    
 
     private void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -232,22 +210,8 @@ public class Loging extends javax.swing.JFrame {
         }
     }
 
-    /**
-     * Core authentication method with first-time password-reset enforcement.
-     *
-     * Flow:
-     *  1. Hash the entered password and query the staff table.
-     *  2. On match, read first_time_log column.
-     *     a) first_time_log == 0 → open First_time_log dialog to force a new password.
-     *        If the user successfully sets one, proceed to Dashboard.
-     *        If the user cancels, abort — do NOT open Dashboard.
-     *     b) first_time_log == 1 → normal login; open Dashboard immediately.
-     *
-     * @param username  staff_id, staff_email, or national Id entered by the user
-     * @param password  plain-text password entered by the user
-     */
+    
     private void performLogin(String username, String password) {
-        // ── 1. Basic null / empty guard ───────────────────────────────────────
         if (username == null || username.trim().isEmpty()
                 || password == null || password.trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -256,7 +220,7 @@ public class Loging extends javax.swing.JFrame {
             return;
         }
 
-        // ── 2. Ensure DB connection ───────────────────────────────────────────
+       
         if (conn == null) {
             conn = DBConnect.connect();
         }
@@ -267,9 +231,10 @@ public class Loging extends javax.swing.JFrame {
             return;
         }
 
-        // ── 3. Query staff table ──────────────────────────────────────────────
+      
         try {
             String encryptedPassword = encryptMyPassword(password);
+            System.out.println(encryptedPassword);
             String query =
                 "SELECT *, first_time_log FROM staff " +
                 "WHERE (staff_id = ? OR staff_email = ? OR Id = ?) AND password = ?";
@@ -281,7 +246,6 @@ public class Loging extends javax.swing.JFrame {
             rs = pst.executeQuery();
 
             if (!rs.next()) {
-                // ── Wrong credentials ─────────────────────────────────────────
                 JOptionPane.showMessageDialog(this,
                     "Incorrect username or password.\nPlease try again.",
                     "Login Failed", JOptionPane.ERROR_MESSAGE);
@@ -290,7 +254,6 @@ public class Loging extends javax.swing.JFrame {
                 return;
             }
 
-            // ── 4. Credentials OK — build Staff object ────────────────────────
             Staff staff = new Staff(
                 rs.getString(1),   // staff_id
                 rs.getString(2),   // staff_name
@@ -302,29 +265,28 @@ public class Loging extends javax.swing.JFrame {
             );
             int firstTimeLog = rs.getInt("first_time_log");
 
-            // Store in global session
             UserSession.loggedUserRole = staff.getRole();
             UserSession.loggedUserName = staff.getStaff_name();
 
-            // ── 5. First-time login? ──────────────────────────────────────────
+           
             if (firstTimeLog == 0) {
-                // Open the force-password-reset dialog (MODAL)
+               
                 First_time_log resetDialog = new First_time_log(this, staff);
                 resetDialog.setVisible(true);
 
-                // After the dialog closes, check whether the user actually changed it
+              
                 if (!resetDialog.isPasswordChanged()) {
-                    // User cancelled — abort login entirely
+                  
                     JOptionPane.showMessageDialog(this,
                         "Password change was cancelled.\nYou must set a new password on your first login.",
                         "Login Aborted", JOptionPane.WARNING_MESSAGE);
                     UserSession.clear();
                     return;
                 }
-                // Password changed successfully — fall through to Dashboard
+             
             }
 
-            // ── 6. Normal (or post-reset) login — open Dashboard ──────────────
+       
             JOptionPane.showMessageDialog(this,
                 "Welcome, " + staff.getStaff_name() + "!\nLogin successful.",
                 "Success", JOptionPane.INFORMATION_MESSAGE);

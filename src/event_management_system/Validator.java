@@ -14,14 +14,7 @@ public class Validator {
 
     private Validator() { /* static-only utility */ }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    /**
-     * Checks that a JTextField is not null and not blank.
-     *
-     * @param field     the text field to validate
-     * @param fieldName human-readable label shown in the error message
-     * @return true if valid, false otherwise (error popup shown)
-     */
+    
     public static boolean isNotEmpty(JTextField field, String fieldName) {
         if (field == null || field.getText() == null || field.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(
@@ -36,13 +29,7 @@ public class Validator {
         return true;
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    /**
-     * Checks that a String represents a valid decimal number.
-     *
-     * @param text the raw text to parse
-     * @return true if parseable as a double, false otherwise (error popup shown)
-     */
+    
     public static boolean isNumber(String text) {
         if (text == null || text.trim().isEmpty()) {
             JOptionPane.showMessageDialog(
@@ -67,13 +54,7 @@ public class Validator {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    /**
-     * Checks that a phone number is a 10-digit numeric string.
-     *
-     * @param phone the phone number text to validate
-     * @return true if valid, false otherwise (error popup shown)
-     */
+   
     public static boolean isValidPhone(String phone) {
         if (phone == null || phone.trim().isEmpty()) {
             JOptionPane.showMessageDialog(
