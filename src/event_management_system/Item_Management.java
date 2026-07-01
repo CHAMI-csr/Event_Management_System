@@ -15,6 +15,8 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.JSpinner.DefaultEditor;
+import javax.swing.JFormattedTextField;
 
 public class Item_Management extends javax.swing.JFrame {
 
@@ -26,7 +28,7 @@ public class Item_Management extends javax.swing.JFrame {
     PreparedStatement pst;
     ResultSet rs;
     Connection con = DBConnect.connect();
-    String itemPrice, package_Id, item_id;
+    String itemPrice, package_Id, item_id,package_re_id;
 
     public Item_Management(String package_Id) {
         initComponents();
@@ -35,13 +37,15 @@ public class Item_Management extends javax.swing.JFrame {
         loadItemTable();
         loadPackageResourcesTable(package_Id);
         this.package_Id = package_Id;
+        btnItemDelete.setVisible(false);
 
         // Hide the column from the view
         TableColumn hiddenColumn = itemTable.getColumnModel().getColumn(0); // Targets index 1
+        TableColumn hiddenColumn2 = itemTable.getColumnModel().getColumn(4); // Targets index 1
         itemTable.removeColumn(hiddenColumn);
-        TableColumn hiddenColumn1 = tbPackageResources.getColumnModel().getColumn(0); // Targets index 1
-        tbPackageResources.removeColumn(hiddenColumn1);
+        itemTable.removeColumn(hiddenColumn2);
         
+
         //UITheme.removeInternalFrameChrome(this);
         customizeUI();
         setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
@@ -97,10 +101,9 @@ public class Item_Management extends javax.swing.JFrame {
         lblSelectItem = new javax.swing.JLabel();
         lblSelectPackage = new javax.swing.JLabel();
         btnItemUpadate = new javax.swing.JButton();
+        btnItemDelete = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        jPanel3.setBackground(UITheme.BG_DEEP);
+        jPanel3.setBackground(new java.awt.Color(16, 6, 0));
         jPanel3.setToolTipText("");
 
         package_id.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -153,10 +156,10 @@ public class Item_Management extends javax.swing.JFrame {
                 .addContainerGap(54, Short.MAX_VALUE))
         );
 
-        jPanel4.setBackground(UITheme.BG_DEEP);
+        jPanel4.setBackground(new java.awt.Color(0, 0, 0));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel5.setBackground(UITheme.BG_CARD);
+        jPanel5.setBackground(new java.awt.Color(26, 26, 36));
         jPanel5.setPreferredSize(new java.awt.Dimension(500, 529));
 
         itemTable.setBackground(new java.awt.Color(0, 0, 0));
@@ -215,24 +218,24 @@ public class Item_Management extends javax.swing.JFrame {
 
         jPanel4.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 480, -1));
 
-        jPanel1.setBackground(UITheme.BG_CARD);
+        jPanel1.setBackground(new java.awt.Color(26, 26, 36));
         jPanel1.setPreferredSize(new java.awt.Dimension(400, 529));
         jPanel1.setRequestFocusEnabled(false);
 
         tbPackageResources.setBackground(new java.awt.Color(0, 0, 0));
         tbPackageResources.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Id", "resources name", "Quantity", "Price"
+                "Id", "resources name", "Quantity", "Price", "pakage_id"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                true, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -280,24 +283,23 @@ public class Item_Management extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnUpdate)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(lblGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(lblEstimatePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                    .addComponent(jLabel6))
-                .addContainerGap(10, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblEstimatePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jLabel6)
+                    .addComponent(btnUpdate, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -321,7 +323,7 @@ public class Item_Management extends javax.swing.JFrame {
 
         jPanel4.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(717, 0, 480, -1));
 
-        jPanel6.setBackground(UITheme.BG_DEEP);
+        jPanel6.setBackground(new java.awt.Color(0, 12, 28));
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         txtItemName.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -348,7 +350,7 @@ public class Item_Management extends javax.swing.JFrame {
 
         btnItemAdd.setText("ADD Resources");
         btnItemAdd.addActionListener(this::btnItemAddActionPerformed);
-        jPanel6.add(btnItemAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 380, 118, 39));
+        jPanel6.add(btnItemAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 400, 118, 39));
 
         lblSelectItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Circled Right.png"))); // NOI18N
         jPanel6.add(lblSelectItem, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 71, -1, 32));
@@ -358,7 +360,13 @@ public class Item_Management extends javax.swing.JFrame {
 
         btnItemUpadate.setText("UPDATE");
         btnItemUpadate.addActionListener(this::btnItemUpadateActionPerformed);
-        jPanel6.add(btnItemUpadate, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 380, 118, 39));
+        jPanel6.add(btnItemUpadate, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 400, 118, 39));
+
+        btnItemDelete.setBackground(new java.awt.Color(255, 51, 102));
+        btnItemDelete.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnItemDelete.setText("Delete");
+        btnItemDelete.addActionListener(this::btnItemDeleteActionPerformed);
+        jPanel6.add(btnItemDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 450, 118, 39));
 
         jPanel4.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 0, 240, 530));
 
@@ -397,7 +405,20 @@ public class Item_Management extends javax.swing.JFrame {
         tbPackageResources.clearSelection();
         btnItemAdd.setText("ADD ITEM");
         lblSelectPackage.setVisible(false);
-        txtQty.setValue(1);
+        btnItemDelete.setVisible(false);
+        
+        DefaultEditor spinnerEditor = (DefaultEditor) txtQty.getEditor();
+       JFormattedTextField txtField = spinnerEditor.getTextField();
+
+        // deret Focus 
+        txtField.requestFocusInWindow();
+
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                txtField.selectAll();
+            }
+        });
 
         int rowIndex = itemTable.getSelectedRow();
 
@@ -484,6 +505,7 @@ public class Item_Management extends javax.swing.JFrame {
             txtItemName.setText("");
             txtQty.setValue(0);
             txtUnitPrice.setText("");
+            calculateGrandTotal();
 
             loadPackageResourcesTable(packageId);
 
@@ -525,6 +547,7 @@ public class Item_Management extends javax.swing.JFrame {
         btnItemAdd.setVisible(false);
         itemTable.clearSelection();
         lblSelectItem.setVisible(false);
+        btnItemDelete.setVisible(true);
         int rowIndex = tbPackageResources.getSelectedRow();
         DefaultTableModel iModel = (DefaultTableModel) tbPackageResources.getModel();
 
@@ -532,6 +555,7 @@ public class Item_Management extends javax.swing.JFrame {
         String item_name = iModel.getValueAt(rowIndex, 1).toString();
         String item_qty = iModel.getValueAt(rowIndex, 2).toString();
         String item_total_price = iModel.getValueAt(rowIndex, 3).toString();
+        String package_re_id = iModel.getValueAt(rowIndex, 4).toString();
 
         txtItemName.setText(item_name);
 
@@ -554,6 +578,7 @@ public class Item_Management extends javax.swing.JFrame {
 
         txtUnitPrice.setText(item_total_price);
         this.item_id = selectedItemId;
+        this.package_re_id=package_re_id;
         lblSelectPackage.setVisible(true);
     }//GEN-LAST:event_tbPackageResourcesMouseClicked
 
@@ -598,6 +623,36 @@ public class Item_Management extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnItemUpadateActionPerformed
 
+    private void btnItemDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemDeleteActionPerformed
+        int ok = JOptionPane.showConfirmDialog(null, "Do you want to delete", "Delete", JOptionPane.YES_NO_OPTION);
+        if (ok == JOptionPane.YES_OPTION) {
+            try {
+
+                
+                // Database Update
+                String sql = "DELETE FROM package_resources WHERE id=? ";
+                PreparedStatement pst = con.prepareStatement(sql);
+                pst.setString(1, package_re_id);
+
+                pst.executeUpdate();
+
+                JOptionPane.showMessageDialog(this, "item Delete Successfully!");
+
+               loadPackageResourcesTable(package_Id);
+               txtItemName.setText("");
+               txtQty.setValue(0);
+               txtUnitPrice.setText("");
+               package_re_id=null;
+
+                
+
+            } catch (SQLException ex) {
+                System.getLogger(client_Details.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+
+        }
+    }//GEN-LAST:event_btnItemDeleteActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -624,6 +679,7 @@ public class Item_Management extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnItemAdd;
+    private javax.swing.JButton btnItemDelete;
     private javax.swing.JButton btnItemUpadate;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JTable itemTable;
@@ -657,23 +713,25 @@ public class Item_Management extends javax.swing.JFrame {
     private javax.swing.JSpinner txtQty;
     private javax.swing.JTextField txtUnitPrice;
     // End of variables declaration//GEN-END:variables
-    
+
     private void customizeUI() {
         getContentPane().setBackground(UITheme.BG_DEEP);
-        
+
         UITheme.styleTextField(txtItemName);
         UITheme.styleTextField(txtUnitPrice);
         UITheme.styleTextField(lblGrandTotal);
         UITheme.styleTextField(lblEstimatePrice);
         UITheme.styleSpinner(txtQty);
-        
+
         UITheme.styleTable(itemTable);
         UITheme.styleTable(tbPackageResources);
-        
+
         UITheme.styleButton(btnItemAdd, UITheme.BTN_BLUE);
         UITheme.styleButton(btnItemUpadate, new java.awt.Color(0, 102, 179));
         UITheme.styleButton(btnUpdate, UITheme.BTN_BLUE);
+        UITheme.styleButton(btnItemDelete, UITheme.BTN_RED);
         
+
         javax.swing.JLabel[] labels = {
             jLabel1, jLabel2, jLabel3, jLabel4, jLabel5, jLabel6, jLabel7, jLabel8, jLabel9, jLabel10,
             package_id, lblPackageName, lblPackagePrice
@@ -759,7 +817,8 @@ public class Item_Management extends javax.swing.JFrame {
                         resId,
                         resName,
                         String.valueOf(qty),
-                        String.valueOf(total)
+                        String.valueOf(total),
+                        rowId
                     });
                 }
             }
@@ -775,11 +834,10 @@ public class Item_Management extends javax.swing.JFrame {
 
         for (int i = 0; i < rowCount; i++) {
             try {
-
-                double rowTotal = Double.parseDouble(tbPackageResources.getValueAt(i, 3).toString());
+                double rowTotal = Double.parseDouble(tbPackageResources.getModel().getValueAt(i, 3).toString());
                 grandTotal += rowTotal;
             } catch (Exception e) {
-
+                System.out.println("Row Calculation Error: " + e.getMessage());
             }
         }
 
