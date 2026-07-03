@@ -1430,15 +1430,27 @@ public class Admin_Management extends javax.swing.JInternalFrame {
         iM.setLocationRelativeTo(null);
         iM.setVisible(true);
         iM.toFront();
+
+        // When Item_Management closes, auto-refresh the pakageTable
+        // so the updated package price is immediately visible
+        iM.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                refreshPackageTable();
+            }
+        });
     }//GEN-LAST:event_btnItemManageActionPerformed
 
     private void pakageTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pakageTableMouseClicked
-        int rowIndex = pakageTable.getSelectedRow();
-        if (rowIndex < 0) return;
+        int viewRow = pakageTable.getSelectedRow();
+        if (viewRow < 0) return;
+
+        // Convert view index to model index (handles search/sort filters correctly)
+        int modelRow = pakageTable.convertRowIndexToModel(viewRow);
 
         DefaultTableModel iModel = (DefaultTableModel) pakageTable.getModel();
 
-        String package_id = iModel.getValueAt(rowIndex, 0).toString();
+        String package_id = iModel.getValueAt(modelRow, 0).toString();
 
         this.package_Id = package_id;
 

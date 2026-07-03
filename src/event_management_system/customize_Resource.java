@@ -493,12 +493,28 @@ public class customize_Resource extends javax.swing.JInternalFrame {
             grandTotal = 0.0;
         }
 
+        // Auto-save the items total as the package price in DB
+        // so that Billing & Cost form reads the correct price
+        if (selectedPackageId != null && !selectedPackageId.isEmpty()) {
+            try (Connection conn = DBConnect.connect()) {
+                String sql = "UPDATE package SET price = ? WHERE package_id = ?";
+                PreparedStatement pstUpdate = conn.prepareStatement(sql);
+                pstUpdate.setDouble(1, grandTotal);
+                pstUpdate.setString(2, selectedPackageId);
+                pstUpdate.executeUpdate();
+                pstUpdate.close();
+            } catch (Exception ex) {
+                logger.log(java.util.logging.Level.WARNING, "Could not auto-save package price: " + ex.getMessage());
+            }
+        }
+
         if (parentForm != null) {
             parentForm.setCustomizedData(grandTotal, items);
         }
 
         this.dispose();
     }//GEN-LAST:event_btnConfirmActionPerformed
+
 
     /**
      * @param args the command line arguments

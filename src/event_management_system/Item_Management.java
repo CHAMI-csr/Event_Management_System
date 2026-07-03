@@ -53,7 +53,7 @@ public class Item_Management extends javax.swing.JFrame {
         txtItemName.setEditable(false);
         txtUnitPrice.setEditable(false);
         lblGrandTotal.setEditable(false);
-        btnUpdate.setVisible(false);
+        
         lblSelectItem.setVisible(false);
         lblSelectPackage.setVisible(false);
 
@@ -87,9 +87,6 @@ public class Item_Management extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         lblGrandTotal = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        lblEstimatePrice = new javax.swing.JTextField();
-        btnUpdate = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         txtItemName = new javax.swing.JTextField();
         txtQty = new javax.swing.JSpinner();
@@ -263,21 +260,6 @@ public class Item_Management extends javax.swing.JFrame {
 
         lblGrandTotal.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel8.setText("Your Estimate Price");
-
-        lblEstimatePrice.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblEstimatePrice.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lblEstimatePriceMouseClicked(evt);
-            }
-        });
-        lblEstimatePrice.addActionListener(this::lblEstimatePriceActionPerformed);
-
-        btnUpdate.setFont(new java.awt.Font("Tw Cen MT Condensed", 0, 18)); // NOI18N
-        btnUpdate.setText("UPDATE Estimate Price ");
-        btnUpdate.addActionListener(this::btnUpdateActionPerformed);
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -288,17 +270,10 @@ public class Item_Management extends javax.swing.JFrame {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lblGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblEstimatePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jLabel6)
-                    .addComponent(btnUpdate, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel6))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -312,13 +287,7 @@ public class Item_Management extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblGrandTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(39, 39, 39)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblEstimatePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addContainerGap(170, Short.MAX_VALUE))
         );
 
         jPanel4.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(717, 0, 480, -1));
@@ -515,33 +484,6 @@ public class Item_Management extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnItemAddActionPerformed
 
-    private void lblEstimatePriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblEstimatePriceActionPerformed
-
-    }//GEN-LAST:event_lblEstimatePriceActionPerformed
-
-    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-
-        try {
-            String price = lblEstimatePrice.getText();
-            String sql = "UPDATE package SET price = ? WHERE package_id = ?";
-            pst = con.prepareStatement(sql);
-            pst.setString(1, price);
-            pst.setString(2, package_Id);
-            pst.executeUpdate();
-            detailsLoad(package_Id);
-            btnUpdate.setVisible(false);
-
-        } catch (SQLException ex) {
-            System.getLogger(Item_Management.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-
-
-    }//GEN-LAST:event_btnUpdateActionPerformed
-
-    private void lblEstimatePriceMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblEstimatePriceMouseClicked
-        btnUpdate.setVisible(true);
-    }//GEN-LAST:event_lblEstimatePriceMouseClicked
-
     private void tbPackageResourcesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbPackageResourcesMouseClicked
         btnItemUpadate.setVisible(true);
         btnItemAdd.setVisible(false);
@@ -681,7 +623,6 @@ public class Item_Management extends javax.swing.JFrame {
     private javax.swing.JButton btnItemAdd;
     private javax.swing.JButton btnItemDelete;
     private javax.swing.JButton btnItemUpadate;
-    private javax.swing.JButton btnUpdate;
     private javax.swing.JTable itemTable;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -691,7 +632,6 @@ public class Item_Management extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -701,7 +641,6 @@ public class Item_Management extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField lblEstimatePrice;
     private javax.swing.JTextField lblGrandTotal;
     private javax.swing.JLabel lblPackageName;
     private javax.swing.JLabel lblPackagePrice;
@@ -720,7 +659,6 @@ public class Item_Management extends javax.swing.JFrame {
         UITheme.styleTextField(txtItemName);
         UITheme.styleTextField(txtUnitPrice);
         UITheme.styleTextField(lblGrandTotal);
-        UITheme.styleTextField(lblEstimatePrice);
         UITheme.styleSpinner(txtQty);
 
         UITheme.styleTable(itemTable);
@@ -728,12 +666,11 @@ public class Item_Management extends javax.swing.JFrame {
 
         UITheme.styleButton(btnItemAdd, UITheme.BTN_BLUE);
         UITheme.styleButton(btnItemUpadate, new java.awt.Color(0, 102, 179));
-        UITheme.styleButton(btnUpdate, UITheme.BTN_BLUE);
         UITheme.styleButton(btnItemDelete, UITheme.BTN_RED);
         
 
         javax.swing.JLabel[] labels = {
-            jLabel1, jLabel2, jLabel3, jLabel4, jLabel5, jLabel6, jLabel7, jLabel8, jLabel9, jLabel10,
+            jLabel1, jLabel2, jLabel3, jLabel4, jLabel5, jLabel6, jLabel7, jLabel9, jLabel10,
             package_id, lblPackageName, lblPackagePrice
         };
         for (javax.swing.JLabel lbl : labels) {
@@ -753,7 +690,6 @@ public class Item_Management extends javax.swing.JFrame {
                 name = rs.getString("package_name");
                 price = rs.getString("price");
                 lblPackageName.setText(name);
-                lblEstimatePrice.setText(price);
                 lblPackagePrice.setText(price);
             } else {
                 lblPackagePrice.setText("Package not found");
@@ -842,5 +778,32 @@ public class Item_Management extends javax.swing.JFrame {
         }
 
         lblGrandTotal.setText(String.format("%.2f", grandTotal));
+
+        // Auto-save the items total as the package price
+        autoSavePackagePrice(grandTotal);
+    }
+
+    /**
+     * Automatically saves the calculated items total as package.price in the DB.
+     * This ensures Billing & Cost form always reads the correct price.
+     */
+    private void autoSavePackagePrice(double price) {
+        if (package_Id == null || package_Id.isEmpty()) {
+            return;
+        }
+        try {
+            String sql = "UPDATE package SET price = ? WHERE package_id = ?";
+            java.sql.PreparedStatement updatePst = con.prepareStatement(sql);
+            updatePst.setDouble(1, price);
+            updatePst.setString(2, package_Id);
+            updatePst.executeUpdate();
+            updatePst.close();
+
+            // Refresh the display labels to reflect the new saved price
+            String formatted = String.format("%.2f", price);
+            lblPackagePrice.setText(formatted);
+        } catch (java.sql.SQLException ex) {
+            System.out.println("Auto-save package price error: " + ex.getMessage());
+        }
     }
 }

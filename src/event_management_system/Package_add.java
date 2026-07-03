@@ -235,29 +235,29 @@ public class Package_add extends javax.swing.JFrame {
         try {
             String name = txtPacName.getText().trim();
             String description = txtPacDescription.getText().trim();
-            String vPrice = txtPacPrice.getText().trim();
+//            String vPrice = txtPacPrice.getText().trim();
             String newPackageId = packageIdGenarate();
             int price;
 
-            if (name.isEmpty() || description.isEmpty() || vPrice.isEmpty()) {
+            if (name.isEmpty() || description.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Please fill all required fields", "Missing Information", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            try {
-                price = Integer.parseInt(vPrice);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Price must be a valid number", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+//            try {
+//                price = Integer.parseInt(vPrice);
+//            } catch (NumberFormatException e) {
+//                JOptionPane.showMessageDialog(null, "Price must be a valid number", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
 
-            String sql = "INSERT INTO `package` (package_id, package_name, description, price) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO `package` (package_id, package_name, description) VALUES (?, ?, ?)";
             pst = con.prepareStatement(sql);
 
             pst.setString(1, newPackageId);
             pst.setString(2, name);
             pst.setString(3, description);
-            pst.setInt(4, price);
+//            pst.setInt(4, price);
 
             pst.executeUpdate();
 

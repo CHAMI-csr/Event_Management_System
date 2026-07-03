@@ -501,6 +501,8 @@ public class assign_resources extends javax.swing.JInternalFrame {
             pst.setInt(4, qty);
             pst.setDouble(5, totalCost);
             pst.executeUpdate();
+            // Auto-save the event's total resource cost to package.price
+            autoSavePackagePriceForEvent(eventId);
             showInfo("Resource assigned!\nAssignment ID: " + newId);
             loadAllAssignments();
             clearForm();
@@ -527,6 +529,13 @@ public class assign_resources extends javax.swing.JInternalFrame {
             return;
         }
 
+        // Get the event_id for this assignment (needed to recalculate package price)
+        String eventIdForUpdate = null;
+        int selectedRow = tblAssignments.getSelectedRow();
+        if (selectedRow != -1) {
+            eventIdForUpdate = tableModel.getValueAt(selectedRow, 1).toString();
+        }
+
         try (Connection con = DBConnect.connect();
                 PreparedStatement pst = con.prepareStatement(
                         "UPDATE event_resources SET quantity=?, total_cost=? WHERE assignment_id=?")) {
@@ -534,6 +543,10 @@ public class assign_resources extends javax.swing.JInternalFrame {
             pst.setDouble(2, totalCost);
             pst.setString(3, assignId);
             pst.executeUpdate();
+            // Auto-save the event's total resource cost to package.price
+            if (eventIdForUpdate != null) {
+                autoSavePackagePriceForEvent(eventIdForUpdate);
+            }
             showInfo("Assignment updated!");
             loadAllAssignments();
             clearForm();
@@ -558,11 +571,22 @@ public class assign_resources extends javax.swing.JInternalFrame {
         if (confirm != JOptionPane.YES_OPTION)
             return;
 
+        // Get the event_id before deleting (needed to recalculate package price)
+        String eventIdForRemove = null;
+        int selectedRowRemove = tblAssignments.getSelectedRow();
+        if (selectedRowRemove != -1) {
+            eventIdForRemove = tableModel.getValueAt(selectedRowRemove, 1).toString();
+        }
+
         try (Connection con = DBConnect.connect();
                 PreparedStatement pst = con.prepareStatement(
                         "DELETE FROM event_resources WHERE assignment_id=?")) {
             pst.setString(1, assignId);
             pst.executeUpdate();
+            // Auto-save the event's total resource cost to package.price
+            if (eventIdForRemove != null) {
+                autoSavePackagePriceForEvent(eventIdForRemove);
+            }
             showInfo("Assignment removed.");
             loadAllAssignments();
             clearForm();
@@ -699,9 +723,58 @@ public class assign_resources extends javax.swing.JInternalFrame {
                 pst.setString(3, assignId);
                 pst.executeUpdate();
             }
+            // Auto-save the event's total resource cost to package.price
+            autoSavePackagePriceForEvent(eventId);
             showInfo("Quantity updated to " + newQty + " (+" + additionalQty + ").");
         } catch (Exception ex) {
             showError("Update failed: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Calculates the SUM of total_cost from event_resources for the given event,
+     * then updates the linked package.price in DB.
+     * This ensures Billing & Cost form always shows the correct Base Price.
+     */
+    private void autoSavePackagePriceForEvent(String eventId) {
+        if (eventId == null || eventId.trim().isEmpty()) {
+            return;
+        }
+        try (Connection con = DBConnect.connect()) {
+            // Step 1: Get the package_id linked to this event
+            String packageId = null;
+            try (PreparedStatement pst = con.prepareStatement(
+                    "SELECT package_id FROM events WHERE event_id = ?")) {
+                pst.setString(1, eventId);
+                ResultSet rs = pst.executeQuery();
+                if (rs.next()) {
+                    packageId = rs.getString("package_id");
+                }
+            }
+            if (packageId == null || packageId.trim().isEmpty()) {
+                return; // No package linked to this event
+            }
+
+            // Step 2: Sum all resource costs for this event
+            double totalResourceCost = 0.0;
+            try (PreparedStatement pst = con.prepareStatement(
+                    "SELECT COALESCE(SUM(total_cost), 0) AS total FROM event_resources WHERE event_id = ?")) {
+                pst.setString(1, eventId);
+                ResultSet rs = pst.executeQuery();
+                if (rs.next()) {
+                    totalResourceCost = rs.getDouble("total");
+                }
+            }
+
+            // Step 3: Update package.price with the total
+            try (PreparedStatement pst = con.prepareStatement(
+                    "UPDATE package SET price = ? WHERE package_id = ?")) {
+                pst.setDouble(1, totalResourceCost);
+                pst.setString(2, packageId);
+                pst.executeUpdate();
+            }
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Auto-save package price error: " + ex.getMessage());
         }
     }
 
