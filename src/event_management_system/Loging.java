@@ -5,7 +5,10 @@
 package event_management_system;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import java.awt.Image;
+import java.awt.Taskbar;
 import java.awt.event.KeyEvent;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
@@ -18,6 +21,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import java.util.Arrays;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -46,7 +50,27 @@ public class Loging extends javax.swing.JFrame {
         } catch (Exception ex) {
             System.err.println("Failed to initialize FlatLaf");
         }
+        
+        //logo create
+        try {
+           
+            URL iconURL = getClass().getResource("/images/logo.png");
+            Image taskbarIcon = new ImageIcon(iconURL).getImage();
 
+           
+            this.setIconImage(taskbarIcon);
+
+           
+            if (Taskbar.isTaskbarSupported()) {
+                Taskbar taskbar = Taskbar.getTaskbar();
+
+                if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
+                    taskbar.setIconImage(taskbarIcon);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Icon failed to load: " + e.getMessage());
+        }
 
     }
 
@@ -73,6 +97,7 @@ public class Loging extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAutoRequestFocus(false);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        setResizable(false);
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -118,6 +143,7 @@ public class Loging extends javax.swing.JFrame {
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 110, 110));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Blue Flat Color UI Login Page Desktop Prototype.png"))); // NOI18N
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -132,6 +158,7 @@ public class Loging extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyPressed
@@ -148,14 +175,13 @@ public class Loging extends javax.swing.JFrame {
 
     private void btnLogingActionPerformed(java.awt.event.ActionEvent evt) {
         String enteredUsername = txtUsername.getText().trim();
-        char[] passwordChars   = txtPassword.getPassword();
+        char[] passwordChars = txtPassword.getPassword();
         String enteredPassword = new String(passwordChars).trim();
         Arrays.fill(passwordChars, ' '); // wipe char array
 
         // Delegate ALL authentication (including first-time reset) to performLogin
         performLogin(enteredUsername, enteredPassword);
     }
-
 
     private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtPasswordActionPerformed
         // TODO add your handling code here:
@@ -202,42 +228,37 @@ public class Loging extends javax.swing.JFrame {
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 
-    
-
     private void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             btnLoging.doClick();
         }
     }
 
-    
     private void performLogin(String username, String password) {
         if (username == null || username.trim().isEmpty()
                 || password == null || password.trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                "Please enter both username and password.",
-                "Warning", JOptionPane.WARNING_MESSAGE);
+                    "Please enter both username and password.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-       
         if (conn == null) {
             conn = DBConnect.connect();
         }
         if (conn == null) {
             JOptionPane.showMessageDialog(this,
-                "Cannot connect to the database!\nPlease check your MySQL server.",
-                "Database Error", JOptionPane.ERROR_MESSAGE);
+                    "Cannot connect to the database!\nPlease check your MySQL server.",
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-      
         try {
             String encryptedPassword = encryptMyPassword(password);
             System.out.println(encryptedPassword);
-            String query =
-                "SELECT *, first_time_log FROM staff " +
-                "WHERE (staff_id = ? OR staff_email = ? OR Id = ?) AND password = ?";
+            String query
+                    = "SELECT *, first_time_log FROM staff "
+                    + "WHERE (staff_id = ? OR staff_email = ? OR Id = ?) AND password = ?";
             pst = conn.prepareStatement(query);
             pst.setString(1, username);
             pst.setString(2, username);
@@ -247,57 +268,54 @@ public class Loging extends javax.swing.JFrame {
 
             if (!rs.next()) {
                 JOptionPane.showMessageDialog(this,
-                    "Incorrect username or password.\nPlease try again.",
-                    "Login Failed", JOptionPane.ERROR_MESSAGE);
+                        "Incorrect username or password.\nPlease try again.",
+                        "Login Failed", JOptionPane.ERROR_MESSAGE);
                 txtPassword.setText("");
                 txtPassword.requestFocus();
                 return;
             }
 
             Staff staff = new Staff(
-                rs.getString(1),   // staff_id
-                rs.getString(2),   // staff_name
-                rs.getInt(3),      // contact_number
-                rs.getString(4),   // staff_email
-                rs.getString(5),   // staff_address
-                rs.getString(6),   // Id (NIC)
-                rs.getString(7)    // role
+                    rs.getString(1), // staff_id
+                    rs.getString(2), // staff_name
+                    rs.getInt(3), // contact_number
+                    rs.getString(4), // staff_email
+                    rs.getString(5), // staff_address
+                    rs.getString(6), // Id (NIC)
+                    rs.getString(7) // role
             );
             int firstTimeLog = rs.getInt("first_time_log");
 
             UserSession.loggedUserRole = staff.getRole();
             UserSession.loggedUserName = staff.getStaff_name();
 
-           
             if (firstTimeLog == 0) {
-               
+
                 First_time_log resetDialog = new First_time_log(this, staff);
                 resetDialog.setVisible(true);
 
-              
                 if (!resetDialog.isPasswordChanged()) {
-                  
+
                     JOptionPane.showMessageDialog(this,
-                        "Password change was cancelled.\nYou must set a new password on your first login.",
-                        "Login Aborted", JOptionPane.WARNING_MESSAGE);
+                            "Password change was cancelled.\nYou must set a new password on your first login.",
+                            "Login Aborted", JOptionPane.WARNING_MESSAGE);
                     UserSession.clear();
                     return;
                 }
-             
+
             }
 
-       
             JOptionPane.showMessageDialog(this,
-                "Welcome, " + staff.getStaff_name() + "!\nLogin successful.",
-                "Success", JOptionPane.INFORMATION_MESSAGE);
+                    "Welcome, " + staff.getStaff_name() + "!\nLogin successful.",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
             new Dashboard(staff).setVisible(true);
             this.dispose();
 
         } catch (SQLException ex) {
             Logger.getLogger(Loging.class.getName()).log(Level.SEVERE, "Login query failed", ex);
             JOptionPane.showMessageDialog(this,
-                "A database error occurred:\n" + ex.getMessage(),
-                "Database Error", JOptionPane.ERROR_MESSAGE);
+                    "A database error occurred:\n" + ex.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
